@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCompleteMentorSession, useMentorSessions } from '../../shared/hooks/useMentorSessions';
 import { useCancelSession } from '../../shared/hooks/useSessionLifecycle';
@@ -6,140 +6,20 @@ import type { ApiWarning, AttendanceStatus, MentorSession, SessionParticipant } 
 import MentorSessionComposer from './MentorSessionComposer';
 import MentorFeedbackForm from './MentorFeedbackForm';
 import AttendanceModal from './AttendanceModal';
-import ProgressDashboard from '../mentee/ProgressDashboard';
-
-const formatDate = (value?: string | null) => {
-    if (!value) return '—';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return '—';
-    return date.toLocaleString();
-};
+import MentorSessionList from './sessions/MentorSessionList';
+import MentorSessionDetails from './sessions/MentorSessionDetails';
+import { 
+    getParticipantList, 
+    getPrimaryParticipantName, 
+    canRecordAttendance, 
+    canCancelSession, 
+    getHoursUntilSession, 
+    formatTimeUntil, 
+    SESSION_CANCEL_PENALTY_HOURS 
+} from './sessions/sessionUtils';
 
 export const ATTENDANCE_LOCKOUT_MESSAGE =
     'Attendance opens at the scheduled start time. Please try again once the session begins.';
-
-const getParticipantList = (session: MentorSession): SessionParticipant[] => {
-    if (session.participants && session.participants.length > 0) {
-        return session.participants;
-    }
-    if (session.mentee) {
-        return [session.mentee];
-    }
-    return [];
-};
-
-const getPrimaryParticipantName = (session: MentorSession) => {
-    const participants = getParticipantList(session);
-    return participants[0]?.name || '';
-};
-
-const attendanceStyleMap: Record<AttendanceStatus, { label: string; classes: string }> = {
-    present: { label: 'Present', classes: 'tw-bg-green-50 tw-text-green-700' },
-    late: { label: 'Late', classes: 'tw-bg-amber-50 tw-text-amber-700' },
-    absent: { label: 'Absent', classes: 'tw-bg-red-50 tw-text-red-700' },
-};
-
-const deriveAttendanceBadge = (session: MentorSession) => {
-    const participants = getParticipantList(session);
-    const primary = participants[0];
-    const normalized = (primary?.status || '').toString().toLowerCase();
-    const validStatus = (['present', 'absent', 'late'] as AttendanceStatus[]).includes(normalized as AttendanceStatus)
-        ? (normalized as AttendanceStatus)
-        : undefined;
-
-    let finalStatus: AttendanceStatus | undefined = validStatus;
-    if (!finalStatus && (session.status === 'completed' || session.status === 'overdue')) {
-        finalStatus = session.attended ? 'present' : 'absent';
-    }
-
-    if (!finalStatus) {
-        return {
-            label: 'Not recorded',
-            classes: 'tw-bg-gray-100 tw-text-gray-600',
-            participantName: primary?.name,
-        };
-    }
-
-    const style = attendanceStyleMap[finalStatus];
-    return {
-        label: style.label,
-        classes: style.classes,
-        participantName: primary?.name,
-    };
-};
-
-const canRecordAttendance = (session: MentorSession | null): boolean => {
-    if (!session) {
-        return false;
-    }
-
-    if (session.status === 'completed' || session.status === 'overdue') {
-        return true;
-    }
-
-    const startTime = Date.parse(session.date);
-    if (Number.isNaN(startTime)) {
-        return false;
-    }
-
-    return Date.now() >= startTime;
-};
-
-const canCancelSession = (session: MentorSession | null): boolean => {
-    if (!session) {
-        return false;
-    }
-
-    const status = session.status || (session.attended ? 'completed' : 'upcoming');
-    if (status === 'cancelled' || status === 'completed' || status === 'overdue') {
-        return false;
-    }
-
-    const startTime = Date.parse(session.date);
-    if (Number.isNaN(startTime)) {
-        return false;
-    }
-
-    return startTime > Date.now();
-};
-
-const SESSION_CANCEL_PENALTY_HOURS = 6;
-
-const getHoursUntilSession = (session: MentorSession | null): number | null => {
-    if (!session) {
-        return null;
-    }
-
-    const startTime = Date.parse(session.date);
-    if (Number.isNaN(startTime)) {
-        return null;
-    }
-
-    return (startTime - Date.now()) / 3_600_000;
-};
-
-const formatTimeUntil = (hoursUntil: number | null): string => {
-    if (hoursUntil == null) {
-        return 'this session starts soon';
-    }
-
-    if (hoursUntil <= 0) {
-        return 'this session has started';
-    }
-
-    const totalMinutes = Math.max(1, Math.round(hoursUntil * 60));
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    if (hours === 0) {
-        return `${minutes}m`;
-    }
-
-    if (minutes === 0) {
-        return `${hours}h`;
-    }
-
-    return `${hours}h ${minutes}m`;
-};
 
 const MentorSessionsManager: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -166,6 +46,16 @@ const MentorSessionsManager: React.FC = () => {
     const completeSession = useCompleteMentorSession();
     const cancelSession = useCancelSession();
     const navigate = useNavigate();
+
+    // Sync selectedSession when the react-query cache for sessions is updated
+    useEffect(() => {
+        if (selectedSession && sessions) {
+            const updated = sessions.find((s) => s.id === selectedSession.id);
+            if (updated && updated !== selectedSession) {
+                setSelectedSession(updated);
+            }
+        }
+    }, [sessions, selectedSession]);
 
     const handleSessionScheduled = (session: MentorSession, warnings?: ApiWarning[]) => {
         if (warnings && warnings.length > 0) {
@@ -200,8 +90,9 @@ const MentorSessionsManager: React.FC = () => {
         const lower = searchTerm.trim().toLowerCase();
         return sessions
             .filter((session) => {
-                if (statusFilter === 'upcoming' && session.attended) return false;
-                if (statusFilter === 'completed' && !session.attended) return false;
+                const isCompleted = session.status ? session.status === 'completed' : session.attended;
+                if (statusFilter === 'upcoming' && isCompleted) return false;
+                if (statusFilter === 'completed' && !isCompleted) return false;
                 if (!lower) return true;
                 const participantNames = getParticipantList(session)
                     .map((participant) => participant.name)
@@ -465,283 +356,31 @@ const MentorSessionsManager: React.FC = () => {
             )}
 
                         <div className="tw-overflow-x-auto lg:tw-grid lg:tw-grid-cols-3 lg:tw-gap-6">
-                                <div className="lg:tw-col-span-2">
-                                    <div className="tw-overflow-x-auto">
-                                        <table className="tw-min-w-full tw-divide-y tw-divide-gray-200">
-                    <thead className="tw-bg-gray-50">
-                        <tr>
-                            <th className="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">Session</th>
-                            <th className="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">Schedule</th>
-                            <th className="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">Location & capacity</th>
-                            <th className="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">Attendance</th>
-                            <th className="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">Status</th>
-                            <th className="tw-px-6 tw-py-3 tw-text-right tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="tw-bg-white tw-divide-y tw-divide-gray-200">
-                        {isLoading || isFetching ? (
-                            [...Array(3)].map((_, index) => (
-                                <tr key={`loading-${index}`}>
-                                    <td className="tw-px-6 tw-py-4" colSpan={6}>
-                                        <div className="tw-h-4 tw-bg-gray-100 tw-rounded tw-animate-pulse" />
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            filteredSessions.map((session) => {
-                                const participants = getParticipantList(session);
-                                const visibleParticipants = participants.slice(0, 3);
-                                const overflow = participants.length - visibleParticipants.length;
-
-                                return (
-                                    <tr key={session.id} className="hover:tw-bg-gray-50">
-                                        <td className="tw-px-6 tw-py-4 tw-align-top">
-                                            <div className="tw-text-sm tw-font-semibold tw-text-gray-900">{session.subject}</div>
-                                            <div className="tw-mt-2 tw-flex tw-flex-wrap tw-gap-1">
-                                                {visibleParticipants.length ? (
-                                                    visibleParticipants.map((participant) => (
-                                                        <span
-                                                            key={`${session.id}-${participant.id}`}
-                                                            className="tw-inline-flex tw-items-center tw-rounded-full tw-bg-gray-100 tw-text-gray-700 tw-text-xs tw-font-medium tw-px-3 tw-py-1"
-                                                        >
-                                                            {participant.name}
-                                                        </span>
-                                                    ))
-                                                ) : (
-                                                    <span className="tw-text-xs tw-text-gray-500">No participants yet</span>
-                                                )}
-                                                {overflow > 0 ? (
-                                                    <span className="tw-inline-flex tw-items-center tw-rounded-full tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-font-medium tw-px-3 tw-py-1">+{overflow} more</span>
-                                                ) : null}
-                                            </div>
-                                        </td>
-                                        <td className="tw-px-6 tw-py-4 tw-align-top">
-                                            <div className="tw-text-sm tw-text-gray-900">{formatDate(session.date)}</div>
-                                            <p className="tw-text-xs tw-text-gray-500">{session.durationMinutes || 60} min</p>
-                                        </td>
-                                        <td className="tw-px-6 tw-py-4 tw-align-top">
-                                            <div className="tw-text-sm tw-text-gray-900">{session.room || 'Room TBA'}</div>
-                                            <p className="tw-text-xs tw-text-gray-500">
-                                                {`${session.participantCount ?? 0}/${session.capacity ?? session.participantCount ?? 0} seats`}
-                                            </p>
-                                            <span
-                                                className={`tw-inline-flex tw-items-center tw-gap-1 tw-text-[11px] tw-font-semibold tw-rounded-full tw-px-2 tw-py-0.5 tw-mt-2 ${
-                                                    session.isGroup ? 'tw-bg-blue-50 tw-text-blue-700' : 'tw-bg-purple-50 tw-text-purple-700'
-                                                }`}
-                                            >
-                                                {session.isGroup ? 'Group session' : '1:1 session'}
-                                            </span>
-                                        </td>
-                                        <td className="tw-px-6 tw-py-4 tw-align-top">
-                                            {(() => {
-                                                const badge = deriveAttendanceBadge(session);
-                                                return (
-                                                    <span
-                                                        className={`tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-semibold tw-rounded-full tw-px-3 tw-py-1 ${badge.classes}`}
-                                                    >
-                                                        {badge.label}
-                                                    </span>
-                                                );
-                                            })()}
-                                        </td>
-                                        <td className="tw-px-6 tw-py-4 tw-align-top">
-                                            {(() => {
-                                                const status = session.status || (session.attended ? 'completed' : 'upcoming');
-                                                if (status === 'completed') {
-                                                    return (
-                                                        <span className="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-semibold tw-text-green-700 tw-bg-green-50 tw-rounded-full tw-px-3 tw-py-1">
-                                                            <span aria-hidden="true">●</span> Completed
-                                                        </span>
-                                                    );
-                                                }
-                                                if (status === 'overdue') {
-                                                    return (
-                                                        <span className="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-semibold tw-text-red-700 tw-bg-red-50 tw-rounded-full tw-px-3 tw-py-1">
-                                                            <span aria-hidden="true">●</span> Needs update
-                                                        </span>
-                                                    );
-                                                }
-                                                return (
-                                                    <span className="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-semibold tw-text-amber-700 tw-bg-amber-50 tw-rounded-full tw-px-3 tw-py-1">
-                                                        <span aria-hidden="true">●</span> Upcoming
-                                                    </span>
-                                                );
-                                            })()}
-                                            {session.feedbackDue ? (
-                                                <div className="tw-mt-2">
-                                                    <span className="tw-inline-flex tw-items-center tw-gap-1 tw-text-[11px] tw-font-semibold tw-rounded-full tw-bg-blue-50 tw-text-blue-700 tw-px-2 tw-py-0.5">
-                                                        Awaiting mentee feedback
-                                                    </span>
-                                                </div>
-                                            ) : null}
-                                        </td>
-                                        <td className="tw-px-6 tw-py-4 tw-align-top tw-text-right">
-                                            <div className="tw-flex tw-items-center tw-justify-end">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setSelectedSession(session)}
-                                                    className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white tw-text-sm tw-font-semibold tw-text-gray-700 tw-px-3 tw-py-2 hover:tw-bg-gray-50 focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-gray-200"
-                                                >
-                                                    View details
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                );
-                            })
-                        )}
-                        {showEmpty && (
-                            <tr>
-                                <td className="tw-px-6 tw-py-6 tw-text-sm tw-text-gray-500" colSpan={6}>
-                                    No sessions match your filters. Try another search.
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
-                                {/* Right-side small panel for the selected session's mentee progress */}
-                                <aside className="tw-hidden lg:tw-block lg:tw-col-span-1">
-                                    {selectedSession ? (
-                                        <div className="tw-sticky tw-top-6 tw-space-y-4">
-                                            <div className="tw-bg-white tw-rounded-xl tw-border tw-border-gray-100 tw-p-4">
-                                                <div className="tw-flex tw-justify-between tw-items-start">
-                                                    <div>
-                                                        <h3 className="tw-text-sm tw-font-semibold tw-text-gray-900">{selectedSession.subject}</h3>
-                                                        <p className="tw-text-xs tw-text-gray-500">Mentee: {selectedSession.mentee?.name || selectedSession.participants?.[0]?.name || '—'}</p>
-                                                        <p className="tw-text-xs tw-text-gray-400 tw-mt-2">{formatDate(selectedSession.date)}</p>
-                                                    </div>
-                                                    <button
-                                                        onClick={() => setSelectedSession(null)}
-                                                        aria-label="Close details"
-                                                        className="tw-text-gray-400 hover:tw-text-gray-600"
-                                                    >
-                                                        ×
-                                                    </button>
-                                                </div>
-
-                                                {banner && (
-                                                    <div
-                                                        role="status"
-                                                        className={`tw-mt-3 tw-rounded-md tw-border tw-p-2 tw-text-sm ${
-                                                            banner.type === 'success'
-                                                                ? 'tw-bg-green-50 tw-border-green-200 tw-text-green-800'
-                                                                : 'tw-bg-red-50 tw-border-red-200 tw-text-red-700'
-                                                        }`}
-                                                    >
-                                                        <div className="tw-flex tw-justify-between tw-items-center">
-                                                            <span>{banner.message}</span>
-                                                            <button onClick={() => setBanner(null)} className="tw-text-xs tw-uppercase tw-font-semibold">
-                                                                Close
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                )}
-
-                                                <div className="tw-mt-3 tw-flex tw-flex-wrap tw-gap-2">
-                                                    <div className="tw-text-xs tw-text-gray-500">{selectedSession.room || 'Room TBA'}</div>
-                                                    <div className="tw-text-xs tw-text-gray-500">• {selectedSession.durationMinutes || 60} min</div>
-                                                </div>
-
-                                                <div className="tw-mt-4">
-                                                    <div className="tw-text-xs tw-text-gray-500 tw-mb-2">Attendance</div>
-                                                    {(() => {
-                                                        const badge = deriveAttendanceBadge(selectedSession);
-                                                        return (
-                                                            <div className="tw-flex tw-items-center tw-gap-2">
-                                                                <span className={`tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-semibold tw-rounded-full tw-px-3 tw-py-1 ${badge.classes}`}>
-                                                                    {badge.label}
-                                                                </span>
-                                                                {badge.participantName ? (
-                                                                    <span className="tw-text-xs tw-text-gray-500">{badge.participantName}</span>
-                                                                ) : null}
-                                                            </div>
-                                                        );
-                                                    })()}
-                                                </div>
-
-                                                <div className="tw-mt-4 tw-flex tw-flex-col tw-gap-2">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleOpenChat(selectedSession.chatThreadId)}
-                                                        disabled={!selectedSession.chatThreadId}
-                                                        className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white tw-text-sm tw-font-semibold tw-text-gray-700 tw-px-3 tw-py-2 hover:tw-bg-gray-50 disabled:tw-opacity-50"
-                                                    >
-                                                        Open chat
-                                                    </button>
-
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => openCompletionModal(selectedSession)}
-                                                        className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-bg-primary tw-text-white tw-text-sm tw-font-semibold tw-px-3 tw-py-2 hover:tw-bg-primary/90"
-                                                    >
-                                                        {selectedSession.attended ? 'Update' : 'Mark complete'}
-                                                    </button>
-
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => openCancelModal(selectedSession)}
-                                                        disabled={!cancellationReady}
-                                                        title={
-                                                            cancellationReady
-                                                                ? undefined
-                                                                : 'Only upcoming sessions that have not started can be cancelled.'
-                                                        }
-                                                        className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-red-200 tw-bg-red-50 tw-text-sm tw-font-semibold tw-text-red-700 tw-px-3 tw-py-2 hover:tw-bg-red-100 disabled:tw-opacity-60 disabled:tw-cursor-not-allowed"
-                                                    >
-                                                        Cancel session
-                                                    </button>
-
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => openAttendanceModal(selectedSession)}
-                                                        aria-disabled={!attendanceReady}
-                                                        title={attendanceReady ? undefined : 'Attendance opens at the session start time.'}
-                                                        className={`tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white tw-text-sm tw-font-semibold tw-text-gray-700 tw-px-3 tw-py-2 hover:tw-bg-gray-50 ${
-                                                            attendanceReady ? '' : 'tw-opacity-60 tw-cursor-not-allowed'
-                                                        }`}
-                                                    >
-                                                        Attendance
-                                                    </button>
-
-                                                    {!attendanceReady && (
-                                                        <p className="tw-text-[11px] tw-text-gray-500 tw-text-center tw-leading-4">
-                                                            Attendance unlocks once the scheduled start time arrives.
-                                                        </p>
-                                                    )}
-
-                                                    {((selectedSession.status || (selectedSession.attended ? 'completed' : 'upcoming')) === 'completed') && (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => {
-                                                                setFeedbackSession(selectedSession);
-                                                                setFeedbackOpen(true);
-                                                            }}
-                                                            className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white tw-text-sm tw-font-semibold tw-text-gray-700 tw-px-3 tw-py-2 hover:tw-bg-gray-50"
-                                                        >
-                                                            Give feedback
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            <div className="tw-hidden lg:tw-block">
-                                                <div className="tw-mt-4 tw-bg-white tw-rounded-xl tw-border tw-border-gray-100 tw-p-4">
-                                                    <ProgressDashboard menteeId={selectedSession.mentee?.id || (selectedSession.participants?.[0]?.id ?? null)} />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ) : feedbackSession ? (
-                                        <div className="tw-sticky tw-top-6">
-                                            <ProgressDashboard menteeId={feedbackSession.mentee?.id || (feedbackSession.participants?.[0]?.id ?? null)} />
-                                        </div>
-                                    ) : (
-                                        <div className="tw-bg-white tw-rounded-xl tw-border tw-border-gray-100 tw-p-4 tw-text-sm tw-text-gray-500">Select a session (click View details) to view the mentee's progress snapshot + session actions here.</div>
-                                    )}
-                                </aside>
-            </div>
+    <div className="lg:tw-col-span-2">
+        <MentorSessionList
+            isLoading={isLoading}
+            isFetching={isFetching}
+            filteredSessions={filteredSessions}
+            showEmpty={showEmpty}
+            setSelectedSession={setSelectedSession}
+        />
+    </div>
+    <MentorSessionDetails
+        selectedSession={selectedSession}
+        feedbackSession={feedbackSession}
+        setSelectedSession={setSelectedSession}
+        banner={banner}
+        setBanner={setBanner}
+        handleOpenChat={handleOpenChat}
+        openCompletionModal={openCompletionModal}
+        openCancelModal={openCancelModal}
+        openAttendanceModal={openAttendanceModal}
+        cancellationReady={cancellationReady}
+        attendanceReady={attendanceReady}
+        setFeedbackSession={setFeedbackSession}
+        setFeedbackOpen={setFeedbackOpen}
+    />
+</div>
 
             {selectedSession && isCompletionOpen && (
                 <div
@@ -974,3 +613,4 @@ const MentorSessionsManager: React.FC = () => {
 };
 
 export default MentorSessionsManager;
+

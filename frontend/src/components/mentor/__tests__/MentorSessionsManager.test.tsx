@@ -64,7 +64,8 @@ beforeEach(() => {
     jest.clearAllMocks();
     mockUseMentorSessions.mockReturnValue({ data: [baseSession()], isLoading: false, isError: false, refetch: jest.fn(), isFetching: false });
     mockUseCompleteMentorSession.mockReturnValue({ mutateAsync: jest.fn(), isLoading: false });
-    mockUseRecordAttendance.mockReturnValue({ mutateAsync: jest.fn(), isLoading: false });\n    mockUseCancelSession.mockReturnValue({ mutateAsync: jest.fn(), isLoading: false });
+    mockUseRecordAttendance.mockReturnValue({ mutateAsync: jest.fn(), isLoading: false });
+    mockUseCancelSession.mockReturnValue({ mutateAsync: jest.fn(), isLoading: false });
     mockUseMentorFeedbackForSession.mockReturnValue({ data: null, isLoading: false });
     mockUseMenteeProgressSnapshot.mockReturnValue({ data: null, isLoading: false });
     mockUseCreateMentorFeedback.mockReturnValue({ mutateAsync: jest.fn(), isLoading: false });
