@@ -190,6 +190,12 @@ const userSchema = new mongoose.Schema(
     },
     ratingAvg: { type: Number, default: 0 },
     ratingCount: { type: Number, default: 0 },
+    cancellationMetrics: {
+      lateCancellations: { type: Number, default: 0 },
+      lastLateCancel: { type: Date },
+      earlyCancellations: { type: Number, default: 0 },
+      totalCancellations: { type: Number, default: 0 },
+    },
   },
   { timestamps: true }
 );

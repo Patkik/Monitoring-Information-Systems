@@ -1237,6 +1237,22 @@ exports.cancelSession = async (req, res) => {
       },
     });
 
+    // Update user cancellation metrics
+    const userUpdate = {
+      $inc: {
+        'cancellationMetrics.totalCancellations': 1,
+      },
+    };
+
+    if (penaltyWindow) {
+      userUpdate.$inc['cancellationMetrics.lateCancellations'] = 1;
+      userUpdate.$set = { 'cancellationMetrics.lastLateCancel': new Date() };
+    } else {
+      userUpdate.$inc['cancellationMetrics.earlyCancellations'] = 1;
+    }
+
+    await User.findByIdAndUpdate(req.user.id, userUpdate, { new: true });
+
     if (req.user.role === 'mentor' && penaltyWindow) {
       console.warn('Mentor cancelled within penalty window', {
         sessionId: session._id.toString(),
