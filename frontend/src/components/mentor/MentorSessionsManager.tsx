@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCompleteMentorSession, useMentorSessions } from '../../shared/hooks/useMentorSessions';
+import { useCancelSession } from '../../shared/hooks/useSessionLifecycle';
 import type { ApiWarning, AttendanceStatus, MentorSession, SessionParticipant } from '../../shared/services/sessionsService';
 import MentorSessionComposer from './MentorSessionComposer';
 import MentorFeedbackForm from './MentorFeedbackForm';
@@ -84,6 +85,24 @@ const canRecordAttendance = (session: MentorSession | null): boolean => {
     return Date.now() >= startTime;
 };
 
+const canCancelSession = (session: MentorSession | null): boolean => {
+    if (!session) {
+        return false;
+    }
+
+    const status = session.status || (session.attended ? 'completed' : 'upcoming');
+    if (status === 'cancelled' || status === 'completed' || status === 'overdue') {
+        return false;
+    }
+
+    const startTime = Date.parse(session.date);
+    if (Number.isNaN(startTime)) {
+        return false;
+    }
+
+    return startTime > Date.now();
+};
+
 const MentorSessionsManager: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState<'all' | 'upcoming' | 'completed'>('upcoming');
@@ -100,9 +119,13 @@ const MentorSessionsManager: React.FC = () => {
     const [feedbackSession, setFeedbackSession] = useState<MentorSession | null>(null);
     const [isAttendanceOpen, setAttendanceOpen] = useState(false);
     const [attendanceSession, setAttendanceSession] = useState<MentorSession | null>(null);
+    const [cancelTarget, setCancelTarget] = useState<MentorSession | null>(null);
+    const [cancelReason, setCancelReason] = useState('');
+    const [cancelError, setCancelError] = useState<string | null>(null);
 
     const { data: sessions = [], isLoading, isError, isFetching, refetch } = useMentorSessions();
     const completeSession = useCompleteMentorSession();
+    const cancelSession = useCancelSession();
     const navigate = useNavigate();
 
     const handleSessionScheduled = (session: MentorSession, warnings?: ApiWarning[]) => {
@@ -188,6 +211,56 @@ const MentorSessionsManager: React.FC = () => {
         setAttendanceOpen(true);
     };
 
+    const openCancelModal = (session: MentorSession) => {
+        setCancelTarget(session);
+        setCancelReason('');
+        setCancelError(null);
+    };
+
+    const closeCancelModal = () => {
+        if (cancelSession.isLoading) {
+            return;
+        }
+
+        setCancelTarget(null);
+        setCancelReason('');
+        setCancelError(null);
+    };
+
+    const handleCancelSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        if (!cancelTarget) {
+            return;
+        }
+
+        try {
+            const result = await cancelSession.mutateAsync({
+                sessionId: cancelTarget.id,
+                payload: {
+                    reason: cancelReason.trim() || undefined,
+                    notify: true,
+                },
+            });
+
+            setSelectedSession((current) => (current && current.id === result.session.id ? ({ ...current, ...result.session } as MentorSession) : current));
+
+            const warningMessage = result.warnings?.length
+                ? ` ${result.warnings.map((warning) => warning.message).join(' ')}`
+                : '';
+
+            setBanner({
+                type: 'success',
+                message: `Session cancelled successfully.${warningMessage}`,
+            });
+
+            closeCancelModal();
+            void refetch();
+        } catch (error: any) {
+            setCancelError(error?.response?.data?.message || error?.message || 'Unable to cancel this session right now.');
+        }
+    };
+
     const handleComplete = async (event: React.FormEvent) => {
         event.preventDefault();
         if (!selectedSession) return;
@@ -213,6 +286,7 @@ const MentorSessionsManager: React.FC = () => {
 
     const showEmpty = !isLoading && filteredSessions.length === 0;
     const attendanceReady = selectedSession ? canRecordAttendance(selectedSession) : false;
+    const cancellationReady = selectedSession ? canCancelSession(selectedSession) : false;
 
     return (
         <>
@@ -556,6 +630,20 @@ const MentorSessionsManager: React.FC = () => {
 
                                                     <button
                                                         type="button"
+                                                        onClick={() => openCancelModal(selectedSession)}
+                                                        disabled={!cancellationReady}
+                                                        title={
+                                                            cancellationReady
+                                                                ? undefined
+                                                                : 'Only upcoming sessions that have not started can be cancelled.'
+                                                        }
+                                                        className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-red-200 tw-bg-red-50 tw-text-sm tw-font-semibold tw-text-red-700 tw-px-3 tw-py-2 hover:tw-bg-red-100 disabled:tw-opacity-60 disabled:tw-cursor-not-allowed"
+                                                    >
+                                                        Cancel session
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
                                                         onClick={() => openAttendanceModal(selectedSession)}
                                                         aria-disabled={!attendanceReady}
                                                         title={attendanceReady ? undefined : 'Attendance opens at the session start time.'}
@@ -714,6 +802,83 @@ const MentorSessionsManager: React.FC = () => {
                     sessionId={attendanceSession.id}
                     participants={getParticipantList(attendanceSession)}
                 />
+            )}
+
+            {cancelTarget && (
+                <div
+                    className="tw-fixed tw-inset-0 tw-z-50 tw-flex tw-items-center tw-justify-center tw-bg-black/40 tw-p-4"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="mentor-cancel-session-title"
+                >
+                    <div className="tw-w-full tw-max-w-xl tw-rounded-2xl tw-bg-white tw-shadow-2xl tw-p-6">
+                        <div className="tw-flex tw-items-start tw-justify-between tw-gap-4 tw-mb-4">
+                            <div>
+                                <h3 id="mentor-cancel-session-title" className="tw-text-xl tw-font-bold tw-text-gray-900">
+                                    Cancel session
+                                </h3>
+                                <p className="tw-text-sm tw-text-gray-500 tw-mt-1">
+                                    {cancelTarget.subject || 'Untitled session'} with {cancelTarget.mentee?.name || cancelTarget.participants?.[0]?.name || 'your mentee'}
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={closeCancelModal}
+                                className="tw-text-gray-400 hover:tw-text-gray-600"
+                                aria-label="Close"
+                            >
+                                x
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleCancelSubmit} className="tw-space-y-4">
+                            <div>
+                                <label htmlFor="mentor-cancel-session-reason" className="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">
+                                    Reason for cancellation (optional)
+                                </label>
+                                <textarea
+                                    id="mentor-cancel-session-reason"
+                                    value={cancelReason}
+                                    onChange={(event) => {
+                                        setCancelReason(event.target.value);
+                                        if (cancelError) {
+                                            setCancelError(null);
+                                        }
+                                    }}
+                                    placeholder="Add a short reason to help the mentee understand"
+                                    maxLength={500}
+                                    rows={4}
+                                    className="tw-w-full tw-rounded-lg tw-border tw-border-gray-300 tw-px-3 tw-py-2 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary"
+                                />
+                                <p className="tw-mt-1 tw-text-xs tw-text-gray-500">{cancelReason.length}/500</p>
+                            </div>
+
+                            {cancelError && (
+                                <div role="alert" className="tw-rounded-lg tw-border tw-border-red-200 tw-bg-red-50 tw-p-3 tw-text-sm tw-text-red-700">
+                                    {cancelError}
+                                </div>
+                            )}
+
+                            <div className="tw-flex tw-justify-end tw-gap-3">
+                                <button
+                                    type="button"
+                                    onClick={closeCancelModal}
+                                    className="tw-rounded-lg tw-border tw-border-gray-300 tw-px-4 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-700 hover:tw-bg-gray-50"
+                                    disabled={cancelSession.isLoading}
+                                >
+                                    Keep session
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={cancelSession.isLoading}
+                                    className="tw-rounded-lg tw-bg-red-600 tw-px-4 tw-py-2 tw-text-sm tw-font-semibold tw-text-white hover:tw-bg-red-700 disabled:tw-opacity-70"
+                                >
+                                    {cancelSession.isLoading ? 'Cancelling...' : 'Confirm cancellation'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             )}
         </section>
 
