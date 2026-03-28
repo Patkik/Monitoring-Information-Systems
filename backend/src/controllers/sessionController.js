@@ -20,6 +20,49 @@ const DEFAULT_ROOM_PLACEHOLDER = 'Virtual meeting link to be shared upon confirm
 
 const toObjectId = (id) => (mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : null);
 
+const extractIdString = (value) => {
+  if (value == null) {
+    return null;
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed || null;
+  }
+
+  if (value instanceof mongoose.Types.ObjectId) {
+    return value.toString();
+  }
+
+  if (typeof value === 'object') {
+    const fromObjectId = extractIdString(value._id);
+    if (fromObjectId) {
+      return fromObjectId;
+    }
+
+    const fromId = extractIdString(value.id);
+    if (fromId) {
+      return fromId;
+    }
+
+    if (typeof value.toHexString === 'function') {
+      const hex = value.toHexString();
+      if (typeof hex === 'string' && hex) {
+        return hex;
+      }
+    }
+  }
+
+  if (typeof value.toString === 'function') {
+    const stringified = value.toString();
+    if (typeof stringified === 'string' && stringified && stringified !== '[object Object]') {
+      return stringified;
+    }
+  }
+
+  return null;
+};
+
 const normalizeUserId = (value) => {
   if (!value) {
     return null;
@@ -246,12 +289,16 @@ const recordSessionAudit = async ({ actorId, sessionId, action, metadata }) => {
 
 const collectParticipantIds = (session) => {
   const ids = new Set();
-  if (session.mentee) ids.add(session.mentee.toString());
+  const menteeId = extractIdString(session?.mentee);
+  if (menteeId) ids.add(menteeId);
+
   if (Array.isArray(session.participants)) {
     session.participants.forEach((entry) => {
-      if (entry?.user) ids.add(entry.user.toString());
+      const participantId = extractIdString(entry?.user);
+      if (participantId) ids.add(participantId);
     });
   }
+
   return Array.from(ids);
 };
 
@@ -333,16 +380,23 @@ const userCanAccessSession = (session, user) => {
     return true;
   }
 
-  if (session.mentor?.toString() === user.id?.toString()) {
+  const userId = extractIdString(user.id || user._id || user);
+  if (!userId) {
+    return false;
+  }
+
+  const mentorId = extractIdString(session.mentor);
+  if (mentorId === userId) {
     return true;
   }
 
-  if (session.mentee && session.mentee.toString() === user.id?.toString()) {
+  const menteeId = extractIdString(session.mentee);
+  if (menteeId === userId) {
     return true;
   }
 
   if (Array.isArray(session.participants)) {
-    const match = session.participants.find((entry) => entry?.user?.toString() === user.id?.toString());
+    const match = session.participants.find((entry) => extractIdString(entry?.user) === userId);
     if (match) {
       return true;
     }
@@ -374,7 +428,7 @@ exports.getMenteeSessions = async (req, res) => {
 
     query
       .limit(limit)
-  .select('subject mentor mentee participants room capacity isGroup chatThread date durationMinutes attended tasksCompleted notes createdAt updatedAt calendarEvent')
+      .select('subject mentor mentee participants room capacity isGroup chatThread date durationMinutes status statusMeta attended completedAt tasksCompleted notes createdAt updatedAt calendarEvent')
       .populate('mentor', 'firstname lastname email')
       .populate('mentee', 'firstname lastname email')
       .populate('participants.user', 'firstname lastname email')
@@ -434,7 +488,7 @@ exports.getMentorSessions = async (req, res) => {
 
     query
       .limit(limit)
-  .select('subject mentor mentee participants room capacity isGroup chatThread date durationMinutes attended tasksCompleted notes createdAt updatedAt calendarEvent')
+      .select('subject mentor mentee participants room capacity isGroup chatThread date durationMinutes status statusMeta attended completedAt tasksCompleted notes createdAt updatedAt calendarEvent')
       .populate('mentee', 'firstname lastname email')
       .populate('mentor', 'firstname lastname email')
       .populate('participants.user', 'firstname lastname email')
@@ -664,7 +718,7 @@ exports.createMentorSession = async (req, res) => {
     let hydrated;
     try {
       hydrated = await Session.findById(session._id)
-        .select('subject mentor mentee participants room capacity isGroup chatThread date durationMinutes attended tasksCompleted notes createdAt updatedAt calendarEvent')
+        .select('subject mentor mentee participants room capacity isGroup chatThread date durationMinutes status statusMeta attended completedAt tasksCompleted notes createdAt updatedAt calendarEvent')
         .populate('mentor', 'firstname lastname email')
         .populate('mentee', 'firstname lastname email')
         .populate('participants.user', 'firstname lastname email')

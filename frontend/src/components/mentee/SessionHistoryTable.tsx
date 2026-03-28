@@ -6,17 +6,29 @@ type SortKey = 'subject' | 'mentor' | 'date';
 
 const normalizeText = (value?: string | null) => (typeof value === 'string' ? value : '');
 
+const isHistorySession = (session: MenteeSession) => {
+  if (session.attended) {
+    return true;
+  }
+
+  if (session.status) {
+    return session.status === 'completed' || session.status === 'cancelled';
+  }
+
+  return false;
+};
+
 const SessionHistoryTable: React.FC = () => {
   const [sortBy, setSortBy] = useState<SortKey>('date');
   const { data: sessions = [], isLoading, isError, refetch } = useMenteeSessions();
 
-  const completedSessions = useMemo(
-    () => sessions.filter((session) => (session.status ? session.status === 'completed' : session.attended)),
+  const historySessions = useMemo(
+    () => sessions.filter((session) => isHistorySession(session)),
     [sessions]
   );
 
   const sortedSessions = useMemo(() => {
-    return [...completedSessions].sort((a, b) => {
+    return [...historySessions].sort((a, b) => {
       switch (sortBy) {
         case 'subject': {
           const subjectA = normalizeText(a.subject);
@@ -33,7 +45,7 @@ const SessionHistoryTable: React.FC = () => {
           return new Date(b.completedAt || b.date).getTime() - new Date(a.completedAt || a.date).getTime();
       }
     });
-  }, [completedSessions, sortBy]);
+  }, [historySessions, sortBy]);
 
   const showEmpty = !isLoading && sortedSessions.length === 0;
 
@@ -72,7 +84,7 @@ const SessionHistoryTable: React.FC = () => {
                 Mentor
               </th>
               <th className="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
-                Date completed
+                Date
               </th>
               <th className="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
                 Status
@@ -99,7 +111,7 @@ const SessionHistoryTable: React.FC = () => {
                     {session.subject || 'Untitled session'}
                   </td>
                   <td className="tw-px-6 tw-py-4 tw-whitespace-nowrap tw-text-sm tw-text-gray-600">
-                    {session.mentor?.name || '—'}
+                    {session.mentor?.name || '-'}
                   </td>
                   <td className="tw-px-6 tw-py-4 tw-whitespace-nowrap tw-text-sm tw-text-gray-600">
                     {new Date(session.completedAt || session.date).toLocaleString()}
@@ -109,12 +121,20 @@ const SessionHistoryTable: React.FC = () => {
                       className={`tw-inline-flex tw-px-2 tw-py-1 tw-text-xs tw-font-semibold tw-rounded-full ${
                         session.status === 'completed'
                           ? 'tw-bg-green-50 tw-text-green-700'
+                          : session.status === 'cancelled'
+                            ? 'tw-bg-gray-100 tw-text-gray-700'
                           : session.status === 'overdue'
                             ? 'tw-bg-red-50 tw-text-red-700'
                             : 'tw-bg-amber-50 tw-text-amber-700'
                       }`}
                     >
-                      {session.status === 'completed' ? 'Completed' : session.status === 'overdue' ? 'Needs update' : 'Scheduled'}
+                      {session.status === 'completed'
+                        ? 'Completed'
+                        : session.status === 'cancelled'
+                          ? 'Cancelled'
+                          : session.status === 'overdue'
+                            ? 'Needs update'
+                            : 'Scheduled'}
                     </span>
                   </td>
                   <td className="tw-px-6 tw-py-4 tw-whitespace-nowrap tw-text-sm tw-text-primary">
@@ -147,7 +167,7 @@ const SessionHistoryTable: React.FC = () => {
             {showEmpty && (
               <tr>
                 <td className="tw-px-6 tw-py-6 tw-text-sm tw-text-gray-500" colSpan={5}>
-                  Completed sessions will appear here once you start logging them.
+                  Completed and cancelled sessions will appear here once you start logging them.
                 </td>
               </tr>
             )}

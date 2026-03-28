@@ -1,14 +1,15 @@
 import React, { useMemo, useState } from 'react';
-import { useMenteeSessions } from '../../shared/hooks/useMenteeSessions';
+import { isUpcomingMenteeSession, useMenteeSessions } from '../../shared/hooks/useMenteeSessions';
+import { useCancelSession } from '../../shared/hooks/useSessionLifecycle';
 import type { MenteeSession } from '../../shared/services/sessionsService';
 import { useToast } from '../../hooks/useToast';
 
 type SortKey = 'subject' | 'mentor' | 'date' | 'duration';
 
 const formatDate = (value?: string | null) => {
-  if (!value) return '—';
+  if (!value) return '-';
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '—';
+  if (Number.isNaN(date.getTime())) return '-';
   return date.toLocaleString();
 };
 
@@ -37,17 +38,21 @@ const formatRange = (session: MenteeSession) => {
     return 'Schedule TBA';
   }
   const end = new Date(start.getTime() + (session.durationMinutes || 60) * 60_000);
-  return `${start.toLocaleString()} · Ends ${end.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
+  return `${start.toLocaleString()} - Ends ${end.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
 };
 
 const UpcomingSessionsTable: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortKey>('date');
+  const [cancelTarget, setCancelTarget] = useState<MenteeSession | null>(null);
+  const [cancelReason, setCancelReason] = useState('');
+  const [cancelError, setCancelError] = useState<string | null>(null);
   const { showToast } = useToast();
+  const cancelSession = useCancelSession();
 
   const { data: sessions = [], isLoading, isError, refetch, isFetching } = useMenteeSessions();
 
-  const upcomingSessions = useMemo(() => sessions.filter((session) => !session.attended), [sessions]);
+  const upcomingSessions = useMemo(() => sessions.filter((session) => isUpcomingMenteeSession(session)), [sessions]);
 
   const filteredSessions = useMemo(() => {
     const lower = normalizeText(searchTerm).toLowerCase();
@@ -87,10 +92,58 @@ const UpcomingSessionsTable: React.FC = () => {
     const mentorName = session.mentor?.name || 'your mentor';
     const schedule = formatRange(session);
     showToast({
-      message: `${subject} with ${mentorName} · ${schedule}`,
+      message: `${subject} with ${mentorName} - ${schedule}`,
       variant: 'info',
       durationMs: 6000
     });
+  };
+
+  const openCancelModal = (session: MenteeSession) => {
+    setCancelTarget(session);
+    setCancelReason('');
+    setCancelError(null);
+  };
+
+  const closeCancelModal = () => {
+    if (cancelSession.isLoading) {
+      return;
+    }
+
+    setCancelTarget(null);
+    setCancelReason('');
+    setCancelError(null);
+  };
+
+  const handleCancelSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!cancelTarget) {
+      return;
+    }
+
+    const trimmedReason = cancelReason.trim();
+    if (!trimmedReason) {
+      setCancelError('Please provide a cancellation reason before confirming.');
+      return;
+    }
+
+    try {
+      await cancelSession.mutateAsync({
+        sessionId: cancelTarget.id,
+        payload: {
+          reason: trimmedReason,
+          notify: true,
+        },
+      });
+
+      showToast({
+        message: 'Session cancelled. It has been moved to your history.',
+        variant: 'success',
+      });
+      closeCancelModal();
+    } catch (error: any) {
+      setCancelError(error?.response?.data?.message || 'Unable to cancel this session right now. Please try again.');
+    }
   };
 
   const showEmpty = !isLoading && sortedSessions.length === 0;
@@ -117,7 +170,7 @@ const UpcomingSessionsTable: React.FC = () => {
                 className="tw-absolute tw-right-3 tw-top-1/2 -tw-translate-y-1/2 tw-text-gray-400 hover:tw-text-gray-600"
                 aria-label="Clear search"
               >
-                ×
+                x
               </button>
             )}
           </div>
@@ -149,7 +202,7 @@ const UpcomingSessionsTable: React.FC = () => {
 
       {isError && (
         <div className="tw-bg-red-50 tw-text-red-700 tw-p-4 tw-rounded-lg tw-flex tw-items-center tw-justify-between tw-mb-4" role="alert">
-          <span>We couldn’t load your sessions. Please refresh.</span>
+          <span>We couldn't load your sessions. Please refresh.</span>
           <button
             onClick={() => refetch()}
             className="tw-text-sm tw-font-medium tw-underline"
@@ -176,7 +229,7 @@ const UpcomingSessionsTable: React.FC = () => {
                 Duration
               </th>
               <th className="tw-px-6 tw-py-3 tw-text-right tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
-                Details
+                Actions
               </th>
             </tr>
           </thead>
@@ -211,17 +264,26 @@ const UpcomingSessionsTable: React.FC = () => {
                         )}
                       </div>
                     </td>
-                  <td className="tw-px-6 tw-py-4 tw-text-sm tw-text-gray-600">{session.mentor?.name || '—'}</td>
+                  <td className="tw-px-6 tw-py-4 tw-text-sm tw-text-gray-600">{session.mentor?.name || '-'}</td>
                   <td className="tw-px-6 tw-py-4 tw-text-sm tw-text-gray-600">{formatDate(session.date)}</td>
                   <td className="tw-px-6 tw-py-4 tw-text-sm tw-text-gray-600">{session.durationMinutes || 60} min</td>
                   <td className="tw-px-6 tw-py-4 tw-text-right">
-                    <button
-                      type="button"
-                      onClick={() => showDetailsToast(session)}
-                      className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white tw-text-sm tw-font-semibold tw-px-4 tw-py-2 hover:tw-border-primary hover:tw-text-primary focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-primary"
-                    >
-                      View details
-                    </button>
+                    <div className="tw-inline-flex tw-items-center tw-gap-2">
+                      <button
+                        type="button"
+                        onClick={() => showDetailsToast(session)}
+                        className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white tw-text-sm tw-font-semibold tw-px-4 tw-py-2 hover:tw-border-primary hover:tw-text-primary focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-primary"
+                      >
+                        View details
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openCancelModal(session)}
+                        className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-red-200 tw-bg-white tw-text-sm tw-font-semibold tw-text-red-700 tw-px-4 tw-py-2 hover:tw-bg-red-50 focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-red-200"
+                      >
+                        Cancel
+                      </button>
+                    </div>
                     <p className="tw-mt-1 tw-text-[11px] tw-uppercase tw-tracking-wide tw-text-gray-400">Mentor completes</p>
                   </td>
                   </tr>
@@ -238,6 +300,84 @@ const UpcomingSessionsTable: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      {cancelTarget && (
+        <div
+          className="tw-fixed tw-inset-0 tw-z-50 tw-flex tw-items-center tw-justify-center tw-bg-black/40 tw-p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="cancel-session-title"
+        >
+          <div className="tw-w-full tw-max-w-xl tw-rounded-2xl tw-bg-white tw-shadow-2xl tw-p-6">
+            <div className="tw-flex tw-items-start tw-justify-between tw-gap-4 tw-mb-4">
+              <div>
+                <h3 id="cancel-session-title" className="tw-text-xl tw-font-bold tw-text-gray-900">
+                  Cancel session
+                </h3>
+                <p className="tw-text-sm tw-text-gray-500 tw-mt-1">
+                  {cancelTarget.subject || 'Untitled session'} with {cancelTarget.mentor?.name || 'your mentor'}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={closeCancelModal}
+                className="tw-text-gray-400 hover:tw-text-gray-600"
+                aria-label="Close"
+              >
+                x
+              </button>
+            </div>
+
+            <form onSubmit={handleCancelSubmit} className="tw-space-y-4">
+              <div>
+                <label htmlFor="cancel-session-reason" className="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">
+                  Reason for cancellation
+                </label>
+                <textarea
+                  id="cancel-session-reason"
+                  value={cancelReason}
+                  onChange={(event) => {
+                    setCancelReason(event.target.value);
+                    if (cancelError) {
+                      setCancelError(null);
+                    }
+                  }}
+                  placeholder="Share why you are cancelling this session"
+                  maxLength={500}
+                  required
+                  rows={4}
+                  className="tw-w-full tw-rounded-lg tw-border tw-border-gray-300 tw-px-3 tw-py-2 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary"
+                />
+                <p className="tw-mt-1 tw-text-xs tw-text-gray-500">{cancelReason.length}/500</p>
+              </div>
+
+              {cancelError && (
+                <div role="alert" className="tw-rounded-lg tw-border tw-border-red-200 tw-bg-red-50 tw-p-3 tw-text-sm tw-text-red-700">
+                  {cancelError}
+                </div>
+              )}
+
+              <div className="tw-flex tw-justify-end tw-gap-3">
+                <button
+                  type="button"
+                  onClick={closeCancelModal}
+                  className="tw-rounded-lg tw-border tw-border-gray-300 tw-px-4 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-700 hover:tw-bg-gray-50"
+                  disabled={cancelSession.isLoading}
+                >
+                  Keep session
+                </button>
+                <button
+                  type="submit"
+                  disabled={cancelSession.isLoading}
+                  className="tw-rounded-lg tw-bg-red-600 tw-px-4 tw-py-2 tw-text-sm tw-font-semibold tw-text-white hover:tw-bg-red-700 disabled:tw-opacity-70"
+                >
+                  {cancelSession.isLoading ? 'Cancelling...' : 'Confirm cancellation'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

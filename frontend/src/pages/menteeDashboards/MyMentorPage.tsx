@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import PendingFeedbackList from '../../components/mentee/PendingFeedbackList';
+import UpcomingSessionsTable from '../../components/mentee/UpcomingSessionsTable';
 import { useMentorshipRequests } from '../../features/mentorship/hooks/useMentorshipRequests';
 import MaterialsLibrary from '../../features/materials/MaterialsLibrary';
 import type { MentorshipRequest, MentorshipRequestStatus } from '../../shared/services/mentorMatching';
@@ -194,6 +195,16 @@ const MyMentorPage: React.FC = () => {
               {currentMatches.map((match) => renderMatchCard(match))}
             </div>
           )}
+        </section>
+
+        <section className="tw-space-y-4" aria-label="Upcoming sessions">
+          <header>
+            <h2 className="tw-text-xl tw-font-semibold tw-text-gray-900">Upcoming sessions</h2>
+            <p className="tw-text-sm tw-text-gray-600">
+              Manage your scheduled mentorship meetings here, including cancellation when needed.
+            </p>
+          </header>
+          <UpcomingSessionsTable />
         </section>
 
         {previousMatches.length > 0 && (

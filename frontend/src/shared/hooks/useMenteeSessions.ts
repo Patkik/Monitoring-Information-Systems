@@ -4,6 +4,22 @@ import { completeSession, CompleteSessionPayload, fetchMenteeSessions, MenteeSes
 
 export const menteeSessionsKey = ['sessions', 'mentee'];
 
+export const isUpcomingMenteeSession = (session: MenteeSession) => {
+    if (session.attended) {
+        return false;
+    }
+
+    if (session.status) {
+        return session.status !== 'completed' && session.status !== 'cancelled';
+    }
+
+    return true;
+};
+
+export const isCompletedMenteeSession = (session: MenteeSession) => {
+    return !!session.attended || session.status === 'completed';
+};
+
 export const useMenteeSessions = () =>
     useQuery<MenteeSession[]>(menteeSessionsKey, fetchMenteeSessions, {
         staleTime: 60_000,
@@ -15,7 +31,7 @@ export const useUpcomingSessions = () => {
 
     const upcomingSessions = useMemo(() => {
         if (!query.data) return [];
-        return query.data.filter((session: MenteeSession) => !session.attended);
+        return query.data.filter((session: MenteeSession) => isUpcomingMenteeSession(session));
     }, [query.data]);
 
     return { ...query, sessions: upcomingSessions };
@@ -26,7 +42,7 @@ export const useCompletedSessions = () => {
 
     const completedSessions = useMemo(() => {
         if (!query.data) return [];
-        return query.data.filter((session: MenteeSession) => !!session.attended);
+        return query.data.filter((session: MenteeSession) => isCompletedMenteeSession(session));
     }, [query.data]);
 
     return { ...query, sessions: completedSessions };

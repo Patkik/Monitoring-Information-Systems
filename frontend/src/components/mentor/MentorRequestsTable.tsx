@@ -21,6 +21,8 @@ const MentorRequestsTable: React.FC = () => {
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedMenteeId, setSelectedMenteeId] = useState<string | null>(null);
+  const [lockedActionById, setLockedActionById] = useState<Record<string, boolean>>({});
+  const [resolvedStatusById, setResolvedStatusById] = useState<Record<string, 'accepted' | 'declined'>>({});
 
   const openProfile = useCallback((id?: string | null) => {
     if (!id) return;
@@ -42,19 +44,41 @@ const MentorRequestsTable: React.FC = () => {
     );
     if (!confirmed) return;
 
+    setLockedActionById((prev) => ({ ...prev, [id]: true }));
+
     try {
       await acceptRequest(id, sessionSuggestion || undefined);
+      setResolvedStatusById((prev) => ({ ...prev, [id]: 'accepted' }));
       // small success feedback
       window.alert('Request accepted — mentee will be notified.');
     } catch (error) {
       void error;
+      setLockedActionById((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
       window.alert('Unable to accept request. Please try again.');
     }
   }, [acceptRequest]);
 
   const handleDecline = useCallback(async (id: string) => {
     const declineReason = window.prompt('Provide a reason for declining (optional):');
-    await declineRequest(id, declineReason || undefined);
+    setLockedActionById((prev) => ({ ...prev, [id]: true }));
+
+    try {
+      await declineRequest(id, declineReason || undefined);
+      setResolvedStatusById((prev) => ({ ...prev, [id]: 'declined' }));
+      window.alert('Request declined.');
+    } catch (error) {
+      void error;
+      setLockedActionById((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+      window.alert('Unable to decline request. Please try again.');
+    }
   }, [declineRequest]);
 
   const computeMatchScore = useCallback((r: any) => {
@@ -101,7 +125,11 @@ const MentorRequestsTable: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {requests.map((r) => (
+              {requests.map((r) => {
+                const effectiveStatus = resolvedStatusById[r.id] || r.status;
+                const isRowLocked = Boolean(lockedActionById[r.id]);
+
+                return (
                 <tr key={r.id} className="tw-border-b tw-border-gray-100 hover:tw-bg-gray-50/50">
                   <td className="tw-py-2 tw-pr-4 tw-font-medium tw-text-gray-900">{r.subject}</td>
                   <td className="tw-py-2 tw-pr-4">{r.mentee?.name || '—'}</td>
@@ -126,14 +154,14 @@ const MentorRequestsTable: React.FC = () => {
                   </td>
                   <td className="tw-py-2 tw-pr-4">{fmt(r.createdAt)}</td>
                   <td className="tw-py-2 tw-pr-4">{r.preferredSlot || '—'}</td>
-                  <td className="tw-py-2 tw-pr-4"><StatusPill status={r.status} /></td>
+                  <td className="tw-py-2 tw-pr-4"><StatusPill status={effectiveStatus} /></td>
                   <td className="tw-py-2 tw-pl-4">
                     <div className="tw-flex tw-gap-2 tw-justify-end">
-                      {r.status === 'pending' && (
+                      {effectiveStatus === 'pending' && (
                         <>
                           <button
                             type="button"
-                            disabled={isMutating}
+                            disabled={isMutating || isRowLocked}
                             onClick={() => handleAccept(r.id)}
                             className="tw-px-3 tw-py-1 tw-rounded tw-bg-green-600 hover:tw-bg-green-700 tw-text-white tw-text-xs tw-font-medium disabled:tw-opacity-50"
                           >
@@ -141,7 +169,7 @@ const MentorRequestsTable: React.FC = () => {
                           </button>
                           <button
                             type="button"
-                            disabled={isMutating}
+                            disabled={isMutating || isRowLocked}
                             onClick={() => handleDecline(r.id)}
                             className="tw-px-3 tw-py-1 tw-rounded tw-bg-red-600 hover:tw-bg-red-700 tw-text-white tw-text-xs tw-font-medium disabled:tw-opacity-50"
                           >
@@ -152,7 +180,7 @@ const MentorRequestsTable: React.FC = () => {
                     </div>
                   </td>
                 </tr>
-              ))}
+              )})}
             </tbody>
           </table>
         </div>
