@@ -70,7 +70,11 @@ const run = async () => {
     console.log(`Mentee: ${mentee.email}`);
     console.log(`Scheduled At: ${session.date.toISOString()}`);
     console.log(`Hours Ahead: ${hoursAhead}`);
-    console.log('This session is within the penalty window when hoursAhead <= 6.');
+    if (hoursAhead <= 6) {
+      console.log('This session is inside the late-cancellation penalty window.');
+    } else {
+      console.log('This session is outside the late-cancellation penalty window.');
+    }
   } catch (error) {
     console.error('Failed to seed late-cancel session:', error.message || error);
     process.exitCode = 1;

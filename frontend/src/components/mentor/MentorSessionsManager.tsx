@@ -103,6 +103,44 @@ const canCancelSession = (session: MentorSession | null): boolean => {
     return startTime > Date.now();
 };
 
+const SESSION_CANCEL_PENALTY_HOURS = 6;
+
+const getHoursUntilSession = (session: MentorSession | null): number | null => {
+    if (!session) {
+        return null;
+    }
+
+    const startTime = Date.parse(session.date);
+    if (Number.isNaN(startTime)) {
+        return null;
+    }
+
+    return (startTime - Date.now()) / 3_600_000;
+};
+
+const formatTimeUntil = (hoursUntil: number | null): string => {
+    if (hoursUntil == null) {
+        return 'this session starts soon';
+    }
+
+    if (hoursUntil <= 0) {
+        return 'this session has started';
+    }
+
+    const totalMinutes = Math.max(1, Math.round(hoursUntil * 60));
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    if (hours === 0) {
+        return `${minutes}m`;
+    }
+
+    if (minutes === 0) {
+        return `${hours}h`;
+    }
+
+    return `${hours}h ${minutes}m`;
+};
+
 const MentorSessionsManager: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState<'all' | 'upcoming' | 'completed'>('upcoming');
@@ -122,6 +160,7 @@ const MentorSessionsManager: React.FC = () => {
     const [cancelTarget, setCancelTarget] = useState<MentorSession | null>(null);
     const [cancelReason, setCancelReason] = useState('');
     const [cancelError, setCancelError] = useState<string | null>(null);
+    const [lateCancelAcknowledged, setLateCancelAcknowledged] = useState(false);
 
     const { data: sessions = [], isLoading, isError, isFetching, refetch } = useMentorSessions();
     const completeSession = useCompleteMentorSession();
@@ -215,6 +254,7 @@ const MentorSessionsManager: React.FC = () => {
         setCancelTarget(session);
         setCancelReason('');
         setCancelError(null);
+        setLateCancelAcknowledged(false);
     };
 
     const closeCancelModal = () => {
@@ -225,12 +265,20 @@ const MentorSessionsManager: React.FC = () => {
         setCancelTarget(null);
         setCancelReason('');
         setCancelError(null);
+        setLateCancelAcknowledged(false);
     };
 
     const handleCancelSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         if (!cancelTarget) {
+            return;
+        }
+
+        const hoursUntilSession = getHoursUntilSession(cancelTarget);
+        const isLateCancel = hoursUntilSession != null && hoursUntilSession <= SESSION_CANCEL_PENALTY_HOURS;
+        if (isLateCancel && !lateCancelAcknowledged) {
+            setCancelError('Please confirm you understand this is a late cancellation before continuing.');
             return;
         }
 
@@ -287,6 +335,9 @@ const MentorSessionsManager: React.FC = () => {
     const showEmpty = !isLoading && filteredSessions.length === 0;
     const attendanceReady = selectedSession ? canRecordAttendance(selectedSession) : false;
     const cancellationReady = selectedSession ? canCancelSession(selectedSession) : false;
+    const cancelHoursUntilSession = getHoursUntilSession(cancelTarget);
+    const cancelIsLateWindow =
+        cancelHoursUntilSession != null && cancelHoursUntilSession > 0 && cancelHoursUntilSession <= SESSION_CANCEL_PENALTY_HOURS;
 
     return (
         <>
@@ -832,6 +883,19 @@ const MentorSessionsManager: React.FC = () => {
                         </div>
 
                         <form onSubmit={handleCancelSubmit} className="tw-space-y-4">
+                            {cancelIsLateWindow ? (
+                                <div className="tw-rounded-lg tw-border tw-border-amber-200 tw-bg-amber-50 tw-p-3 tw-text-sm tw-text-amber-900">
+                                    <p className="tw-font-semibold">Late cancellation warning</p>
+                                    <p className="tw-mt-1">
+                                        This session starts in {formatTimeUntil(cancelHoursUntilSession)}. Cancelling now may apply a late-cancellation warning or penalty.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="tw-rounded-lg tw-border tw-border-blue-200 tw-bg-blue-50 tw-p-3 tw-text-sm tw-text-blue-900">
+                                    Cancelling more than {SESSION_CANCEL_PENALTY_HOURS} hours before start does not trigger a late-cancellation penalty.
+                                </div>
+                            )}
+
                             <div>
                                 <label htmlFor="mentor-cancel-session-reason" className="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">
                                     Reason for cancellation (optional)
@@ -853,6 +917,23 @@ const MentorSessionsManager: React.FC = () => {
                                 <p className="tw-mt-1 tw-text-xs tw-text-gray-500">{cancelReason.length}/500</p>
                             </div>
 
+                            {cancelIsLateWindow && (
+                                <label className="tw-flex tw-items-start tw-gap-2 tw-text-sm tw-text-gray-700">
+                                    <input
+                                        type="checkbox"
+                                        checked={lateCancelAcknowledged}
+                                        onChange={(event) => {
+                                            setLateCancelAcknowledged(event.target.checked);
+                                            if (cancelError) {
+                                                setCancelError(null);
+                                            }
+                                        }}
+                                        className="tw-mt-0.5"
+                                    />
+                                    <span>I understand this is a late cancellation and may apply a warning/penalty.</span>
+                                </label>
+                            )}
+
                             {cancelError && (
                                 <div role="alert" className="tw-rounded-lg tw-border tw-border-red-200 tw-bg-red-50 tw-p-3 tw-text-sm tw-text-red-700">
                                     {cancelError}
@@ -870,7 +951,7 @@ const MentorSessionsManager: React.FC = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    disabled={cancelSession.isLoading}
+                                    disabled={cancelSession.isLoading || (cancelIsLateWindow && !lateCancelAcknowledged)}
                                     className="tw-rounded-lg tw-bg-red-600 tw-px-4 tw-py-2 tw-text-sm tw-font-semibold tw-text-white hover:tw-bg-red-700 disabled:tw-opacity-70"
                                 >
                                     {cancelSession.isLoading ? 'Cancelling...' : 'Confirm cancellation'}
