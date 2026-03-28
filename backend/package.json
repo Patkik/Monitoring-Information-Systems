@@ -11,6 +11,7 @@
     "dev": "nodemon src/server.js",
     "seed": "node src/scripts/seedDatabase.js",
     "seed:late-cancel": "node src/scripts/seedLateCancelSession.js",
+    "seed:attendance-test": "node src/scripts/seedAttendanceSession.js",
     "seed:admin": "node src/scripts/createAdmin.js",
     "seed:matching-mentors": "node src/scripts/createMatchingMentors.js",
     "seed:matching-mentees": "node src/scripts/createMatchingMentees.js",
@@ -31,10 +32,10 @@
     "express": "^4.19.2",
     "express-rate-limit": "^7.1.5",
     "express-session": "^1.17.3",
-  "googleapis": "^131.0.0",
-  "luxon": "^3.5.0",
+    "googleapis": "^131.0.0",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
+    "luxon": "^3.5.0",
     "mongoose": "^8.7.1",
     "multer": "^2.0.2",
     "node-fetch": "^2.7.0",
@@ -48,6 +49,7 @@
   },
   "devDependencies": {
     "mongodb-memory-server": "^10.3.0",
-    "nodemon": "^3.1.4"
+    "nodemon": "^3.1.4",
+    "playwright": "^1.58.2"
   }
 }
