@@ -55,6 +55,16 @@ const formatSessionRow = (sessionDoc) => {
         ? sessionDoc.participants.map(summarizeParticipantEntry).filter(Boolean)
         : [];
 
+    // Format attendance records for the response
+    const attendance = Array.isArray(sessionDoc.attendance)
+        ? sessionDoc.attendance.map((entry) => ({
+            user: entry.user && typeof entry.user === 'object' ? entry.user._id || entry.user.id : entry.user,
+            status: entry.status,
+            recordedAt: entry.recordedAt,
+            note: entry.note,
+          }))
+        : [];
+
     return {
         id: sessionDoc._id.toString(),
         subject: sessionDoc.subject,
@@ -64,6 +74,7 @@ const formatSessionRow = (sessionDoc) => {
         durationMinutes: sessionDoc.durationMinutes,
         status: sessionDoc.status || null,
         attended: !!sessionDoc.attended,
+        attendance: attendance,
         tasksCompleted: sessionDoc.tasksCompleted || 0,
         notes: sessionDoc.notes || null,
         room: sessionDoc.room || null,

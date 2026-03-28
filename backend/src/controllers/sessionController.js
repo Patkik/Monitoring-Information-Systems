@@ -1387,12 +1387,22 @@ exports.recordAttendance = async (req, res) => {
       return res.status(400).json({ success: false, error: 'INVALID_ATTENDANCE', message: 'Attendance payload invalid.' });
     }
 
+    // Ensure this session's ID is set correctly before updating
+    if (!session._id) {
+      return res.status(400).json({ success: false, error: 'SESSION_ID_MISSING', message: 'Session ID missing.' });
+    }
+
     session.attendance = attendanceDocs;
     session.attended = attendanceDocs.some((entry) => entry.status === 'present');
     session.completedAt = new Date();
     session.status = 'completed';
 
-    await session.save();
+    // Save and verify only this session is updated
+    const savedSession = await session.save();
+    
+    if (!savedSession._id.equals(id)) {
+      console.error('Session ID mismatch after save', { expectedId: id, savedId: savedSession._id });
+    }
 
     await recordSessionAudit({
       actorId: req.user.id,

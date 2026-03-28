@@ -29,21 +29,56 @@ const upsertSessionList = <T extends SessionRecord>(list: T[] | undefined, updat
     if (!list) {
         return list;
     }
-    const exists = list.some((session) => session.id === updated.id);
+    
+    // Defensive check: ensure updated has a valid id
+    if (!updated || !updated.id) {
+        console.warn('upsertSessionList called with invalid updated object', { updated, listSize: list.length });
+        return list;
+    }
+    
+    const exists = list.some((session) => session && session.id === updated.id);
     if (!exists) {
         return [updated as T, ...list];
     }
-    return list.map((session) => (session.id === updated.id ? ({ ...session, ...updated } as T) : session));
+    
+    // Update only the matching session, preserve all other sessions untouched
+    return list.map((session) => {
+        if (!session || !session.id) {
+            return session;
+        }
+        // Strict ID comparison: only update if IDs match exactly
+        if (session.id === updated.id) {
+            return { ...session, ...updated } as T;
+        }
+        return session;
+    });
 };
 
 const updateSessionCaches = (queryClient: ReturnType<typeof useQueryClient>, updated: SessionRecord) => {
-    queryClient.setQueryData<MentorSession[] | undefined>(mentorSessionsKey, (prev) => upsertSessionList(prev, updated));
-    queryClient.setQueryData<MenteeSession[] | undefined>(menteeSessionsKey, (prev) => upsertSessionList(prev, updated));
+    if (!updated || !updated.id) {
+        console.error('updateSessionCaches called with invalid session record', updated);
+        return;
+    }
+    
+    queryClient.setQueryData<MentorSession[] | undefined>(mentorSessionsKey, (prev) => {
+        if (!prev) return prev;
+        return upsertSessionList(prev, updated);
+    });
+    
+    queryClient.setQueryData<MenteeSession[] | undefined>(menteeSessionsKey, (prev) => {
+        if (!prev) return prev;
+        return upsertSessionList(prev, updated);
+    });
+    
     queryClient.setQueryData<SessionResponse | undefined>(sessionDetailKey(updated.id), (prev) => {
         if (!prev) {
             return { session: updated };
         }
-        return { ...prev, session: { ...prev.session, ...updated } };
+        // Merge carefully - preserve existing data not overwritten by updated
+        return { 
+            ...prev, 
+            session: { ...prev.session, ...updated } 
+        };
     });
 };
 

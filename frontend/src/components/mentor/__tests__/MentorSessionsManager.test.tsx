@@ -13,6 +13,7 @@ jest.mock('../../../shared/hooks/useMentorSessions', () => ({
 
 jest.mock('../../../shared/hooks/useSessionLifecycle', () => ({
     useRecordSessionAttendance: jest.fn(),
+    useCancelSession: jest.fn(),
 }));
 
 // The composer is a small child component that uses many other hooks. Stub it out for these tests.
@@ -37,10 +38,11 @@ const mockUseMentorFeedbackForSession = useMentorFeedbackForSession as jest.Mock
 const mockUseCreateMentorFeedback = useCreateMentorFeedback as jest.Mock;
 const mockUseUpdateMentorFeedback = useUpdateMentorFeedback as jest.Mock;
 import { useMenteeProgressSnapshot } from '../../../shared/hooks/useMentorFeedback';
-import { useRecordSessionAttendance } from '../../../shared/hooks/useSessionLifecycle';
+import { useRecordSessionAttendance, useCancelSession } from '../../../shared/hooks/useSessionLifecycle';
 
 const mockUseMenteeProgressSnapshot = useMenteeProgressSnapshot as jest.Mock;
 const mockUseRecordAttendance = useRecordSessionAttendance as jest.Mock;
+const mockUseCancelSession = useCancelSession as jest.Mock;
 
 function baseSession(overrides: Record<string, any> = {}) {
     return {
@@ -62,7 +64,7 @@ beforeEach(() => {
     jest.clearAllMocks();
     mockUseMentorSessions.mockReturnValue({ data: [baseSession()], isLoading: false, isError: false, refetch: jest.fn(), isFetching: false });
     mockUseCompleteMentorSession.mockReturnValue({ mutateAsync: jest.fn(), isLoading: false });
-    mockUseRecordAttendance.mockReturnValue({ mutateAsync: jest.fn(), isLoading: false });
+    mockUseRecordAttendance.mockReturnValue({ mutateAsync: jest.fn(), isLoading: false });\n    mockUseCancelSession.mockReturnValue({ mutateAsync: jest.fn(), isLoading: false });
     mockUseMentorFeedbackForSession.mockReturnValue({ data: null, isLoading: false });
     mockUseMenteeProgressSnapshot.mockReturnValue({ data: null, isLoading: false });
     mockUseCreateMentorFeedback.mockReturnValue({ mutateAsync: jest.fn(), isLoading: false });
