@@ -192,8 +192,10 @@ exports.afterPhotoUploaded = async (req, res) => {
         transformation: [{ width: 512, height: 512, crop: 'limit' }],
       });
     } catch (storageErr) {
+      // Log error but provide helpful message for development
+      console.warn('Avatar upload failed:', storageErr.message);
       const message = storageErr.code === 'CLOUDINARY_NOT_CONFIGURED'
-        ? 'Cloud storage is not configured on the server.'
+        ? 'Cloud storage is not configured. Avatar upload is disabled in development mode. Configure Cloudinary credentials to enable file uploads.'
         : storageErr.message;
       return res.status(502).json({ error: 'UPLOAD_FAILED', message });
     }

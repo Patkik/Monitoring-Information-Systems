@@ -7,6 +7,8 @@ export const api = axios.create({ baseURL: API_BASE, withCredentials: true });
 export const register = (data) => api.post('/auth/register', data).then(r => r.data);
 export const login = (data) => api.post('/auth/login', data).then(r => r.data);
 export const forgotPassword = (data) => api.post('/auth/forgot-password', data).then(r => r.data);
+export const verifyCode = (data) => api.post('/auth/verify-code', data).then(r => r.data);
+export const verifyResetCode = (data) => api.post('/auth/verify-reset-code', data).then(r => r.data);
 export const resetPassword = (token, data) => api.post(`/auth/reset-password/${token}`, data).then(r => r.data);
 
 const buildOAuthUrl = (path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
@@ -21,6 +23,7 @@ export const mapErrorCodeToMessage = (code) => {
     case 'ACCOUNT_LOCKED': return 'Account locked due to failed attempts. Try again later.';
     case 'ACCOUNT_DEACTIVATED': return 'This account has been deactivated. Contact an administrator to regain access.';
     case 'INVALID_TOKEN': return 'Invalid or expired token.';
+    case 'INVALID_CODE': return 'Invalid or expired code. Please try again.';
     // reCAPTCHA specific errors
     case 'RECAPTCHA_REQUIRED': return 'Please complete the verification step.';
     case 'RECAPTCHA_FAILED': return 'Verification failed. Please try again.';

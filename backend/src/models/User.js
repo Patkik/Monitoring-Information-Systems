@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema(
     googleId: { type: String },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
+    resetPasswordCode: { type: String },
     loginAttempts: { type: Number, default: 0 },
     lockUntil: { type: Date },
     

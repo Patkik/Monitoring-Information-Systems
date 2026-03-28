@@ -1,6 +1,7 @@
 import React from 'react';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import CategoryCards from '../../components/mentee/CategoryCards';
+import MatchSuggestionsSection from '../../components/mentee/MatchSuggestionsSection';
 import MentorDirectorySection from '../../components/mentee/MentorDirectorySection';
 import ApplicationForm from '../../components/mentee/ApplicationForm';
 
@@ -14,8 +15,11 @@ const ApplyPage: React.FC = () => {
         {/* Category Cards */}
         <CategoryCards />
 
-  {/* Mentor Directory */}
-  <MentorDirectorySection />
+        {/* Match Suggestions */}
+        <MatchSuggestionsSection limit={5} showHeader={true} />
+
+        {/* Mentor Directory */}
+        <MentorDirectorySection />
 
         {/* Application Form */}
         <ApplicationForm />

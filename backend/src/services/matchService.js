@@ -110,12 +110,11 @@ const calculateScore = (mentor, mentee) => {
   const interactions = calculateInteractionScore(mentor, mentee);
   const priority = calculatePriorityScore(mentee);
 
-  const score = Math.round(
-    expertise * SCORE_WEIGHTS.expertise +
-      availability * SCORE_WEIGHTS.availability +
-      interactions * SCORE_WEIGHTS.interactions +
-      priority * SCORE_WEIGHTS.priority
-  );
+  const rawScore = expertise * SCORE_WEIGHTS.expertise +
+    availability * SCORE_WEIGHTS.availability +
+    interactions * SCORE_WEIGHTS.interactions +
+    priority * SCORE_WEIGHTS.priority;
+  const score = Math.round(rawScore * 100) / 100;
 
   return {
     score,

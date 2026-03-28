@@ -1,0 +1,21 @@
+{
+  "version": "1.2.0",
+  "schemaVersion": 1,
+  "description": "Workspace hook registry for orchestrator lifecycle enforcement.",
+  "hooks": {
+    "PostToolUse": {
+      "enabled": true,
+      "handlers": [
+        {
+          "id": "continual-learning-checkpoint",
+          "when": {
+            "tool": "task_complete"
+          },
+          "script": ".github/hooks/scripts/continual_learning_checkpoint.py",
+          "timeoutMs": 15000,
+          "failMode": "warn"
+        }
+      ]
+    }
+  }
+}

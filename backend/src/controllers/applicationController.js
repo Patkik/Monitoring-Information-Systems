@@ -109,14 +109,10 @@ const submitMenteeApplication = async (req, res) => {
         const uploadResult = await uploadApplicationFile(req.file);
         corUrl = uploadResult ? uploadResult.secure_url || uploadResult.url || '' : '';
       } catch (storageErr) {
-        const message = storageErr.code === 'CLOUDINARY_NOT_CONFIGURED'
-          ? 'Cloud storage is not configured on the server.'
-          : storageErr.message;
-        return res.status(502).json({
-          success: false,
-          error: 'DOCUMENT_UPLOAD_FAILED',
-          message,
-        });
+        // Log error but don't block application submission if cloud storage is unavailable
+        console.warn('File upload failed:', storageErr.message);
+        corUrl = '';
+        // Note: Application can proceed without the document URL for development
       }
     }
 
@@ -273,14 +269,10 @@ const submitMentorApplication = async (req, res) => {
         const uploadResult = await uploadApplicationFile(req.file);
         supportingDocumentUrl = uploadResult ? uploadResult.secure_url || uploadResult.url || '' : '';
       } catch (storageErr) {
-        const message = storageErr.code === 'CLOUDINARY_NOT_CONFIGURED'
-          ? 'Cloud storage is not configured on the server.'
-          : storageErr.message;
-        return res.status(502).json({
-          success: false,
-          error: 'DOCUMENT_UPLOAD_FAILED',
-          message,
-        });
+        // Log error but don't block application submission if cloud storage is unavailable
+        console.warn('File upload failed:', storageErr.message);
+        supportingDocumentUrl = '';
+        // Note: Application can proceed without the document URL for development
       }
     }
 

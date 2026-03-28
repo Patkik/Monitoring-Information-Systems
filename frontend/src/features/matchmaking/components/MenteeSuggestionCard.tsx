@@ -59,7 +59,7 @@ const MenteeSuggestionCard: React.FC<Props> = ({ suggestion, onAccept, onDecline
       <section className="tw-grid tw-grid-cols-2 tw-gap-3">
         <div className="tw-bg-purple-50 tw-rounded-xl tw-p-3">
           <p className="tw-text-xs tw-uppercase tw-text-purple-500">Match score</p>
-          <p className="tw-text-2xl tw-font-bold tw-text-purple-700">{suggestion.score}</p>
+          <p className="tw-text-2xl tw-font-bold tw-text-purple-700">{suggestion.score.toFixed(2)}</p>
         </div>
         <div className="tw-bg-gray-50 tw-rounded-xl tw-p-3">
           <p className="tw-text-xs tw-uppercase tw-text-gray-500">Availability overlap</p>

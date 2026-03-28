@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import PendingFeedbackList from '../../components/mentee/PendingFeedbackList';
 import { useMentorshipRequests } from '../../features/mentorship/hooks/useMentorshipRequests';
@@ -37,11 +37,13 @@ const formatDateTime = (value: string | null | undefined) => {
 };
 
 const MyMentorPage: React.FC = () => {
+  const [withdrawingId, setWithdrawingId] = useState<string | null>(null);
   const {
     requests,
     isLoading: loadingRequests,
     isRefetching: refetchingRequests,
-    refetch: refetchRequests
+    refetch: refetchRequests,
+    withdrawRequest
   } = useMentorshipRequests('mentee');
 
   const currentMatches = useMemo(
@@ -58,6 +60,19 @@ const MyMentorPage: React.FC = () => {
   const handleRefresh = useCallback(async () => {
     await refetchRequests();
   }, [refetchRequests]);
+
+  const handleWithdraw = useCallback(async (matchId: string, mentorName: string) => {
+    if (!confirm(`Are you sure you want to withdraw your mentorship request with ${mentorName}? This cannot be undone.`)) {
+      return;
+    }
+
+    setWithdrawingId(matchId);
+    try {
+      await withdrawRequest(matchId);
+    } finally {
+      setWithdrawingId(null);
+    }
+  }, [withdrawRequest]);
 
   const renderMatchCard = (match: MentorshipRequest) => {
     const mentorName = match.mentor?.name || 'Mentor';
@@ -80,9 +95,32 @@ const MyMentorPage: React.FC = () => {
               {mentorEmail}
             </a>
           </div>
-          <span className={`tw-inline-flex tw-items-center tw-rounded-full tw-px-3 tw-py-1 tw-text-xs tw-font-semibold ${badgeClass}`}>
-            {statusLabel}
-          </span>
+          <div className="tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-center tw-gap-3">
+            <span className={`tw-inline-flex tw-items-center tw-rounded-full tw-px-3 tw-py-1 tw-text-xs tw-font-semibold ${badgeClass}`}>
+              {statusLabel}
+            </span>
+            {match.status === 'pending' && (
+              <button
+                onClick={() => handleWithdraw(match.id, mentorName)}
+                disabled={withdrawingId === match.id}
+                className="tw-inline-flex tw-items-center tw-gap-1 tw-rounded-lg tw-border tw-border-red-300 tw-bg-red-50 tw-px-3 tw-py-1.5 tw-text-xs tw-font-medium tw-text-red-700 hover:tw-bg-red-100 disabled:tw-opacity-60 tw-transition-colors"
+              >
+                {withdrawingId === match.id ? (
+                  <>
+                    <span className="tw-animate-spin tw-h-3 tw-w-3 tw-border-b-2 tw-border-red-700 tw-rounded-full" />
+                    Withdrawing...
+                  </>
+                ) : (
+                  <>
+                    <svg className="tw-h-3 tw-w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Withdraw
+                  </>
+                )}
+              </button>
+            )}
+          </div>
         </div>
         <dl className="tw-mt-4 tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-4">
           <div>

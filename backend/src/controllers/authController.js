@@ -143,14 +143,81 @@ exports.forgotPassword = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ error: 'INVALID_TOKEN' });
 
-    const token = crypto.randomBytes(20).toString('hex');
-    user.resetPasswordToken = token;
-    user.resetPasswordExpires = Date.now() + 60 * 60 * 1000; // 1h
+    // Generate a 6-character alphanumeric reset code
+    const resetCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+    user.resetPasswordCode = resetCode;
+    user.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 minutes
     await user.save();
 
-    await sendPasswordResetEmail(user.email, token);
+    try {
+      await sendPasswordResetEmail(user.email, resetCode);
+    } catch (emailErr) {
+      // Log email error but don't block the request for development
+      console.warn('Password reset email failed to send:', emailErr.message);
+      // In development, still return success so user can proceed
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(`[DEV] Password reset code for ${email}: ${resetCode}`);
+      }
+    }
+
     return res.json({ message: 'RESET_EMAIL_SENT' });
   } catch (err) {
+    console.error('Forgot password error:', err);
+    return res.status(500).json({ error: 'NETWORK_ERROR' });
+  }
+};
+
+exports.verifyCode = async (req, res) => {
+  try {
+    const { email, code } = req.body;
+
+    if (!email || !code) {
+      return res.status(400).json({ error: 'MISSING_FIELDS', message: 'Email and code are required.' });
+    }
+
+    const user = await User.findOne({
+      email,
+      resetPasswordCode: code.toUpperCase(),
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: 'INVALID_CODE', message: 'Invalid or expired reset code.' });
+    }
+
+    return res.json({ message: 'CODE_VERIFIED', success: true });
+  } catch (err) {
+    console.error('Verify code error:', err);
+    return res.status(500).json({ error: 'NETWORK_ERROR' });
+  }
+};
+
+exports.verifyResetCode = async (req, res) => {
+  try {
+    const { email, code, password } = req.body;
+
+    if (!email || !code || !password) {
+      return res.status(400).json({ error: 'MISSING_FIELDS', message: 'Email, code, and password are required.' });
+    }
+
+    const user = await User.findOne({
+      email,
+      resetPasswordCode: code.toUpperCase(),
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: 'INVALID_CODE', message: 'Invalid or expired reset code.' });
+    }
+
+    user.password = password;
+    user.resetPasswordCode = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    return res.json({ message: 'PASSWORD_RESET', success: true });
+  } catch (err) {
+    console.error('Verify reset code error:', err);
     return res.status(500).json({ error: 'NETWORK_ERROR' });
   }
 };

@@ -12,6 +12,8 @@ const isFacebookConfigured = !!(facebookAppId && facebookAppSecret);
 router.post('/auth/register', controller.register);
 router.post('/auth/login', controller.login);
 router.post('/auth/forgot-password', controller.forgotPassword);
+router.post('/auth/verify-code', controller.verifyCode);
+router.post('/auth/verify-reset-code', controller.verifyResetCode);
 router.post('/auth/reset-password/:token', controller.resetPassword);
 router.post('/auth/set-password', auth, controller.setPassword);
 
