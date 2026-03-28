@@ -18,12 +18,12 @@ const StatusPill: React.FC<{ status: string }> = ({ status }) => {
 };
 
 const MentorRequestsTable: React.FC = () => {
-  const { requests, isLoading, isRefetching, meta, acceptRequest, declineRequest, isMutating } = useMentorshipRequests('mentor');
+  const { requests, isLoading, isRefetching, meta, acceptRequest, declineRequest } = useMentorshipRequests('mentor');
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedMenteeId, setSelectedMenteeId] = useState<string | null>(null);
   const [lockedActionById, setLockedActionById] = useState<Record<string, boolean>>({});
-  const [resolvedStatusById, setResolvedStatusById] = useState<Record<string, 'accepted' | 'declined'>>({});
+  const [resolvedStatusById, setResolvedStatusById] = useState<Record<string, string>>({});
   const optimisticRecoveryTimersRef = useRef<Record<string, ReturnType<typeof window.setTimeout>>>({});
 
   const clearOptimisticRecoveryTimer = useCallback((id: string) => {
@@ -247,7 +247,7 @@ const MentorRequestsTable: React.FC = () => {
                         <>
                           <button
                             type="button"
-                            disabled={isMutating || isRowLocked}
+                            disabled={isRowLocked}
                             onClick={() => handleAccept(r.id)}
                             className="tw-px-3 tw-py-1 tw-rounded tw-bg-green-600 hover:tw-bg-green-700 tw-text-white tw-text-xs tw-font-medium disabled:tw-opacity-50"
                           >
@@ -255,7 +255,7 @@ const MentorRequestsTable: React.FC = () => {
                           </button>
                           <button
                             type="button"
-                            disabled={isMutating || isRowLocked}
+                            disabled={isRowLocked}
                             onClick={() => handleDecline(r.id)}
                             className="tw-px-3 tw-py-1 tw-rounded tw-bg-red-600 hover:tw-bg-red-700 tw-text-white tw-text-xs tw-font-medium disabled:tw-opacity-50"
                           >

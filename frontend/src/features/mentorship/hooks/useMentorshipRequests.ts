@@ -23,6 +23,7 @@ export type MentorshipRequestsHook = {
   declineRequest: (id: string, declineReason?: string) => Promise<unknown>;
   withdrawRequest: (id: string) => Promise<unknown>;
   isMutating: boolean;
+  mutatingId?: string;
 };
 
 export const useMentorshipRequests = (scope: MentorshipRequestScope): MentorshipRequestsHook => {
@@ -92,6 +93,7 @@ export const useMentorshipRequests = (scope: MentorshipRequestScope): Mentorship
     declineRequest,
     withdrawRequest,
     isMutating: acceptMutation.isPending || declineMutation.isPending || withdrawMutation.isPending,
+    mutatingId: (acceptMutation.variables?.id || declineMutation.variables?.id || withdrawMutation.variables) as string | undefined,
   };
 };
 

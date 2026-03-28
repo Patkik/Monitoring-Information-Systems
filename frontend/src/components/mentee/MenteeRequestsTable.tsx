@@ -16,7 +16,7 @@ const StatusPill: React.FC<{ status: string }> = ({ status }) => {
 };
 
 const MenteeRequestsTable: React.FC = () => {
-  const { requests, isLoading, isRefetching, meta, withdrawRequest, isMutating } = useMentorshipRequests('mentee');
+  const { requests, isLoading, isRefetching, meta, withdrawRequest, isMutating, mutatingId } = useMentorshipRequests('mentee');
 
   const handleWithdraw = useCallback(async (id: string) => {
     if (!window.confirm('Withdraw this mentorship request?')) return;
@@ -73,7 +73,7 @@ const MenteeRequestsTable: React.FC = () => {
                       {(r.status === 'pending' || r.status === 'accepted') && (
                         <button
                           type="button"
-                          disabled={isMutating}
+                            disabled={isMutating && mutatingId === r.id}
                           onClick={() => handleWithdraw(r.id)}
                           className="tw-px-3 tw-py-1 tw-rounded tw-bg-gray-600 hover:tw-bg-gray-700 tw-text-white tw-text-xs tw-font-medium disabled:tw-opacity-50"
                         >

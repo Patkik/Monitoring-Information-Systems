@@ -99,8 +99,8 @@ const MatchSuggestionsSection: React.FC<MatchSuggestionsSectionProps> = ({ limit
               suggestion={suggestion}
               onAccept={() => handleAccept(suggestion.id)}
               onDecline={() => handleDecline(suggestion.id)}
-              isAccepting={acceptMutation.isPending}
-              isDeclining={declineMutation.isPending}
+              isAccepting={acceptMutation.isPending && acceptMutation.variables?.matchId === suggestion.id}
+              isDeclining={declineMutation.isPending && declineMutation.variables?.matchId === suggestion.id}
             />
           ))}
         </div>

@@ -37,10 +37,10 @@ const MentorDashboardSuggestions: React.FC<{ mentorId?: string }> = ({ mentorId 
               key={s.id}
               suggestion={s}
               onAccept={() => acceptMutation.mutate({ matchId: s.id })}
-              onDecline={() => declineMutation.mutate({ matchId: s.id })}
+              onDecline={() => declineMutation.mutate({ matchId: s.id })}       
               disableAccept={capacityInfo.remaining !== null && capacityInfo.remaining <= 0 && s.status !== 'mentor_accepted'}
-              isAccepting={acceptMutation.isPending}
-              isDeclining={declineMutation.isPending}
+              isAccepting={acceptMutation.isPending && acceptMutation.variables?.matchId === s.id}
+              isDeclining={declineMutation.isPending && declineMutation.variables?.matchId === s.id}
             />
           ))}
         </div>

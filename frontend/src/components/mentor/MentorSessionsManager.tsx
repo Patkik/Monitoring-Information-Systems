@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCompleteMentorSession, useMentorSessions } from '../../shared/hooks/useMentorSessions';
 import { useCancelSession } from '../../shared/hooks/useSessionLifecycle';
-import type { ApiWarning, AttendanceStatus, MentorSession, SessionParticipant } from '../../shared/services/sessionsService';
+import type { ApiWarning, MentorSession } from '../../shared/services/sessionsService';
 import MentorSessionComposer from './MentorSessionComposer';
 import MentorFeedbackForm from './MentorFeedbackForm';
 import AttendanceModal from './AttendanceModal';
