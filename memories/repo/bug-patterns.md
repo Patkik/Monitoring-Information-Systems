@@ -1,0 +1,3 @@
+- Resolved bug pattern: for row-level async table actions, enforce a per-row lock and perform immediate optimistic state transition.
+- Prevent sticky optimistic UI by adding a bounded rollback timeout plus cleanup and backend reconciliation.
+- Required test coverage for this pattern: cancel-abort path, success with immediate action removal, failure with unlock plus error surfacing, and stale-pending rollback.

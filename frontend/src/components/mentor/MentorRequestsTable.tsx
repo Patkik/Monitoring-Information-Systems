@@ -1,8 +1,9 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useMentorshipRequests } from '../../features/mentorship/hooks/useMentorshipRequests';
 import MenteeProfileDrawer from './MenteeProfileDrawer';
 
 const fmt = (iso?: string | null) => (iso ? new Date(iso).toLocaleString() : '—');
+const OPTIMISTIC_RECOVERY_TIMEOUT_MS = 10000;
 
 const StatusPill: React.FC<{ status: string }> = ({ status }) => {
   const base = 'tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-medium';
@@ -23,6 +24,88 @@ const MentorRequestsTable: React.FC = () => {
   const [selectedMenteeId, setSelectedMenteeId] = useState<string | null>(null);
   const [lockedActionById, setLockedActionById] = useState<Record<string, boolean>>({});
   const [resolvedStatusById, setResolvedStatusById] = useState<Record<string, 'accepted' | 'declined'>>({});
+  const optimisticRecoveryTimersRef = useRef<Record<string, ReturnType<typeof window.setTimeout>>>({});
+
+  const clearOptimisticRecoveryTimer = useCallback((id: string) => {
+    const timer = optimisticRecoveryTimersRef.current[id];
+    if (!timer) return;
+    window.clearTimeout(timer);
+    delete optimisticRecoveryTimersRef.current[id];
+  }, []);
+
+  const scheduleOptimisticRecovery = useCallback((id: string) => {
+    clearOptimisticRecoveryTimer(id);
+
+    optimisticRecoveryTimersRef.current[id] = window.setTimeout(() => {
+      setResolvedStatusById((prev) => {
+        if (!prev[id]) return prev;
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+
+      setLockedActionById((prev) => {
+        if (!prev[id]) return prev;
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+
+      delete optimisticRecoveryTimersRef.current[id];
+    }, OPTIMISTIC_RECOVERY_TIMEOUT_MS);
+  }, [clearOptimisticRecoveryTimer]);
+
+  useEffect(() => {
+    return () => {
+      Object.values(optimisticRecoveryTimersRef.current).forEach((timer) => {
+        window.clearTimeout(timer);
+      });
+      optimisticRecoveryTimersRef.current = {};
+    };
+  }, []);
+
+  useEffect(() => {
+    const statusById = new Map(requests.map((request) => [request.id, request.status]));
+
+    setResolvedStatusById((prev) => {
+      let changed = false;
+      const next = { ...prev };
+
+      Object.entries(prev).forEach(([id, status]) => {
+        const incomingStatus = statusById.get(id);
+
+        // Keep local override only while waiting for backend status to move off pending.
+        if (!incomingStatus || incomingStatus === status || incomingStatus !== 'pending') {
+          clearOptimisticRecoveryTimer(id);
+          delete next[id];
+          changed = true;
+        }
+      });
+
+      return changed ? next : prev;
+    });
+
+    setLockedActionById((prev) => {
+      let changed = false;
+      const next = { ...prev };
+
+      Object.keys(prev).forEach((id) => {
+        const incomingStatus = statusById.get(id);
+        if (!incomingStatus || incomingStatus !== 'pending') {
+          clearOptimisticRecoveryTimer(id);
+          delete next[id];
+          changed = true;
+        }
+      });
+
+      return changed ? next : prev;
+    });
+    Object.keys(optimisticRecoveryTimersRef.current).forEach((id) => {
+      if (!statusById.has(id)) {
+        clearOptimisticRecoveryTimer(id);
+      }
+    });
+  }, [clearOptimisticRecoveryTimer, requests]);
 
   const openProfile = useCallback((id?: string | null) => {
     if (!id) return;
@@ -49,6 +132,7 @@ const MentorRequestsTable: React.FC = () => {
     try {
       await acceptRequest(id, sessionSuggestion || undefined);
       setResolvedStatusById((prev) => ({ ...prev, [id]: 'accepted' }));
+      scheduleOptimisticRecovery(id);
       // small success feedback
       window.alert('Request accepted — mentee will be notified.');
     } catch (error) {
@@ -60,15 +144,18 @@ const MentorRequestsTable: React.FC = () => {
       });
       window.alert('Unable to accept request. Please try again.');
     }
-  }, [acceptRequest]);
+  }, [acceptRequest, scheduleOptimisticRecovery]);
 
   const handleDecline = useCallback(async (id: string) => {
     const declineReason = window.prompt('Provide a reason for declining (optional):');
+    if (declineReason === null) return;
+
     setLockedActionById((prev) => ({ ...prev, [id]: true }));
 
     try {
       await declineRequest(id, declineReason || undefined);
       setResolvedStatusById((prev) => ({ ...prev, [id]: 'declined' }));
+      scheduleOptimisticRecovery(id);
       window.alert('Request declined.');
     } catch (error) {
       void error;
@@ -79,7 +166,7 @@ const MentorRequestsTable: React.FC = () => {
       });
       window.alert('Unable to decline request. Please try again.');
     }
-  }, [declineRequest]);
+  }, [declineRequest, scheduleOptimisticRecovery]);
 
   const computeMatchScore = useCallback((r: any) => {
     // Simple heuristic: base 50, +25 if they provided goals, +25 if notes provided
@@ -132,7 +219,6 @@ const MentorRequestsTable: React.FC = () => {
                 return (
                 <tr key={r.id} className="tw-border-b tw-border-gray-100 hover:tw-bg-gray-50/50">
                   <td className="tw-py-2 tw-pr-4 tw-font-medium tw-text-gray-900">{r.subject}</td>
-                  <td className="tw-py-2 tw-pr-4">{r.mentee?.name || '—'}</td>
                   <td className="tw-py-2 tw-pr-4 tw-flex tw-items-center tw-gap-2">
                     <span>{r.mentee?.name || '—'}</span>
                     <button
