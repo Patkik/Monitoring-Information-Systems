@@ -296,10 +296,11 @@ const MentorSessionsManager: React.FC = () => {
             const warningMessage = result.warnings?.length
                 ? ` ${result.warnings.map((warning) => warning.message).join(' ')}`
                 : '';
+            const latePenaltyMessage = isLateCancel ? ' you will be penalized for cancelling late.' : '';
 
             setBanner({
                 type: 'success',
-                message: `Session cancelled successfully.${warningMessage}`,
+                message: `Session cancelled successfully.${latePenaltyMessage}${warningMessage}`,
             });
 
             closeCancelModal();
