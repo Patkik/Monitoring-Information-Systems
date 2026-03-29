@@ -1,4 +1,5 @@
 import { apiClient } from '../../shared/config/apiClient';
+import axios from 'axios';
 
 export interface MaterialItem {
     id: string;
@@ -28,6 +29,25 @@ export type UploadMaterialPayload = {
     sessionId?: string;
     menteeId?: string;
     tags?: string[];
+};
+
+export interface MaterialsServiceError extends Error {
+    status?: number;
+}
+
+const createDeleteMaterialError = (status?: number): MaterialsServiceError => {
+    let message = 'An error occurred while deleting the material';
+    if (status === 403) {
+        message = "You don't have permission to delete this material";
+    } else if (status === 404) {
+        message = 'Material not found';
+    } else if (status === 500) {
+        message = 'Failed to delete material. Please try again.';
+    }
+
+    const error = new Error(message) as MaterialsServiceError;
+    error.status = status;
+    return error;
 };
 
 export async function listMaterials(
@@ -79,4 +99,17 @@ export async function uploadMaterial(payload: UploadMaterialPayload): Promise<{ 
         id: material.id ?? '',
         title: material.title ?? payload.title
     };
+}
+
+export async function deleteMaterial(materialId: string): Promise<{ deleted: boolean }> {
+    try {
+        const { data } = await apiClient.delete(`/materials/${materialId}`);
+        const deleted = data?.deleted ?? data?.data?.deleted ?? true;
+        return { deleted: Boolean(deleted) };
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            throw createDeleteMaterialError(error.response?.status);
+        }
+        throw createDeleteMaterialError();
+    }
 }

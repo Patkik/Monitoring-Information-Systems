@@ -1,16 +1,16 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useSearchParams } from 'react-router-dom';
 import DashboardLayout from '../components/layouts/DashboardLayout';
 import ChatThreadList from '../components/chat/ChatThreadList';
 import ChatWindow from '../components/chat/ChatWindow';
+import { useMarkThreadAsRead } from '../shared/hooks/useChatThread';
 import { useChatThreads } from '../shared/hooks/useChatThreads';
 import { useChatMessages } from '../shared/hooks/useChatMessages';
 import {
   CHAT_THREADS_QUERY_KEY,
   chatMessagesQueryKey,
-  markThreadRead,
   sendMessage,
   archiveThread as archiveThreadRequest,
   unarchiveThread as unarchiveThreadRequest,
@@ -42,6 +42,7 @@ const ChatPage: React.FC = () => {
   const [threadActionError, setThreadActionError] = useState<string | null>(null);
   const [showArchived, setShowArchived] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const lastMarkedThreadIdRef = useRef<string | null>(null);
 
   const user = useMemo(() => readStoredUser(), []);
   const currentUserId: string | null = user?._id || user?.id || null;
@@ -91,6 +92,21 @@ const ChatPage: React.FC = () => {
     return threads.find((thread) => thread.id === activeThreadId) ?? null;
   }, [threads, activeThreadId]);
 
+  const { markThreadAsRead } = useMarkThreadAsRead(activeThreadId ?? '');
+
+  const triggerMarkThreadAsRead = useCallback((threadId: string) => {
+    if (!threadId) {
+      return;
+    }
+    lastMarkedThreadIdRef.current = threadId;
+    // Fire-and-forget side effect to avoid blocking thread open interactions.
+    markThreadAsRead(threadId);
+  }, [markThreadAsRead]);
+
+  const handleSelectThread = useCallback((threadId: string) => {
+    setActiveThreadId(threadId);
+  }, []);
+
   const messagesQuery = useChatMessages(activeThreadId);
 
   const focusNewChatInput = useCallback(() => {
@@ -133,23 +149,17 @@ const ChatPage: React.FC = () => {
     return messagesQuery.data.pages.flatMap((page) => page.messages);
   }, [messagesQuery.data]);
 
-  const markReadMutation = useMutation<void, AxiosError<ApiError>, string>({
-    mutationFn: (threadId) => markThreadRead(threadId),
-    onSuccess: (_, threadId) => {
-      queryClient.invalidateQueries({ queryKey: CHAT_THREADS_QUERY_KEY });
-      queryClient.invalidateQueries({ queryKey: chatMessagesQueryKey(threadId) });
-    },
-  });
-
   useEffect(() => {
-    if (!activeThreadId || messages.length === 0 || !currentUserId) {
+    if (!activeThreadId) {
       return;
     }
-    const latestMessage = messages[messages.length - 1];
-    if (latestMessage.senderId !== currentUserId) {
-      markReadMutation.mutate(activeThreadId);
+
+    if (lastMarkedThreadIdRef.current === activeThreadId) {
+      return;
     }
-  }, [activeThreadId, messages, currentUserId, markReadMutation]);
+
+    triggerMarkThreadAsRead(activeThreadId);
+  }, [activeThreadId, triggerMarkThreadAsRead]);
 
   const sendMessageMutation = useMutation<ChatMessage, AxiosError<ApiError>, { threadId: string; body: string }>({
     mutationFn: ({ threadId, body }) => sendMessage(threadId, body),
@@ -256,7 +266,8 @@ const ChatPage: React.FC = () => {
         <ChatThreadList
           threads={threads}
           activeThreadId={activeThreadId}
-          onSelect={setActiveThreadId}
+          onSelect={handleSelectThread}
+          onThreadRead={triggerMarkThreadAsRead}
           onStartConversation={handleStartConversation}
           isCreating={startConversation.isLoading}
           errorMessage={creationError}

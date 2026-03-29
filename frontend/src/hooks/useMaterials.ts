@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../shared/config/apiClient';
+import { deleteMaterial as deleteMaterialService, type MaterialsServiceError } from '../shared/services/materialsService';
 
 // Use `importMetaEnv` to allow Jest tests to polyfill environment variables.
 // For Vite builds, `importMetaEnv` is defined as `import.meta.env` in `vite.config.ts`.
@@ -64,8 +65,31 @@ const extractMaterialsArray = (response: any): MaterialItem[] => {
 };
 
 const invalidateMaterialQueries = (queryClient: ReturnType<typeof useQueryClient>) => {
+    queryClient.invalidateQueries({ queryKey: ['materials'] });
+    queryClient.invalidateQueries({ queryKey: ['mentor', 'materials'] });
     queryClient.invalidateQueries({ queryKey: menteeMaterialsKey });
     queryClient.invalidateQueries({ queryKey: mentorMaterialsKey });
+};
+
+const removeMaterialFromCachedData = (cacheEntry: unknown, materialId: string) => {
+    if (!cacheEntry || typeof cacheEntry !== 'object') {
+        return cacheEntry;
+    }
+
+    const candidate = cacheEntry as { materials?: unknown };
+    if (!Array.isArray(candidate.materials)) {
+        return cacheEntry;
+    }
+
+    return {
+        ...candidate,
+        materials: candidate.materials.filter((material) => {
+            if (!material || typeof material !== 'object') {
+                return true;
+            }
+            return (material as { id?: string }).id !== materialId;
+        }),
+    };
 };
 
 export const useMenteeMaterials = (params?: { page?: number; limit?: number; search?: string; sessionId?: string }) => {
@@ -122,11 +146,34 @@ export const useUploadSessionMaterials = (sessionId: string) => {
 export const useDeleteMaterial = () => {
     const queryClient = useQueryClient();
 
-    return useMutation({
+    return useMutation<
+        { deleted: boolean },
+        MaterialsServiceError,
+        string,
+        { materialsSnapshots: Array<[readonly unknown[], unknown]> }
+    >({
         mutationFn: async (materialId: string) => {
-            await apiClient.delete(`/materials/${materialId}`);
+            return deleteMaterialService(materialId);
+        },
+        onMutate: async (materialId: string) => {
+            await queryClient.cancelQueries({ queryKey: ['materials'] });
+
+            const materialsSnapshots = queryClient.getQueriesData({ queryKey: ['materials'] });
+            materialsSnapshots.forEach(([queryKey, snapshot]) => {
+                queryClient.setQueryData(queryKey, removeMaterialFromCachedData(snapshot, materialId));
+            });
+
+            return { materialsSnapshots };
+        },
+        onError: (_error, _materialId, context) => {
+            context?.materialsSnapshots.forEach(([queryKey, snapshot]) => {
+                queryClient.setQueryData(queryKey, snapshot);
+            });
         },
         onSuccess: () => {
+            invalidateMaterialQueries(queryClient);
+        },
+        onSettled: () => {
             invalidateMaterialQueries(queryClient);
         },
     });

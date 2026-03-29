@@ -27,7 +27,10 @@ export const useChatMessages = (threadId: string | null) => {
     },
     getNextPageParam: (lastPage) => lastPage.cursor ?? undefined,
     enabled,
-    refetchOnWindowFocus: false,
+    // Refetch when user returns to the tab (fallback for Pusher)
+    refetchOnWindowFocus: true,
+    // Poll for new messages every 5 seconds as fallback if Pusher doesn't work
+    refetchInterval: 5000,
   });
 
   useEffect(() => {

@@ -124,6 +124,21 @@ const MentorSessionsManager: React.FC = () => {
         setAttended(true);
     };
 
+    const openFeedbackModal = (session: MentorSession) => {
+        const normalizedStatus = (session.status || (session.attended ? 'completed' : 'upcoming')).toLowerCase();
+        if (normalizedStatus !== 'completed' && normalizedStatus !== 'ended') {
+            return;
+        }
+
+        setFeedbackSession(session);
+        setFeedbackOpen(true);
+    };
+
+    const closeFeedbackModal = () => {
+        setFeedbackOpen(false);
+        setFeedbackSession(null);
+    };
+
     const openCompletionModal = (session: MentorSession) => {
         setSelectedSession(session);
         setTasksCompleted(String(session.tasksCompleted || 0));
@@ -365,6 +380,7 @@ const MentorSessionsManager: React.FC = () => {
             showEmpty={showEmpty}
             setSelectedSession={setSelectedSession}
             openCancelModal={openCancelModal}
+            openFeedbackModal={openFeedbackModal}
         />
     </div>
     <MentorSessionDetails
@@ -381,6 +397,7 @@ const MentorSessionsManager: React.FC = () => {
         attendanceReady={attendanceReady}
         setFeedbackSession={setFeedbackSession}
         setFeedbackOpen={setFeedbackOpen}
+        openFeedbackModal={openFeedbackModal}
     />
 </div>
 
@@ -478,9 +495,14 @@ const MentorSessionsManager: React.FC = () => {
                     sessionId={feedbackSession.id}
                     sessionSubject={feedbackSession.subject}
                     menteeId={feedbackSession.mentee?.id || (feedbackSession.participants?.[0]?.id ?? null)}
-                    onClose={() => {
-                        setFeedbackOpen(false);
-                        setFeedbackSession(null);
+                    onClose={closeFeedbackModal}
+                    onSubmitted={(message) => {
+                        setBanner({ type: 'success', message });
+                        closeFeedbackModal();
+                        void refetch();
+                    }}
+                    onSubmissionError={(message) => {
+                        setBanner({ type: 'error', message });
                     }}
                 />
             )}

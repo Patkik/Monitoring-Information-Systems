@@ -38,9 +38,11 @@ const NAV_MAP: Record<string, NavItem[]> = {
   mentor: [
     { label: 'Dashboard', to: '/mentor/dashboard', matches: ['/mentor/dashboard'] },
     { label: 'Sessions', to: '/mentor/sessions', matches: ['/mentor/sessions'] },
+    { label: 'My Mentees', to: '/mentor/roster', matches: ['/mentor/roster'] },
     { label: 'Availability', to: '/mentor/availability', matches: ['/mentor/availability'] },
     { label: 'Upload', to: '/mentor/materials/upload', matches: ['/mentor/materials/upload'] },
     { label: 'Recognition', to: '/mentor/recognition', matches: ['/mentor/recognition'] },
+    { label: 'Achievements', to: '/mentor/achievements', matches: ['/mentor/achievements'] },
     { label: 'Announcements', to: '/mentor/announcements', matches: ['/mentor/announcements'] },
     { label: 'Chat', to: '/mentor/chat', matches: ['/mentor/chat'] }
   ],
