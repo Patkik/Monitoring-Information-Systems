@@ -1,3 +1,5 @@
 - Resolved bug pattern: for row-level async table actions, enforce a per-row lock and perform immediate optimistic state transition.
 - Prevent sticky optimistic UI by adding a bounded rollback timeout plus cleanup and backend reconciliation.
 - Required test coverage for this pattern: cancel-abort path, success with immediate action removal, failure with unlock plus error surfacing, and stale-pending rollback.
+- Goals milestone progress pattern: disable only the clicked milestone action while mutation is in-flight, render achieved timestamps in deterministic UTC format with a fallback for missing dates, and keep live-region semantics (`role=status`/`role=alert`) for dynamic feedback.
+- Required test coverage for goals progress: one interaction flow test must assert click -> mutation payload -> refreshed percent (e.g., 25% for 1/4) -> achieved timestamp text, plus a fallback assertion when achieved date is unavailable.

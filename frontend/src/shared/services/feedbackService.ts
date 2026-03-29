@@ -33,6 +33,11 @@ export interface SessionFeedbackRecord {
     updatedAt?: string;
 }
 
+export interface FlagSessionFeedbackPayload {
+    feedbackId: string;
+    reason: string;
+}
+
 export interface MentorFeedbackSummary {
     ratingAvg: number;
     ratingCount: number;
@@ -61,4 +66,9 @@ export const updateSessionFeedback = async ({ sessionId, ...payload }: SessionFe
 export const fetchMentorFeedbackSummary = async (mentorId: string) => {
     const { data } = await apiClient.get<{ summary: MentorFeedbackSummary }>(`/mentors/${mentorId}/feedback-summary`);
     return data.summary;
+};
+
+export const flagSessionFeedback = async ({ feedbackId, reason }: FlagSessionFeedbackPayload) => {
+    const { data } = await apiClient.post<{ success: boolean }>(`/feedback/${feedbackId}/flag`, { reason });
+    return data;
 };

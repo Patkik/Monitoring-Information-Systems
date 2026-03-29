@@ -5,6 +5,8 @@ import {
     fetchMentorFeedbackSummary,
     fetchPendingFeedbackSessions,
     fetchSessionFeedback,
+    flagSessionFeedback,
+    FlagSessionFeedbackPayload,
     MentorFeedbackSummary,
     PendingFeedbackSession,
     SessionFeedbackPayload,
@@ -52,5 +54,16 @@ export const useSessionFeedback = (sessionId?: string | null, options?: { enable
         queryFn: () => fetchSessionFeedback(sessionId as string),
         enabled: Boolean(sessionId) && (options?.enabled ?? true),
         staleTime: 60 * 1000,
+    });
+};
+
+export const useFlagSessionFeedback = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (payload: FlagSessionFeedbackPayload) => flagSessionFeedback(payload),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: pendingFeedbackKey });
+            queryClient.invalidateQueries({ queryKey: menteeSessionsKey });
+        },
     });
 };

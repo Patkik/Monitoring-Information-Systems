@@ -313,7 +313,7 @@ const MentorSessionComposer: React.FC<MentorSessionComposerProps> = ({ isOpen, o
                                 disabled={createSession.isLoading}
                                 className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-bg-primary tw-text-white tw-text-sm tw-font-semibold tw-px-4 tw-py-2 hover:tw-bg-primary/90 focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-primary disabled:tw-opacity-50"
                             >
-                                {createSession.isLoading ? 'Scheduling…' : 'Send invites'}
+                                {createSession.isLoading ? 'Creating session…' : 'Create session'}
                             </button>
                         </div>
                     </div>

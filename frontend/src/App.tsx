@@ -21,6 +21,7 @@ import MyMentorPage from './pages/menteeDashboards/MyMentorPage';
 import SessionPage from './pages/menteeDashboards/SessionPage';
 import ApplyPage from './pages/menteeDashboards/ApplyPage';
 import AnnouncementsPage from './pages/menteeDashboards/AnnouncementsPage';
+import GoalsPage from './pages/menteeDashboards/GoalsPage';
 import MenteeApplicationForm from './pages/applicationPages/MenteeApplicationForm';
 import PendingApprovalPage from './pages/PendingApprovalPage';
 import MentorApplicationForm from './pages/applicationPages/MentorApplicationForm';
@@ -65,6 +66,7 @@ const MyMentorRoute = () => <ProtectedRoute requiredRole="mentee" children={<MyM
 const SessionRoute = () => <ProtectedRoute requiredRole="mentee" children={<SessionPage />} />;
 const ApplyRoute = () => <ProtectedRoute requiredRole="mentee" children={<ApplyPage />} />;
 const AnnouncementsRoute = () => <ProtectedRoute requiredRole="mentee" children={<AnnouncementsPage />} />;
+const GoalsRoute = () => <ProtectedRoute requiredRole="mentee" children={<GoalsPage />} />;
 const RecognitionRoute = () => <ProtectedRoute requiredRole="mentee" children={<RecognitionPage />} />;
 const ApplicationRoute = () => <ProtectedRoute requiredRole="mentee" children={<MenteeApplicationForm />} />;
 const PendingRoute = () => <ProtectedRoute requiredRole="mentee" children={<PendingApprovalPage />} />;
@@ -132,6 +134,7 @@ const App = () => {
                 <Route path="/mentee/session" element={<SessionRoute />} />
                 <Route path="/mentee/apply" element={<ApplyRoute />} />
                 <Route path="/mentee/announcements" element={<AnnouncementsRoute />} />
+                <Route path="/mentee/goals" element={<GoalsRoute />} />
                 <Route path="/mentee/recognition" element={<RecognitionRoute />} />
                 <Route path="/mentee/matches" element={<MenteeMatchesRoute />} />
 

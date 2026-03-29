@@ -48,6 +48,7 @@ const NAV_MAP: Record<string, NavItem[]> = {
     { label: 'Home', to: '/mentee/dashboard', matches: ['/mentee/dashboard'] },
     { label: 'My Mentor', to: '/mentee/my-mentor', matches: ['/mentee/my-mentor'] },
     { label: 'Session', to: '/mentee/session', matches: ['/mentee/session'] },
+    { label: 'Goals', to: '/mentee/goals', matches: ['/mentee/goals'] },
     { label: 'Apply', to: '/mentee/apply', matches: ['/mentee/apply'] },
     { label: 'Recognition', to: '/mentee/recognition', matches: ['/mentee/recognition'] },
     { label: 'Announcements', to: '/mentee/announcements', matches: ['/mentee/announcements'] },

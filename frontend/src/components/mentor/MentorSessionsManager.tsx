@@ -251,7 +251,7 @@ const MentorSessionsManager: React.FC = () => {
                             onClick={() => setComposerOpen(true)}
                             className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-bg-primary tw-text-white tw-text-sm tw-font-semibold tw-px-4 tw-py-2 hover:tw-bg-primary/90 focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-primary"
                         >
-                            Schedule session
+                            Create session
                         </button>
                         <button
                             type="button"

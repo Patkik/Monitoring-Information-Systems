@@ -37,11 +37,11 @@ const SessionActionsPanel: React.FC = () => {
     }, []);
 
     return (
-        <section className="tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border tw-border-gray-100 tw-p-6 tw-mb-8">
+        <div className="tw-rounded-2xl tw-border tw-border-gray-200 tw-bg-white/95 tw-p-4 sm:tw-p-5 tw-shadow-sm">
             <div className="tw-flex tw-flex-col lg:tw-flex-row lg:tw-items-center lg:tw-justify-between tw-gap-6">
                 <div className="tw-space-y-2">
                     <p className="tw-text-sm tw-font-semibold tw-text-primary tw-uppercase">Sessions</p>
-                    <h1 className="tw-text-3xl tw-font-bold tw-text-gray-900">Keep your sessions on track</h1>
+                    <h2 className="tw-text-3xl tw-font-bold tw-text-gray-900">Keep your sessions on track</h2>
                     <p className="tw-text-sm tw-text-gray-600">
                         Message your mentor when you want to set a schedule and keep a personal copy of everything you have completed so far.
                     </p>
@@ -76,7 +76,7 @@ const SessionActionsPanel: React.FC = () => {
                     {status.message}
                 </div>
             ) : null}
-        </section>
+        </div>
     );
 };
 
