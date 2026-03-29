@@ -1,5 +1,3 @@
-const fetch = require('node-fetch');
-
 const buildResponse = (overrides = {}) => ({
   ok: false,
   status: 400,

@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const dns = require('dns');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
@@ -89,26 +90,48 @@ app.use((err, req, res, next) => {
 });
 
 const start = async () => {
-  const uri = process.env.MONGODB_URI;
-  if (!uri) {
+  const primaryUri = process.env.MONGODB_URI;
+  const fallbackUri = process.env.MONGODB_URI_FALLBACK;
+
+  if (!primaryUri) {
     logger.error('MONGODB_URI environment variable is not set');
     process.exit(1);
   }
 
+  const configuredDnsServers = String(process.env.MONGODB_DNS_SERVERS || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  if (configuredDnsServers.length > 0) {
+    try {
+      dns.setServers(configuredDnsServers);
+      logger.info('Configured custom DNS servers for MongoDB resolution', { dnsServers: configuredDnsServers });
+    } catch (dnsErr) {
+      logger.warn('Failed to apply MONGODB_DNS_SERVERS; continuing with system DNS', {
+        message: dnsErr && dnsErr.message ? dnsErr.message : String(dnsErr),
+      });
+    }
+  }
+
+  const sanitizeMongoUri = (value) => String(value).replace(/(mongodb(?:\+srv)?:\/\/)([^@/]+)@/i, '$1<credentials>@');
+
   const connOptions = {
-    // keep defaults but explicitly enable modern parser/topology for reliability
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+    // rely on modern mongoose defaults
     serverSelectionTimeoutMS: 10000,
     retryWrites: true,
     appName: process.env.APP_NAME || 'MentoringSystem',
   };
 
-  // Enable TLS only for SRV (Atlas) URIs or when explicitly requested via env
-  if (String(uri).startsWith('mongodb+srv://') || process.env.MONGODB_TLS === 'true') {
-    connOptions.tls = true;
-    connOptions.tlsAllowInvalidCertificates = process.env.MONGODB_TLS_ALLOW_INVALID === 'true';
-  }
+  const getConnOptionsForUri = (mongoUri) => {
+    const options = { ...connOptions };
+    // Enable TLS only for SRV (Atlas) URIs or when explicitly requested via env.
+    if (String(mongoUri).startsWith('mongodb+srv://') || process.env.MONGODB_TLS === 'true') {
+      options.tls = true;
+      options.tlsAllowInvalidCertificates = process.env.MONGODB_TLS_ALLOW_INVALID === 'true';
+    }
+    return options;
+  };
 
   // Connection event handlers for better observability
   mongoose.connection.on('connected', () => logger.info('MongoDB connected'));
@@ -123,17 +146,39 @@ const start = async () => {
 
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+  let activeUri = primaryUri;
+  let usingFallbackUri = false;
+
   let attempt = 0;
   while (attempt <= maxRetries) {
     try {
       attempt += 1;
-      logger.info(`Attempting MongoDB connection (attempt ${attempt}/${maxRetries + 1})`);
-      await mongoose.connect(uri, connOptions);
+      logger.info(`Attempting MongoDB connection (attempt ${attempt}/${maxRetries + 1})`, {
+        uriType: usingFallbackUri ? 'fallback' : 'primary',
+      });
+      await mongoose.connect(activeUri, getConnOptionsForUri(activeUri));
       logger.info('MongoDB connection established');
       break;
     } catch (err) {
       const msg = err && err.message ? err.message : String(err);
       logger.error(`MongoDB connection attempt ${attempt} failed: ${msg}`);
+
+      const lowerMsg = msg.toLowerCase();
+      const isSrvLookupFailure = lowerMsg.includes('querysrv');
+
+      if (
+        !usingFallbackUri
+        && String(primaryUri).startsWith('mongodb+srv://')
+        && isSrvLookupFailure
+        && fallbackUri
+      ) {
+        usingFallbackUri = true;
+        activeUri = fallbackUri;
+        logger.warn('MongoDB SRV lookup failed; switching to fallback MongoDB URI for subsequent retries', {
+          fallbackUri: sanitizeMongoUri(fallbackUri),
+        });
+      }
+
       // If we've exhausted retries, exit with error
       if (attempt > maxRetries) {
         logger.error('Exceeded maximum MongoDB connection attempts; exiting');
@@ -142,14 +187,20 @@ const start = async () => {
         process.exit(1);
       }
 
-      // If error looks like a transient network/reset issue, backoff and retry
-      const isTransient = msg.includes('ECONNRESET') || msg.includes('timed out') || msg.includes('ENOTFOUND') || msg.includes('failed to connect');
+      // If error looks like a transient network/DNS issue, backoff and retry
+      const isTransient = msg.includes('ECONNRESET')
+        || msg.includes('ECONNREFUSED')
+        || lowerMsg.includes('timed out')
+        || msg.includes('ENOTFOUND')
+        || lowerMsg.includes('failed to connect')
+        || isSrvLookupFailure;
       const delay = Math.min(30000, baseDelayMs * Math.pow(2, attempt - 1));
-      if (!isTransient) {
-        // For non-transient errors, still wait a short amount before retrying
-        logger.warn('Non-transient MongoDB connect error; retrying after delay', { delay });
+      if (isSrvLookupFailure) {
+        logger.warn('MongoDB SRV lookup failed; retrying after delay. Hint: verify DNS resolution and SRV URI format (mongodb+srv://...).', { delay });
+      } else if (isTransient) {
+        logger.warn('MongoDB transient connection error; retrying after delay', { delay });
       } else {
-        logger.warn('Transient MongoDB error; retrying after delay', { delay });
+        logger.warn('MongoDB connection error; retrying after delay', { delay });
       }
       await sleep(delay);
     }

@@ -91,7 +91,8 @@ const MentorSessionsManager: React.FC = () => {
         return sessions
             .filter((session) => {
                 const isCompleted = session.status ? session.status === 'completed' : session.attended;
-                if (statusFilter === 'upcoming' && isCompleted) return false;
+                const isCancelled = session.status === 'cancelled';
+                if (statusFilter === 'upcoming' && (isCompleted || isCancelled)) return false;
                 if (statusFilter === 'completed' && !isCompleted) return false;
                 if (!lower) return true;
                 const participantNames = getParticipantList(session)
@@ -363,6 +364,7 @@ const MentorSessionsManager: React.FC = () => {
             filteredSessions={filteredSessions}
             showEmpty={showEmpty}
             setSelectedSession={setSelectedSession}
+            openCancelModal={openCancelModal}
         />
     </div>
     <MentorSessionDetails
