@@ -3,8 +3,9 @@ const Material = require('../models/Material');
 const Session = require('../models/Session');
 const MentorshipRequest = require('../models/MentorshipRequest');
 const { fail, ok } = require('../utils/responses');
-const { uploadSessionMaterial } = require('../utils/gdriveService');
+const { uploadSessionMaterial, MAX_FILE_SIZE_BYTES } = require('../utils/gdriveService');
 const { toUserMessage } = require('../utils/gdriveErrorHandler');
+const { uploadBuffer } = require('../utils/cloudinary');
 
 const DRIVE_ERROR_STATUS_MAP = {
   GOOGLE_DRIVE_FILE_TOO_LARGE: 400,
@@ -14,6 +15,59 @@ const DRIVE_ERROR_STATUS_MAP = {
   GOOGLE_DRIVE_FILE_NOT_FOUND: 404,
   GOOGLE_DRIVE_SERVICE_UNAVAILABLE: 503,
   NETWORK_ERROR: 503,
+};
+
+const CLOUDINARY_ERROR_STATUS_MAP = {
+  GOOGLE_DRIVE_FILE_TOO_LARGE: 400,
+  GOOGLE_DRIVE_UNSUPPORTED_FILE_TYPE: 400,
+  GOOGLE_DRIVE_NO_FILE: 400,
+  CLOUDINARY_NOT_CONFIGURED: 503,
+  CLOUDINARY_UPLOAD_FAILED: 502,
+};
+
+const SUPPORTED_MIME_TYPES = new Set([
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'text/plain',
+  'application/zip',
+]);
+
+const toCloudinaryUserMessage = (code) => {
+  switch (code) {
+    case 'GOOGLE_DRIVE_FILE_TOO_LARGE':
+      return 'The selected file is too large to upload.';
+    case 'GOOGLE_DRIVE_UNSUPPORTED_FILE_TYPE':
+      return 'This file type is not supported. Please upload a different format.';
+    case 'GOOGLE_DRIVE_NO_FILE':
+      return 'No file was detected in the request. Please attach at least one file.';
+    case 'CLOUDINARY_NOT_CONFIGURED':
+      return 'Cloudinary is not configured on the server. Please contact support.';
+    default:
+      return 'An unexpected error occurred while uploading to Cloudinary.';
+  }
+};
+
+const validateMaterialFile = (file) => {
+  if (!file) {
+    const err = new Error('No file provided');
+    err.appCode = 'GOOGLE_DRIVE_NO_FILE';
+    throw err;
+  }
+
+  if (file.size > MAX_FILE_SIZE_BYTES) {
+    const err = new Error('File exceeds maximum allowed size');
+    err.appCode = 'GOOGLE_DRIVE_FILE_TOO_LARGE';
+    throw err;
+  }
+
+  if (!SUPPORTED_MIME_TYPES.has(file.mimetype)) {
+    const err = new Error('Unsupported file type');
+    err.appCode = 'GOOGLE_DRIVE_UNSUPPORTED_FILE_TYPE';
+    throw err;
+  }
 };
 
 // Helper: get session ids for mentee to filter shared materials tied to their sessions
@@ -66,19 +120,43 @@ exports.uploadToGoogleDrive = async (req, res) => {
     const menteeEmails = mentees.map((m) => m.mentee?.email).filter(Boolean);
 
     const mentorEmail = req.user.email;
+    const uploadProvider = (process.env.UPLOAD_PROVIDER || 'cloudinary').toLowerCase();
+    const useGoogleDrive = uploadProvider === 'google-drive';
 
     const createdMaterials = [];
 
     for (const file of files) {
       try {
-        // eslint-disable-next-line no-await-in-loop
-        const uploaded = await uploadSessionMaterial({
-          mentorId: session.mentor,
-          sessionId,
-          file,
-          mentorEmail,
-          menteeEmails,
-        });
+        let uploaded;
+
+        if (useGoogleDrive) {
+          // eslint-disable-next-line no-await-in-loop
+          uploaded = await uploadSessionMaterial({
+            mentorId: session.mentor,
+            sessionId,
+            file,
+            mentorEmail,
+            menteeEmails,
+          });
+        } else {
+          validateMaterialFile(file);
+          const folderPath = `mentoring/materials/${session.mentor.toString()}/${sessionId}`;
+
+          // eslint-disable-next-line no-await-in-loop
+          const cloudinaryUpload = await uploadBuffer(file.buffer, {
+            folder: folderPath,
+            resource_type: 'auto',
+          });
+
+          uploaded = {
+            googleDriveFileId: cloudinaryUpload.public_id,
+            googleDriveWebViewLink: cloudinaryUpload.secure_url,
+            googleDriveDownloadLink: cloudinaryUpload.secure_url,
+            mimeType: file.mimetype,
+            fileSize: file.size,
+            folderPath,
+          };
+        }
 
         // eslint-disable-next-line no-await-in-loop
         const doc = await Material.create({
@@ -108,9 +186,11 @@ exports.uploadToGoogleDrive = async (req, res) => {
           googleDriveDownloadLink: doc.googleDriveDownloadLink,
         });
       } catch (err) {
-        const code = err.appCode || 'GOOGLE_DRIVE_UPLOAD_FAILED';
-        const message = toUserMessage(code);
-        const status = DRIVE_ERROR_STATUS_MAP[code] || 502;
+        const defaultCode = useGoogleDrive ? 'GOOGLE_DRIVE_UPLOAD_FAILED' : 'CLOUDINARY_UPLOAD_FAILED';
+        const code = err.appCode || err.code || defaultCode;
+        const message = useGoogleDrive ? toUserMessage(code) : toCloudinaryUserMessage(code);
+        const statusMap = useGoogleDrive ? DRIVE_ERROR_STATUS_MAP : CLOUDINARY_ERROR_STATUS_MAP;
+        const status = statusMap[code] || 502;
         return fail(res, status, code, message);
       }
     }

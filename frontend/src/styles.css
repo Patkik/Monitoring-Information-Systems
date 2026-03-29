@@ -1,11 +1,16 @@
 /*
- * NOTE: All Tailwind utility classes must use the tw- prefix.
- * The custom CSS below is for demo; prefer only tw- classes in components.
+ * Global styles for MERN Refactor Design System
+ * All theme colors and semantics are defined in styles/theme.css
  */
+
+/* Import the complete design system CSS variables */
+@import './styles/theme.css';
+
+/* Import golden ratio grid system (Phase 2) */
+@import './styles/golden-grid.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Remove global body styles and custom classname .auth-hero. Use only tw- utilities in components. */
 
 
