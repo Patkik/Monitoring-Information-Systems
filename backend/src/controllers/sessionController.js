@@ -1578,16 +1578,41 @@ exports.getMenteeReport = async (req, res) => {
 };
 
 const toCsv = (rows) => {
-  const header = ['Date', 'Mentor', 'Subject', 'Duration(min)', 'Attended', 'Tasks Completed', 'Notes'];
-  const lines = rows.map((r) => [
-    new Date(r.date).toISOString(),
-    (r.mentor && (r.mentor.firstname || '') + ' ' + (r.mentor.lastname || '')).trim(),
-    r.subject,
-    r.durationMinutes,
-    r.attended ? 'Yes' : 'No',
-    r.tasksCompleted || 0,
-    (r.notes || '').replace(/\n/g, ' '),
-  ].map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`).join(','));
+  const escapeField = (value) => {
+    const stringVal = String(value ?? '').trim();
+    // If field contains comma, newline, or quote, wrap in quotes and escape internal quotes
+    if (stringVal.includes(',') || stringVal.includes('\n') || stringVal.includes('"')) {
+      return `"${stringVal.replace(/"/g, '""')}"`;
+    }
+    return stringVal;
+  };
+
+  const header = ['Date', 'Mentor', 'Subject', 'Duration (minutes)', 'Attended', 'Tasks Completed', 'Notes'];
+  
+  const lines = rows.map((r) => {
+    const mentorName = r.mentor 
+      ? `${r.mentor.firstname || ''} ${r.mentor.lastname || ''}`.trim() 
+      : 'Not Assigned';
+    
+    return [
+      new Date(r.date).toLocaleString('en-US', { 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit', 
+        hour12: true 
+      }),
+      mentorName,
+      r.subject || '',
+      r.durationMinutes || 0,
+      r.attended ? 'Yes' : 'No',
+      r.tasksCompleted || 0,
+      (r.notes || '').replace(/\n/g, ' '),
+    ].map(escapeField).join(',');
+  });
+
   return [header.join(','), ...lines].join('\n');
 };
 
@@ -1595,6 +1620,7 @@ exports.exportMenteeData = async (req, res) => {
   try {
     const { filters } = parseFilters(req, 'mentee');
     const format = (req.query.format || 'csv').toString().toLowerCase();
+    
     const all = await Session.find(filters)
       .sort({ date: -1 })
       .select('date subject durationMinutes attended tasksCompleted notes mentor')
@@ -1602,17 +1628,22 @@ exports.exportMenteeData = async (req, res) => {
       .lean();
 
     if (format === 'csv') {
-      const csv = toCsv(all);
-      const filename = `mentee_report_${new Date().toISOString().slice(0,10)}.csv`;
-      res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-      return res.status(200).send(csv);
+      try {
+        const csv = toCsv(all);
+        const filename = `mentee_sessions_${new Date().toISOString().slice(0, 10)}.csv`;
+        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        return res.status(200).send(csv);
+      } catch (csvError) {
+        console.error('CSV generation error:', csvError);
+        return res.status(500).json({ success: false, error: 'CSV_GENERATION_FAILED', message: 'Failed to generate CSV report. Please try again.' });
+      }
     }
 
-    return res.status(501).json({ success: false, error: 'PDF_NOT_IMPLEMENTED', message: 'PDF export will be enabled after adding a PDF generator. Use format=csv for now.' });
+    return res.status(501).json({ success: false, error: 'PDF_NOT_IMPLEMENTED', message: 'PDF export is not yet available. Please use format=csv.' });
   } catch (error) {
     console.error('exportMenteeData error:', error);
-    return res.status(500).json({ success: false, error: 'EXPORT_FAILED', message: 'Unable to export report.' });
+    return res.status(500).json({ success: false, error: 'EXPORT_FAILED', message: 'Unable to export sessions. Please try again.' });
   }
 };
 

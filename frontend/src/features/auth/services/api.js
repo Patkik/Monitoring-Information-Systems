@@ -10,6 +10,8 @@ export const forgotPassword = (data) => api.post('/auth/forgot-password', data).
 export const verifyCode = (data) => api.post('/auth/verify-code', data).then(r => r.data);
 export const verifyResetCode = (data) => api.post('/auth/verify-reset-code', data).then(r => r.data);
 export const resetPassword = (token, data) => api.post(`/auth/reset-password/${token}`, data).then(r => r.data);
+export const sendVerificationCode = (data) => api.post('/auth/send-verification-code', data).then(r => r.data);
+export const verifyEmail = (data) => api.post('/auth/verify-email', data).then(r => r.data);
 
 const buildOAuthUrl = (path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
 
@@ -24,6 +26,14 @@ export const mapErrorCodeToMessage = (code) => {
     case 'ACCOUNT_DEACTIVATED': return 'This account has been deactivated. Contact an administrator to regain access.';
     case 'INVALID_TOKEN': return 'Invalid or expired token.';
     case 'INVALID_CODE': return 'Invalid or expired code. Please try again.';
+    case 'USER_NOT_FOUND': return 'No account found with this email.';
+    case 'EMAIL_REQUIRED': return 'Email is required.';
+    case 'NO_CODE_SENT': return 'No verification code has been sent. Please request a new code.';
+    case 'CODE_EXPIRED': return 'Verification code has expired. Please request a new code.';
+    case 'TOO_MANY_ATTEMPTS': return 'Too many failed attempts. Please request a new code.';
+    case 'EMAIL_ALREADY_VERIFIED': return 'Email is already verified. Please continue to login.';
+    case 'EMAIL_SEND_FAILED': return 'Failed to send verification email. Please try again later.';
+    case 'MISSING_FIELDS': return 'Email and verification code are required.';
     // reCAPTCHA specific errors
     case 'RECAPTCHA_REQUIRED': return 'Please complete the verification step.';
     case 'RECAPTCHA_FAILED': return 'Verification failed. Please try again.';

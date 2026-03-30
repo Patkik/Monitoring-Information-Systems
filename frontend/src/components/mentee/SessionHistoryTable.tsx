@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useMenteeSessions } from '../../shared/hooks/useMenteeSessions';
 import type { MenteeSession } from '../../shared/services/sessionsService';
+import SessionDetailModal from './SessionDetailModal';
 
 type SortKey = 'subject' | 'mentor' | 'date';
 
@@ -20,6 +21,8 @@ const isHistorySession = (session: MenteeSession) => {
 
 const SessionHistoryTable: React.FC = () => {
   const [sortBy, setSortBy] = useState<SortKey>('date');
+  const [selectedSession, setSelectedSession] = useState<MenteeSession | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const { data: sessions = [], isLoading, isError, refetch } = useMenteeSessions();
 
   const historySessions = useMemo(
@@ -92,6 +95,9 @@ const SessionHistoryTable: React.FC = () => {
               <th className="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
                 Feedback
               </th>
+              <th className="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="tw-bg-white tw-divide-y tw-divide-gray-200">
@@ -162,11 +168,22 @@ const SessionHistoryTable: React.FC = () => {
                       ) : null}
                     </div>
                   </td>
+                  <td className="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                    <button
+                      onClick={() => {
+                        setSelectedSession(session);
+                        setIsDetailModalOpen(true);
+                      }}
+                      className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-bg-primary tw-text-xs tw-font-semibold tw-text-white tw-px-3 tw-py-1.5 hover:tw-bg-primary/90"
+                    >
+                      View Details
+                    </button>
+                  </td>
                 </tr>
               ))}
             {showEmpty && (
               <tr>
-                <td className="tw-px-6 tw-py-6 tw-text-sm tw-text-gray-500" colSpan={5}>
+                <td className="tw-px-6 tw-py-6 tw-text-sm tw-text-gray-500" colSpan={6}>
                   Completed and cancelled sessions will appear here once you start logging them.
                 </td>
               </tr>
@@ -174,6 +191,16 @@ const SessionHistoryTable: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Session Detail Modal */}
+      <SessionDetailModal
+        session={selectedSession}
+        isOpen={isDetailModalOpen}
+        onClose={() => {
+          setIsDetailModalOpen(false);
+          setSelectedSession(null);
+        }}
+      />
     </div>
   );
 };

@@ -69,6 +69,13 @@ export default function RegisterPage() {
 				recaptchaToken
 			});
 
+			if (role === 'mentor') {
+				localStorage.removeItem('token');
+				localStorage.removeItem('user');
+				navigate(`/verify-email?email=${encodeURIComponent(form.email)}&role=mentor`);
+				return;
+			}
+
 			// If backend returned token+user, auto-login and navigate into the application flow
 			if (result?.token && result?.user) {
 				localStorage.setItem('token', result.token);
@@ -77,8 +84,6 @@ export default function RegisterPage() {
 
 			if (role === 'mentee') {
 				navigate('/mentee/application');
-			} else if (role === 'mentor') {
-				navigate('/mentor/application');
 			} else {
 				navigate('/login');
 			}
