@@ -3,6 +3,7 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import OverviewMetrics from '../mentor/OverviewMetrics';
 import MentorRequestsTable from '../mentor/MentorRequestsTable';
 import MentorDashboardSuggestions from '../../features/matchmaking/components/MentorDashboardSuggestions';
+import { SidebarMainLayout } from '../../shared/components';
 
 const MentorDashboard: React.FC = () => {
   const storedUser = React.useMemo(() => {
@@ -25,23 +26,30 @@ const MentorDashboard: React.FC = () => {
           </p>
         </header>
 
-        {/* Metrics Overview (placeholder – extend with real data hook later) */}
-        <section aria-labelledby="mentor-overview-heading" className="tw-space-y-4">
-          <h2 id="mentor-overview-heading" className="tw-text-xl tw-font-semibold tw-text-gray-900">Overview</h2>
-          <OverviewMetrics />
-        </section>
+        <SidebarMainLayout
+          className="tw-items-start"
+          sidebar={(
+            <div className="tw-space-y-8">
+              {/* Metrics Overview (placeholder – extend with real data hook later) */}
+              <section aria-labelledby="mentor-overview-heading" className="tw-space-y-4">
+                <h2 id="mentor-overview-heading" className="tw-text-xl tw-font-semibold tw-text-gray-900">Overview</h2>
+                <OverviewMetrics />
+              </section>
 
-        {/* Requests Table */}
-        <section aria-labelledby="mentor-requests-heading" className="tw-space-y-4">
-          <h2 id="mentor-requests-heading" className="tw-text-xl tw-font-semibold tw-text-gray-900">Mentorship Requests</h2>
-          <p className="tw-text-sm tw-text-gray-500">Review new requests and accept or decline with a suggested first session slot.</p>
-          <MentorRequestsTable />
-        </section>
-
-        {/* Match suggestions */}
-        <section aria-labelledby="mentor-suggestions-heading" className="tw-space-y-4">
-          <MentorDashboardSuggestions mentorId={mentorId} />
-        </section>
+              {/* Match suggestions */}
+              <section aria-labelledby="mentor-suggestions-heading" className="tw-space-y-4">
+                <MentorDashboardSuggestions mentorId={mentorId} />
+              </section>
+            </div>
+          )}
+          main={(
+            <section aria-labelledby="mentor-requests-heading" className="tw-space-y-4">
+              <h2 id="mentor-requests-heading" className="tw-text-xl tw-font-semibold tw-text-gray-900">Mentorship Requests</h2>
+              <p className="tw-text-sm tw-text-gray-500">Review new requests and accept or decline with a suggested first session slot.</p>
+              <MentorRequestsTable />
+            </section>
+          )}
+        />
       </div>
     </DashboardLayout>
   );

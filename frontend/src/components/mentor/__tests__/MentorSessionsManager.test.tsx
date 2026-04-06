@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import MentorSessionsManager, { ATTENDANCE_LOCKOUT_MESSAGE } from '../MentorSessionsManager';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -132,7 +132,7 @@ describe('MentorSessionsManager', () => {
     it('prevents attendance submissions before the session ends', () => {
         const upcoming = baseSession({ id: 's2', subject: 'Upcoming UX Jam', date: '2099-01-12T10:00:00.000Z', attended: false, status: 'upcoming' });
         const hookValue = { data: [upcoming], isLoading: false, isError: false, refetch: jest.fn(), isFetching: false };
-        mockUseMentorSessions.mockReturnValueOnce(hookValue);
+        mockUseMentorSessions.mockReturnValue(hookValue);
 
         const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
         render(
@@ -146,6 +146,15 @@ describe('MentorSessionsManager', () => {
         const table = screen.getByRole('table');
         const row = within(table).getByText('Upcoming UX Jam').closest('tr');
         expect(row).toBeTruthy();
+
+        const rowCancelBtn = within(row as HTMLElement).getByRole('button', { name: /cancel upcoming ux jam/i });
+        expect(rowCancelBtn).toBeEnabled();
+        fireEvent.click(rowCancelBtn);
+
+        expect(screen.getByRole('dialog', { name: /cancel session/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /confirm cancellation/i })).toBeInTheDocument();
+        fireEvent.click(screen.getByRole('button', { name: /keep session/i }));
+
         const viewBtn = within(row as HTMLElement).getByRole('button', { name: /view details/i });
         fireEvent.click(viewBtn);
 
@@ -154,5 +163,87 @@ describe('MentorSessionsManager', () => {
 
         expect(screen.getAllByText(ATTENDANCE_LOCKOUT_MESSAGE)[0]).toBeInTheDocument();
         expect(screen.queryByText(/Record attendance/i)).not.toBeInTheDocument();
+    });
+
+    it('submits cancellation with sessionId, reason, and notify true', async () => {
+        const upcoming = baseSession({
+            id: 's3',
+            subject: 'Design Sprint',
+            date: '2099-01-12T10:00:00.000Z',
+            attended: false,
+            status: 'upcoming',
+        });
+        mockUseMentorSessions.mockReturnValue({
+            data: [upcoming],
+            isLoading: false,
+            isError: false,
+            refetch: jest.fn(),
+            isFetching: false,
+        });
+
+        const cancelMutateAsync = jest.fn().mockResolvedValue({ session: { ...upcoming, status: 'cancelled' }, warnings: [] });
+        mockUseCancelSession.mockReturnValue({ mutateAsync: cancelMutateAsync, isLoading: false });
+
+        const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+        render(
+            <QueryClientProvider client={qc}>
+                <MemoryRouter>
+                    <MentorSessionsManager />
+                </MemoryRouter>
+            </QueryClientProvider>
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: /^cancel design sprint$/i }));
+        fireEvent.change(screen.getByLabelText(/reason for cancellation/i), {
+            target: { value: 'Need to handle a scheduling conflict.' },
+        });
+        fireEvent.click(screen.getByRole('button', { name: /confirm cancellation/i }));
+
+        await waitFor(() => {
+            expect(cancelMutateAsync).toHaveBeenCalledWith({
+                sessionId: 's3',
+                payload: {
+                    reason: 'Need to handle a scheduling conflict.',
+                    notify: true,
+                },
+            });
+        });
+    });
+
+    it('excludes cancelled sessions from default upcoming list', () => {
+        mockUseMentorSessions.mockReturnValue({
+            data: [
+                baseSession({
+                    id: 's4',
+                    subject: 'Upcoming Session',
+                    date: '2099-01-13T10:00:00.000Z',
+                    attended: false,
+                    status: 'upcoming',
+                }),
+                baseSession({
+                    id: 's5',
+                    subject: 'Cancelled Session',
+                    date: '2099-01-14T10:00:00.000Z',
+                    attended: false,
+                    status: 'cancelled',
+                }),
+            ],
+            isLoading: false,
+            isError: false,
+            refetch: jest.fn(),
+            isFetching: false,
+        });
+
+        const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+        render(
+            <QueryClientProvider client={qc}>
+                <MemoryRouter>
+                    <MentorSessionsManager />
+                </MemoryRouter>
+            </QueryClientProvider>
+        );
+
+        expect(screen.getByText('Upcoming Session')).toBeInTheDocument();
+        expect(screen.queryByText('Cancelled Session')).not.toBeInTheDocument();
     });
 });

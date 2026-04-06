@@ -1,3 +1,7 @@
 - Resolved bug pattern: for row-level async table actions, enforce a per-row lock and perform immediate optimistic state transition.
 - Prevent sticky optimistic UI by adding a bounded rollback timeout plus cleanup and backend reconciliation.
 - Required test coverage for this pattern: cancel-abort path, success with immediate action removal, failure with unlock plus error surfacing, and stale-pending rollback.
+- Goals milestone progress pattern: disable only the clicked milestone action while mutation is in-flight, render achieved timestamps in deterministic UTC format with a fallback for missing dates, and keep live-region semantics (`role=status`/`role=alert`) for dynamic feedback.
+- Required test coverage for goals progress: one interaction flow test must assert click -> mutation payload -> refreshed percent (e.g., 25% for 1/4) -> achieved timestamp text, plus a fallback assertion when achieved date is unavailable.
+- Design-system token drift prevention: when adding new CSS tokens or layout utilities, enforce a compatibility check between producer and consumer namespaces (e.g., `--space-*` vs `--spacing-*`), add aliases if migrating names, and verify with build plus one responsive smoke pass before merge.
+- Cloudinary config guardrail: keep each required env key (`CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`) defined exactly once in `backend/.env`, and make startup smoke tests hard-fail immediately on missing or duplicate keys to prevent silent misconfiguration.

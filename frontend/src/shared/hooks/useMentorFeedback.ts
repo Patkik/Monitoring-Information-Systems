@@ -10,8 +10,24 @@ import {
 } from '../services/mentorFeedbackService';
 import { mentorSessionsKey } from './useMentorSessions';
 import { progressSnapshotKey } from './useGoals';
+import { validateRating } from '../utils/feedbackValidator';
 
-const buildSessionMentorFeedbackKey = (sessionId?: string | null) => ['mentorFeedback', 'session', sessionId];
+const buildSessionMentorFeedbackKey = (sessionId?: string | null) => ['mentor', 'feedback', sessionId];
+
+export type MentorFeedbackSubmissionPayload = {
+    sessionId: string;
+    rating: number;
+    comment?: string | null;
+    competencies?: Array<{ skillKey: string; level: number; notes?: string }>;
+    visibility?: 'public' | 'private';
+};
+
+type SubmissionMode = 'create' | 'update';
+
+export type MentorFeedbackSubmissionVariables = {
+    payload: MentorFeedbackSubmissionPayload;
+    mode?: SubmissionMode;
+};
 
 export const useMentorFeedbackForSession = (sessionId?: string | null, options?: { enabled?: boolean }) => {
     return useQuery<MentorFeedbackRecord | null, AxiosError>({
@@ -22,28 +38,58 @@ export const useMentorFeedbackForSession = (sessionId?: string | null, options?:
     });
 };
 
-export const useCreateMentorFeedback = () => {
+export const useMentorFeedback = () => {
     const qc = useQueryClient();
-    return useMutation({
-        mutationFn: (payload: Parameters<typeof createMentorFeedback>[0]) => createMentorFeedback(payload),
+
+    return useMutation<MentorFeedbackRecord, Error, MentorFeedbackSubmissionVariables>({
+        mutationFn: async ({ payload, mode = 'create' }) => {
+            const ratingValidation = validateRating(payload.rating);
+            if (!ratingValidation.valid) {
+                throw new Error(ratingValidation.error);
+            }
+
+            try {
+                if (mode === 'update') {
+                    return await updateMentorFeedback(payload);
+                }
+
+                return await createMentorFeedback(payload);
+            } catch (error: any) {
+                if (error?.response?.status === 409) {
+                    throw new Error('Feedback already exists for this session.');
+                }
+
+                throw new Error(error?.response?.data?.message || error?.message || 'Unable to submit feedback.');
+            }
+        },
         onSuccess: (_data, variables) => {
             qc.invalidateQueries({ queryKey: mentorSessionsKey });
             qc.invalidateQueries({ queryKey: progressSnapshotKey });
-            qc.invalidateQueries({ queryKey: buildSessionMentorFeedbackKey(variables.sessionId) });
+            qc.invalidateQueries({ queryKey: buildSessionMentorFeedbackKey(variables.payload.sessionId) });
         },
     });
 };
 
+export const useCreateMentorFeedback = () => {
+    const mutation = useMentorFeedback();
+
+    return {
+        ...mutation,
+        mutate: (payload: MentorFeedbackSubmissionPayload, options?: Parameters<typeof mutation.mutate>[1]) =>
+            mutation.mutate({ payload, mode: 'create' }, options),
+        mutateAsync: (payload: MentorFeedbackSubmissionPayload) => mutation.mutateAsync({ payload, mode: 'create' }),
+    };
+};
+
 export const useUpdateMentorFeedback = () => {
-    const qc = useQueryClient();
-    return useMutation({
-        mutationFn: (payload: Parameters<typeof updateMentorFeedback>[0]) => updateMentorFeedback(payload),
-        onSuccess: (_data, variables) => {
-            qc.invalidateQueries({ queryKey: mentorSessionsKey });
-            qc.invalidateQueries({ queryKey: progressSnapshotKey });
-            qc.invalidateQueries({ queryKey: buildSessionMentorFeedbackKey(variables.sessionId) });
-        },
-    });
+    const mutation = useMentorFeedback();
+
+    return {
+        ...mutation,
+        mutate: (payload: MentorFeedbackSubmissionPayload, options?: Parameters<typeof mutation.mutate>[1]) =>
+            mutation.mutate({ payload, mode: 'update' }, options),
+        mutateAsync: (payload: MentorFeedbackSubmissionPayload) => mutation.mutateAsync({ payload, mode: 'update' }),
+    };
 };
 
 // Hook: fetch progress snapshot for a first-class mentee id (mentor / admin views)

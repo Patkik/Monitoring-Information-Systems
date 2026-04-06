@@ -91,7 +91,8 @@ const MentorSessionsManager: React.FC = () => {
         return sessions
             .filter((session) => {
                 const isCompleted = session.status ? session.status === 'completed' : session.attended;
-                if (statusFilter === 'upcoming' && isCompleted) return false;
+                const isCancelled = session.status === 'cancelled';
+                if (statusFilter === 'upcoming' && (isCompleted || isCancelled)) return false;
                 if (statusFilter === 'completed' && !isCompleted) return false;
                 if (!lower) return true;
                 const participantNames = getParticipantList(session)
@@ -121,6 +122,21 @@ const MentorSessionsManager: React.FC = () => {
         setTasksCompleted('0');
         setNotes('');
         setAttended(true);
+    };
+
+    const openFeedbackModal = (session: MentorSession) => {
+        const normalizedStatus = (session.status || (session.attended ? 'completed' : 'upcoming')).toLowerCase();
+        if (normalizedStatus !== 'completed' && normalizedStatus !== 'ended') {
+            return;
+        }
+
+        setFeedbackSession(session);
+        setFeedbackOpen(true);
+    };
+
+    const closeFeedbackModal = () => {
+        setFeedbackOpen(false);
+        setFeedbackSession(null);
     };
 
     const openCompletionModal = (session: MentorSession) => {
@@ -250,7 +266,7 @@ const MentorSessionsManager: React.FC = () => {
                             onClick={() => setComposerOpen(true)}
                             className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-bg-primary tw-text-white tw-text-sm tw-font-semibold tw-px-4 tw-py-2 hover:tw-bg-primary/90 focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-primary"
                         >
-                            Schedule session
+                            Create session
                         </button>
                         <button
                             type="button"
@@ -363,6 +379,8 @@ const MentorSessionsManager: React.FC = () => {
             filteredSessions={filteredSessions}
             showEmpty={showEmpty}
             setSelectedSession={setSelectedSession}
+            openCancelModal={openCancelModal}
+            openFeedbackModal={openFeedbackModal}
         />
     </div>
     <MentorSessionDetails
@@ -379,6 +397,7 @@ const MentorSessionsManager: React.FC = () => {
         attendanceReady={attendanceReady}
         setFeedbackSession={setFeedbackSession}
         setFeedbackOpen={setFeedbackOpen}
+        openFeedbackModal={openFeedbackModal}
     />
 </div>
 
@@ -476,9 +495,14 @@ const MentorSessionsManager: React.FC = () => {
                     sessionId={feedbackSession.id}
                     sessionSubject={feedbackSession.subject}
                     menteeId={feedbackSession.mentee?.id || (feedbackSession.participants?.[0]?.id ?? null)}
-                    onClose={() => {
-                        setFeedbackOpen(false);
-                        setFeedbackSession(null);
+                    onClose={closeFeedbackModal}
+                    onSubmitted={(message) => {
+                        setBanner({ type: 'success', message });
+                        closeFeedbackModal();
+                        void refetch();
+                    }}
+                    onSubmissionError={(message) => {
+                        setBanner({ type: 'error', message });
                     }}
                 />
             )}

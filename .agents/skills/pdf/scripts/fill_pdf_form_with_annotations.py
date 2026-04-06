@@ -1,3 +1,4 @@
+from typing import Tuple
 import json
 import sys
 
@@ -7,7 +8,7 @@ from pypdf.annotations import FreeText
 
 
 
-def transform_from_image_coords(bbox, image_width, image_height, pdf_width, pdf_height):
+def transform_from_image_coords(bbox: list, image_width: float, image_height: float, pdf_width: float, pdf_height: float) -> Tuple[float, float, float, float]:
     x_scale = pdf_width / image_width
     y_scale = pdf_height / image_height
 
@@ -20,7 +21,7 @@ def transform_from_image_coords(bbox, image_width, image_height, pdf_width, pdf_
     return left, bottom, right, top
 
 
-def transform_from_pdf_coords(bbox, pdf_height):
+def transform_from_pdf_coords(bbox: list, pdf_height: float) -> Tuple[float, float, float, float]:
     left = bbox[0]
     right = bbox[2]
 
@@ -30,7 +31,7 @@ def transform_from_pdf_coords(bbox, pdf_height):
     return left, pypdf_bottom, right, pypdf_top
 
 
-def fill_pdf_form(input_pdf_path, fields_json_path, output_pdf_path):
+def fill_pdf_form(input_pdf_path: str, fields_json_path: str, output_pdf_path: str) -> None:
     
     with open(fields_json_path, "r") as f:
         fields_data = json.load(f)

@@ -2,6 +2,7 @@ import React from 'react';
 import type { MentorSession } from '../../../shared/services/sessionsService';
 import { formatDate, deriveAttendanceBadge } from './sessionUtils';
 import ProgressDashboard from '../../mentee/ProgressDashboard';
+import { useMentorFeedbackForSession } from '../../../shared/hooks/useMentorFeedback';
 
 interface MentorSessionDetailsProps {
     selectedSession: MentorSession | null;
@@ -17,6 +18,7 @@ interface MentorSessionDetailsProps {
     attendanceReady: boolean;
     setFeedbackSession: (session: MentorSession | null) => void;
     setFeedbackOpen: (open: boolean) => void;
+    openFeedbackModal: (session: MentorSession) => void;
 }
 
 const MentorSessionDetails: React.FC<MentorSessionDetailsProps> = ({
@@ -33,7 +35,20 @@ const MentorSessionDetails: React.FC<MentorSessionDetailsProps> = ({
     attendanceReady,
     setFeedbackSession,
     setFeedbackOpen,
+    openFeedbackModal,
 }) => {
+    const { data: sessionFeedback, isLoading: isLoadingFeedback } = useMentorFeedbackForSession(selectedSession?.id, {
+        enabled: Boolean(selectedSession?.id),
+    });
+
+    const feedbackUpdatedAt = sessionFeedback?.updatedAt || sessionFeedback?.createdAt;
+    const feedbackCommentPreview = (sessionFeedback?.comment || '').trim();
+    const normalizedStatus = (selectedSession?.status || (selectedSession?.attended ? 'completed' : 'upcoming')).toLowerCase();
+    const canProvideFeedback = normalizedStatus === 'completed' || normalizedStatus === 'ended';
+    const editWindowClosed = Boolean(
+        sessionFeedback?.editWindowClosesAt && Date.now() > Date.parse(sessionFeedback.editWindowClosesAt)
+    );
+
     return (
         <aside className="tw-hidden lg:tw-block lg:tw-col-span-1">
             {selectedSession ? (
@@ -144,18 +159,61 @@ const MentorSessionDetails: React.FC<MentorSessionDetailsProps> = ({
                                 </p>
                             )}
 
-                            {((selectedSession.status || (selectedSession.attended ? 'completed' : 'upcoming')) === 'completed') && (
+                            {canProvideFeedback && !sessionFeedback && (
                                 <button
                                     type="button"
-                                    onClick={() => {
-                                        setFeedbackSession(selectedSession);
-                                        setFeedbackOpen(true);
-                                    }}
+                                    onClick={() => openFeedbackModal(selectedSession)}
                                     className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white tw-text-sm tw-font-semibold tw-text-gray-700 tw-px-3 tw-py-2 hover:tw-bg-gray-50"
                                 >
-                                    Give feedback
+                                    Provide Feedback
                                 </button>
                             )}
+
+                            {canProvideFeedback && isLoadingFeedback ? (
+                                <p className="tw-text-xs tw-text-gray-500 tw-text-center">Loading feedback details...</p>
+                            ) : null}
+
+                            {canProvideFeedback && sessionFeedback ? (
+                                <div className="tw-rounded-lg tw-border tw-border-gray-200 tw-bg-gray-50 tw-p-3 tw-space-y-2">
+                                    <p className="tw-text-xs tw-font-semibold tw-text-gray-700">Feedback summary</p>
+                                    <p className="tw-text-xs tw-text-gray-600">Rating: {sessionFeedback.rating}/5</p>
+                                    <p className="tw-text-xs tw-text-gray-600">
+                                        {feedbackCommentPreview
+                                            ? `Comment: ${feedbackCommentPreview.length > 140 ? `${feedbackCommentPreview.slice(0, 140)}...` : feedbackCommentPreview}`
+                                            : 'Comment: No comment provided.'}
+                                    </p>
+                                    {feedbackUpdatedAt ? (
+                                        <p className="tw-text-[11px] tw-text-gray-500">Last updated: {formatDate(feedbackUpdatedAt)}</p>
+                                    ) : null}
+
+                                    <div className="tw-flex tw-gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setFeedbackSession(selectedSession);
+                                                setFeedbackOpen(true);
+                                            }}
+                                            className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white tw-text-xs tw-font-semibold tw-text-gray-700 tw-px-3 tw-py-2 hover:tw-bg-gray-100"
+                                        >
+                                            View Feedback
+                                        </button>
+
+                                        {!editWindowClosed ? (
+                                            <button
+                                                type="button"
+                                                onClick={() => openFeedbackModal(selectedSession)}
+                                                className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-bg-primary tw-text-white tw-text-xs tw-font-semibold tw-px-3 tw-py-2 hover:tw-bg-primary/90"
+                                            >
+                                                Edit Feedback
+                                            </button>
+                                        ) : null}
+                                    </div>
+
+                                    {editWindowClosed ? (
+                                        <p className="tw-text-[11px] tw-text-amber-700">Feedback submission window closed</p>
+                                    ) : null}
+                                </div>
+                            ) : null}
                         </div>
                     </div>
 

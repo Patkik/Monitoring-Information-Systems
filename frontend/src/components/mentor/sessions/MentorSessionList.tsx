@@ -1,6 +1,6 @@
 import React from 'react';
 import type { MentorSession } from '../../../shared/services/sessionsService';
-import { formatDate, getParticipantList, deriveAttendanceBadge } from './sessionUtils';
+import { canCancelSession, formatDate, getParticipantList, deriveAttendanceBadge } from './sessionUtils';
 
 interface MentorSessionListProps {
     isLoading: boolean;
@@ -8,6 +8,8 @@ interface MentorSessionListProps {
     filteredSessions: MentorSession[];
     showEmpty: boolean;
     setSelectedSession: (session: MentorSession) => void;
+    openCancelModal: (session: MentorSession) => void;
+    openFeedbackModal: (session: MentorSession) => void;
 }
 
 const MentorSessionList: React.FC<MentorSessionListProps> = ({
@@ -16,6 +18,8 @@ const MentorSessionList: React.FC<MentorSessionListProps> = ({
     filteredSessions,
     showEmpty,
     setSelectedSession,
+    openCancelModal,
+    openFeedbackModal,
 }) => {
     return (
         <div className="tw-overflow-x-auto">
@@ -44,6 +48,10 @@ const MentorSessionList: React.FC<MentorSessionListProps> = ({
                             const participants = getParticipantList(session);
                             const visibleParticipants = participants.slice(0, 3);
                             const overflow = participants.length - visibleParticipants.length;
+                            const cancellationReady = canCancelSession(session);
+                            const status = (session.status || (session.attended ? 'completed' : 'upcoming')).toLowerCase();
+                            const canProvideFeedback = status === 'completed' || status === 'ended';
+                            const cancelHintId = `mentor-session-cancel-hint-${session.id}`;
 
                             return (
                                 <tr key={session.id} className="hover:tw-bg-gray-50">
@@ -98,8 +106,14 @@ const MentorSessionList: React.FC<MentorSessionListProps> = ({
                                     </td>
                                     <td className="tw-px-6 tw-py-4 tw-align-top">
                                         {(() => {
-                                            const status = session.status || (session.attended ? 'completed' : 'upcoming');
-                                            if (status === 'completed') {
+                                            if (status === 'cancelled') {
+                                                return (
+                                                    <span className="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-semibold tw-text-gray-700 tw-bg-gray-100 tw-rounded-full tw-px-3 tw-py-1">
+                                                        <span aria-hidden="true">●</span> Cancelled
+                                                    </span>
+                                                );
+                                            }
+                                            if (status === 'completed' || status === 'ended') {
                                                 return (
                                                     <span className="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-semibold tw-text-green-700 tw-bg-green-50 tw-rounded-full tw-px-3 tw-py-1">
                                                         <span aria-hidden="true">●</span> Completed
@@ -128,7 +142,26 @@ const MentorSessionList: React.FC<MentorSessionListProps> = ({
                                         ) : null}
                                     </td>
                                     <td className="tw-px-6 tw-py-4 tw-align-top tw-text-right">
-                                        <div className="tw-flex tw-items-center tw-justify-end">
+                                        <div className="tw-flex tw-items-center tw-justify-end tw-gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => openCancelModal(session)}
+                                                disabled={!cancellationReady}
+                                                aria-label={
+                                                    cancellationReady
+                                                        ? `Cancel ${session.subject || 'session'}`
+                                                        : `Cancel ${session.subject || 'session'} unavailable`
+                                                }
+                                                aria-describedby={!cancellationReady ? cancelHintId : undefined}
+                                                className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-red-200 tw-bg-red-50 tw-text-sm tw-font-semibold tw-text-red-700 tw-px-3 tw-py-2 hover:tw-bg-red-100 focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-red-200 disabled:tw-opacity-60 disabled:tw-cursor-not-allowed"
+                                            >
+                                                Cancel
+                                            </button>
+                                            {!cancellationReady ? (
+                                                <span id={cancelHintId} className="tw-sr-only">
+                                                    Only upcoming sessions that have not started can be cancelled.
+                                                </span>
+                                            ) : null}
                                             <button
                                                 type="button"
                                                 onClick={() => setSelectedSession(session)}
@@ -136,6 +169,16 @@ const MentorSessionList: React.FC<MentorSessionListProps> = ({
                                             >
                                                 View details
                                             </button>
+                                            {canProvideFeedback ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => openFeedbackModal(session)}
+                                                    aria-label="Give feedback"
+                                                    className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white tw-text-sm tw-font-semibold tw-text-gray-700 tw-px-3 tw-py-2 hover:tw-bg-gray-50 focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-gray-200"
+                                                >
+                                                    Provide feedback
+                                                </button>
+                                            ) : null}
                                         </div>
                                     </td>
                                 </tr>

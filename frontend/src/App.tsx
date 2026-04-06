@@ -16,12 +16,15 @@ import MentorDashboard from './components/dashboards/MentorDashboard';
 import MenteeDashboard from './components/dashboards/MenteeDashboard';
 import MaterialsUploadPage from './pages/mentorDashboards/MaterialsUploadPage';
 import MentorSessionsPage from './pages/mentorDashboards/MentorSessionsPage';
+import MentorRosterPage from './pages/mentorDashboards/MentorRosterPage';
 import MentorAvailabilityPage from './pages/mentorDashboards/MentorAvailabilityPage';
 import MentorRecognitionPage from './pages/mentorDashboards/MentorRecognitionPage';
+import MentorAchievementsPage from './pages/mentorDashboards/MentorAchievementsPage';
 import MyMentorPage from './pages/menteeDashboards/MyMentorPage';
 import SessionPage from './pages/menteeDashboards/SessionPage';
 import ApplyPage from './pages/menteeDashboards/ApplyPage';
 import AnnouncementsPage from './pages/menteeDashboards/AnnouncementsPage';
+import GoalsPage from './pages/menteeDashboards/GoalsPage';
 import MenteeApplicationForm from './pages/applicationPages/MenteeApplicationForm';
 import PendingApprovalPage from './pages/PendingApprovalPage';
 import MentorApplicationForm from './pages/applicationPages/MentorApplicationForm';
@@ -66,6 +69,7 @@ const MyMentorRoute = () => <ProtectedRoute requiredRole="mentee" children={<MyM
 const SessionRoute = () => <ProtectedRoute requiredRole="mentee" children={<SessionPage />} />;
 const ApplyRoute = () => <ProtectedRoute requiredRole="mentee" children={<ApplyPage />} />;
 const AnnouncementsRoute = () => <ProtectedRoute requiredRole="mentee" children={<AnnouncementsPage />} />;
+const GoalsRoute = () => <ProtectedRoute requiredRole="mentee" children={<GoalsPage />} />;
 const RecognitionRoute = () => <ProtectedRoute requiredRole="mentee" children={<RecognitionPage />} />;
 const ApplicationRoute = () => <ProtectedRoute requiredRole="mentee" children={<MenteeApplicationForm />} />;
 const PendingRoute = () => <ProtectedRoute requiredRole="mentee" children={<PendingApprovalPage />} />;
@@ -80,8 +84,10 @@ const MenteeChatRoute = () => <ProtectedRoute requiredRole="mentee" children={<C
 const MentorProfileEditRoute = () => <ProtectedRoute requiredRole="mentor" children={<MentorProfileEditor />} />;
 const MentorMaterialsUploadRoute = () => <ProtectedRoute requiredRole="mentor" children={<MaterialsUploadPage />} />;
 const MentorSessionsRoute = () => <ProtectedRoute requiredRole="mentor" children={<MentorSessionsPage />} />;
+const MentorRosterRoute = () => <ProtectedRoute requiredRole="mentor" children={<MentorRosterPage />} />;
 const MentorAvailabilityRoute = () => <ProtectedRoute requiredRole="mentor" children={<MentorAvailabilityPage />} />;
 const MentorRecognitionRoute = () => <ProtectedRoute requiredRole="mentor" children={<MentorRecognitionPage />} />;
+const MentorAchievementsRoute = () => <ProtectedRoute requiredRole="mentor" children={<MentorAchievementsPage />} />;
 const MentorMatchesRoute = () => <ProtectedRoute requiredRole="mentor" children={<MentorMatchSuggestionsPage />} />;
 const MenteeMatchesRoute = () => <ProtectedRoute requiredRole="mentee" children={<MenteeMatchSuggestionsPage />} />;
 
@@ -124,8 +130,10 @@ const App = () => {
                 <Route path="/mentor/chat" element={<MentorChatRoute />} />
                 <Route path="/mentor/materials/upload" element={<MentorMaterialsUploadRoute />} />
                 <Route path="/mentor/sessions" element={<MentorSessionsRoute />} />
+                <Route path="/mentor/roster" element={<MentorRosterRoute />} />
                 <Route path="/mentor/availability" element={<MentorAvailabilityRoute />} />
                 <Route path="/mentor/recognition" element={<MentorRecognitionRoute />} />
+                <Route path="/mentor/achievements" element={<MentorAchievementsRoute />} />
                 <Route path="/mentor/matches" element={<MentorMatchesRoute />} />
                 <Route path="/mentor/profile/edit" element={<MentorProfileEditRoute />} />
                 <Route path="/mentee/dashboard" element={<MenteeRoute />} />
@@ -134,6 +142,7 @@ const App = () => {
                 <Route path="/mentee/session" element={<SessionRoute />} />
                 <Route path="/mentee/apply" element={<ApplyRoute />} />
                 <Route path="/mentee/announcements" element={<AnnouncementsRoute />} />
+                <Route path="/mentee/goals" element={<GoalsRoute />} />
                 <Route path="/mentee/recognition" element={<RecognitionRoute />} />
                 <Route path="/mentee/matches" element={<MenteeMatchesRoute />} />
 

@@ -23,13 +23,13 @@ const buildSuggestion = (): MatchSuggestion => ({
 describe('MatchCard', () => {
   it('renders mentee info and fires accept handler', () => {
     const suggestion = buildSuggestion();
-  const onAccept = jest.fn();
-  const onDecline = jest.fn();
+    const onAccept = jest.fn();
+    const onDecline = jest.fn();
 
     render(<MatchCard suggestion={suggestion} onAccept={onAccept} onDecline={onDecline} />);
 
     expect(screen.getByText('Jamie Learner')).toBeInTheDocument();
-  expect(screen.getByText(/score/i)).toBeInTheDocument();
+    expect(screen.getByText('87')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /accept/i }));
     expect(onAccept).toHaveBeenCalledTimes(1);
@@ -42,7 +42,7 @@ describe('MatchCard', () => {
     const suggestion = buildSuggestion();
     render(<MatchCard suggestion={suggestion} onAccept={() => {}} onDecline={() => {}} disableAccept />);
 
-    const acceptButton = screen.getByRole('button', { name: /capacity reached/i });
+    const acceptButton = screen.getByRole('button', { name: /^full$/i });
     expect(acceptButton).toBeDisabled();
   });
 });

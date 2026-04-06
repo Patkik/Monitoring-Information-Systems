@@ -5,6 +5,7 @@ interface ChatThreadListProps {
   threads: ChatThread[];
   activeThreadId: string | null;
   onSelect: (threadId: string) => void;
+  onThreadRead?: (threadId: string) => void;
   onStartConversation: (email: string) => Promise<void>;
   isCreating: boolean;
   errorMessage?: string | null;
@@ -35,6 +36,7 @@ export const ChatThreadList: React.FC<ChatThreadListProps> = ({
   threads,
   activeThreadId,
   onSelect,
+  onThreadRead,
   onStartConversation,
   isCreating,
   errorMessage,
@@ -49,6 +51,7 @@ export const ChatThreadList: React.FC<ChatThreadListProps> = ({
   actionErrorMessage = null,
 }) => {
   const [email, setEmail] = useState('');
+  const [optimisticallyReadThreadIds, setOptimisticallyReadThreadIds] = useState<Record<string, true>>({});
   const sortedThreads = useMemo(() => {
     return [...threads].sort((a, b) => {
       const aTime = a.lastMessageAt ? new Date(a.lastMessageAt).getTime() : 0;
@@ -145,11 +148,21 @@ export const ChatThreadList: React.FC<ChatThreadListProps> = ({
               const participantNames = thread.type === 'session'
                 ? thread.participants.map((participant) => participant.name).join(', ')
                 : '';
+              const unreadCount = optimisticallyReadThreadIds[thread.id] ? 0 : thread.unreadCount;
               return (
                 <li key={thread.id}>
                   <button
                     type="button"
-                    onClick={() => onSelect(thread.id)}
+                    onClick={() => {
+                      if (thread.unreadCount > 0) {
+                        setOptimisticallyReadThreadIds((current) => ({
+                          ...current,
+                          [thread.id]: true,
+                        }));
+                      }
+                      onThreadRead?.(thread.id);
+                      onSelect(thread.id);
+                    }}
                     className={`tw-w-full tw-text-left tw-px-4 tw-py-3 tw-flex tw-items-start tw-space-x-3 hover:tw-bg-gray-100 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 ${
                       isActive ? 'tw-bg-gray-100 tw-border-l-4 tw-border-blue-500' : 'tw-border-l-4 tw-border-transparent'
                     }`}
@@ -182,9 +195,9 @@ export const ChatThreadList: React.FC<ChatThreadListProps> = ({
                         </p>
                       ) : null}
                     </div>
-                    {thread.unreadCount > 0 ? (
+                    {unreadCount > 0 ? (
                       <span className="tw-ml-2 tw-inline-flex tw-items-center tw-justify-center tw-rounded-full tw-bg-blue-600 tw-text-white tw-text-xs tw-font-semibold tw-h-5 tw-min-w-[1.5rem]">
-                        {thread.unreadCount}
+                        {unreadCount}
                       </span>
                     ) : null}
                   </button>

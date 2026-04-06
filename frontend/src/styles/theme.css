@@ -1,0 +1,259 @@
+/* ============================================================================
+   MERN Refactor Design System - CSS Variables & Semantic Color Scale
+   ============================================================================
+   
+   This file establishes the complete color system, typography scale (golden ratio),
+   and layout proportions for the entire application. All components should use these
+   CSS variables instead of hardcoded colors.
+   
+   Color Model: HSL (Hue, Saturation, Lightness)
+   Primary Hue: 265° (Purple/Violet)
+   Golden Ratio: 1.618
+   ========================================================================== */
+
+/* ============================================================================
+   LIGHT MODE (Default)
+   ========================================================================== */
+:root {
+  /* Primary Color Scale - HSL(265, 85%, L%) */
+  --color-primary-50: hsl(265, 85%, 96%);    /* Extremely subtle backgrounds */
+  --color-primary-100: hsl(265, 85%, 90%);   /* Hover states, soft tints */
+  --color-primary-300: hsl(265, 85%, 75%);   /* Secondary accents, disabled */
+  --color-primary-500: hsl(265, 85%, 45%);   /* PRIMARY BRAND COLOR - Core */
+  --color-primary-600: hsl(265, 85%, 37%);   /* Intermediate dark accent */
+  --color-primary-700: hsl(265, 85%, 30%);   /* Button hover, active states */
+  --color-primary-900: hsl(265, 85%, 15%);   /* Deep backgrounds, dark accents */
+
+  /* Cool Neutral Grays - Tinted with primary hue for cohesion */
+  --color-neutral-0: #ffffff;                /* Pure white for primary backgrounds */
+  --color-neutral-50: #f9f7fb;               /* Subtle tint (cool gray) */
+  --color-neutral-100: #f3f0f7;              /* Light backgrounds */
+  --color-neutral-200: #e8e3f0;              /* Card backgrounds, borders */
+  --color-neutral-300: #d4cbe0;              /* Subtle dividers */
+  --color-neutral-400: #b9b4c4;              /* Secondary text, placeholders */
+  --color-neutral-600: #4a4559;              /* Secondary text, labels */
+  --color-neutral-800: #2a2631;              /* Strong borders, dark surfaces */
+  --color-neutral-900: #1a1820;              /* Primary text, headings */
+
+  /* Semantic Color Aliases (Function-based naming) */
+  --surface-background: var(--color-neutral-0);
+  --surface-secondary: var(--color-neutral-50);
+  --surface-tertiary: var(--color-neutral-100);
+  --text-primary: var(--color-neutral-900);
+  --text-secondary: var(--color-neutral-600);
+  --text-tertiary: var(--color-neutral-400);
+  --text-muted: #999999;
+  --text-disabled: #cccccc;
+  --border-color: var(--color-neutral-200);
+  --border-subtle: var(--color-neutral-100);
+  --divider-color: var(--color-neutral-300);
+
+  /* Interactive States */
+  --color-success: #10b981;                  /* Green for positive states */
+  --color-warning: #f59e0b;                  /* Amber for cautions */
+  --color-error: #ef4444;                    /* Red for destructive/errors */
+  --color-info: #3b82f6;                     /* Blue for informational */
+
+  /* Shadows - Elevation System */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  /* Golden Ratio Layout System */
+  --golden-ratio: 1.618;
+  --grid-unit: 1rem;
+  
+  /* Macro Layout Proportions (Desktop: 1920px viewport) */
+  --sidebar-fraction: 1fr;                   /* 734px @ 1920px */
+  --main-content-fraction: 1.618fr;          /* 1186px @ 1920px */
+
+  /* Typography Scale (Base: 16px) */
+  --font-base: 1rem;                         /* 16px */
+  --font-sm: 0.875rem;                       /* 14px */
+  --font-xs: 0.75rem;                        /* 12px */
+  --font-h3: calc(var(--font-base) * 1.618); /* 25.9px ≈ 26px */
+  --font-h2: calc(var(--font-base) * 2.618); /* 41.9px ≈ 42px */
+  --font-h1: calc(var(--font-base) * 4.236); /* 67.8px ≈ 68px */
+  --font-display: calc(var(--font-base) * 6.854); /* 109.7px ≈ 110px */
+
+  /* Typography Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Spacing System */
+  --space-px: 1px;
+  --space-1: 0.25rem;                        /* 4px */
+  --space-2: 0.5rem;                         /* 8px */
+  --space-3: 0.75rem;                        /* 12px */
+  --space-4: 1rem;                           /* 16px */
+  --space-5: 1.25rem;                        /* 20px */
+  --space-6: 1.5rem;                         /* 24px */
+  --space-8: 2rem;                           /* 32px */
+  --space-10: 2.5rem;                        /* 40px */
+  --space-12: 3rem;                          /* 48px */
+
+  /* Spacing compatibility aliases (consumed by grid/layout styles) */
+  --spacing-0: 0;
+  --spacing-1: var(--space-1);
+  --spacing-2: var(--space-2);
+  --spacing-3: var(--space-3);
+  --spacing-4: var(--space-4);
+  --spacing-5: var(--space-5);
+  --spacing-6: var(--space-6);
+  --spacing-8: var(--space-8);
+  --spacing-10: var(--space-10);
+  --spacing-12: var(--space-12);
+  --spacing-16: 4rem;
+  --spacing-24: 6rem;
+  --spacing-32: 8rem;
+  --spacing-56: 14rem;
+  --spacing-64: 16rem;
+  --spacing-72: 18rem;
+
+  /* Border Radius */
+  --radius-sm: 0.375rem;                     /* 6px */
+  --radius-md: 0.5rem;                       /* 8px */
+  --radius-lg: 0.75rem;                      /* 12px */
+  --radius-xl: 1rem;                         /* 16px */
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease-out;
+  --transition-base: 300ms ease-out;
+  --transition-slow: 500ms ease-out;
+
+  /* Z-Index Scale */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-tooltip: 1070;
+  --z-notification: 1090;
+}
+
+/* ============================================================================
+   RESPONSIVE TYPOGRAPHY
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  :root {
+    --font-display: calc(var(--font-base) * 5.236); /* 83.8px */
+    --font-h1: calc(var(--font-base) * 3.236);      /* 51.8px */
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --font-display: calc(var(--font-base) * 3.236); /* 51.8px */
+    --font-h1: calc(var(--font-base) * 2.618);       /* 41.9px */
+    --font-h2: calc(var(--font-base) * 1.618);       /* 25.9px */
+  }
+}
+
+/* ============================================================================
+   RESPONSIVE LAYOUT PROPORTIONS
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  :root {
+    /* On mobile, use full width */
+    --sidebar-fraction: 100%;
+    --main-content-fraction: 100%;
+  }
+}
+
+/* ============================================================================
+   GLOBAL STYLES
+   ========================================================================== */
+
+html {
+  color-scheme: light;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+body {
+  background-color: var(--surface-background);
+  color: var(--text-primary);
+  font-size: var(--font-base);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Semantic typography */
+h1 {
+  font-size: var(--font-h1);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: var(--font-h2);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+h3 {
+  font-size: var(--font-h3);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.4;
+}
+
+p {
+  font-size: var(--font-base);
+  color: var(--text-secondary);
+}
+
+small {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+}
+
+/* ============================================================================
+   UTILITY CLASSES (Supplementary)
+   ========================================================================== */
+
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.bg-surface {
+  background-color: var(--surface-background);
+}
+
+.bg-surface-secondary {
+  background-color: var(--surface-secondary);
+}
+
+.border-default {
+  border-color: var(--border-color);
+}
+
+.shadow-elevation-sm {
+  box-shadow: var(--shadow-sm);
+}
+
+.shadow-elevation-md {
+  box-shadow: var(--shadow-md);
+}
+
+.shadow-elevation-lg {
+  box-shadow: var(--shadow-lg);
+}
+
+::selection {
+  background-color: var(--color-primary-300);
+  color: var(--color-neutral-900);
+}

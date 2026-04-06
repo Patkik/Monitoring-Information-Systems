@@ -38,9 +38,11 @@ const NAV_MAP: Record<string, NavItem[]> = {
   mentor: [
     { label: 'Dashboard', to: '/mentor/dashboard', matches: ['/mentor/dashboard'] },
     { label: 'Sessions', to: '/mentor/sessions', matches: ['/mentor/sessions'] },
+    { label: 'My Mentees', to: '/mentor/roster', matches: ['/mentor/roster'] },
     { label: 'Availability', to: '/mentor/availability', matches: ['/mentor/availability'] },
     { label: 'Upload', to: '/mentor/materials/upload', matches: ['/mentor/materials/upload'] },
     { label: 'Recognition', to: '/mentor/recognition', matches: ['/mentor/recognition'] },
+    { label: 'Achievements', to: '/mentor/achievements', matches: ['/mentor/achievements'] },
     { label: 'Announcements', to: '/mentor/announcements', matches: ['/mentor/announcements'] },
     { label: 'Chat', to: '/mentor/chat', matches: ['/mentor/chat'] }
   ],
@@ -48,6 +50,7 @@ const NAV_MAP: Record<string, NavItem[]> = {
     { label: 'Home', to: '/mentee/dashboard', matches: ['/mentee/dashboard'] },
     { label: 'My Mentor', to: '/mentee/my-mentor', matches: ['/mentee/my-mentor'] },
     { label: 'Session', to: '/mentee/session', matches: ['/mentee/session'] },
+    { label: 'Goals', to: '/mentee/goals', matches: ['/mentee/goals'] },
     { label: 'Apply', to: '/mentee/apply', matches: ['/mentee/apply'] },
     { label: 'Recognition', to: '/mentee/recognition', matches: ['/mentee/recognition'] },
     { label: 'Announcements', to: '/mentee/announcements', matches: ['/mentee/announcements'] },

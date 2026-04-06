@@ -34,6 +34,7 @@ const formatDateTime = (value?: string) => {
 const MentorMaterialsList: React.FC<MentorMaterialsListProps> = ({ sessionId }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [pendingDelete, setPendingDelete] = useState<string | null>(null);
+    const [confirmDeleteTarget, setConfirmDeleteTarget] = useState<MaterialItem | null>(null);
 
     const queryParams = useMemo(() => ({
         sessionId: sessionId || undefined,
@@ -47,13 +48,32 @@ const MentorMaterialsList: React.FC<MentorMaterialsListProps> = ({ sessionId }) 
     const materials: MaterialItem[] = data?.materials ?? [];
     const isEmpty = !isLoading && materials.length === 0;
 
-    const handleDelete = async (materialId: string) => {
+    const openDeleteConfirmation = (material: MaterialItem) => {
+        if (pendingDelete || deleteMutation.isLoading) {
+            return;
+        }
+        setConfirmDeleteTarget(material);
+    };
+
+    const handleDelete = async () => {
+        const materialId = confirmDeleteTarget?.id;
+        if (!materialId) {
+            return;
+        }
         if (pendingDelete === materialId) {
             return;
         }
+
         setPendingDelete(materialId);
         try {
             await deleteMutation.mutateAsync(materialId);
+            showToast({ message: 'Material deleted', variant: 'success' });
+            setConfirmDeleteTarget(null);
+        } catch (error) {
+            const message = error instanceof Error
+                ? error.message
+                : 'An error occurred while deleting the material';
+            showToast({ message, variant: 'error' });
         } finally {
             setPendingDelete(null);
         }
@@ -163,9 +183,9 @@ const MentorMaterialsList: React.FC<MentorMaterialsListProps> = ({ sessionId }) 
                                             ) : null}
                                             <button
                                                 type="button"
-                                                onClick={() => handleDelete(material.id)}
+                                                onClick={() => openDeleteConfirmation(material)}
                                                 className="tw-text-xs tw-font-semibold tw-text-red-600 hover:tw-text-red-800 disabled:tw-opacity-60"
-                                                disabled={pendingDelete === material.id || deleteMutation.isPending}
+                                                disabled={pendingDelete === material.id || deleteMutation.isLoading}
                                             >
                                                 {pendingDelete === material.id ? 'Deleting…' : 'Delete'}
                                             </button>
@@ -175,6 +195,42 @@ const MentorMaterialsList: React.FC<MentorMaterialsListProps> = ({ sessionId }) 
                             ))}
                         </tbody>
                     </table>
+                </div>
+            ) : null}
+
+            {confirmDeleteTarget ? (
+                <div
+                    className="tw-fixed tw-inset-0 tw-z-50 tw-flex tw-items-center tw-justify-center tw-bg-gray-900/50 tw-p-4"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="delete-material-title"
+                >
+                    <div className="tw-w-full tw-max-w-md tw-rounded-xl tw-bg-white tw-p-6 tw-shadow-2xl tw-space-y-4">
+                        <h3 id="delete-material-title" className="tw-text-lg tw-font-semibold tw-text-gray-900">
+                            Delete material?
+                        </h3>
+                        <p className="tw-text-sm tw-text-gray-700">
+                            Delete '{confirmDeleteTarget.title || confirmDeleteTarget.originalName || 'this material'}'? This cannot be undone.
+                        </p>
+                        <div className="tw-flex tw-justify-end tw-gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setConfirmDeleteTarget(null)}
+                                className="tw-rounded-lg tw-border tw-border-gray-300 tw-bg-white tw-px-4 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-700 hover:tw-border-gray-400 disabled:tw-opacity-60"
+                                disabled={deleteMutation.isLoading}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleDelete}
+                                className="tw-rounded-lg tw-bg-red-600 tw-px-4 tw-py-2 tw-text-sm tw-font-semibold tw-text-white hover:tw-bg-red-700 disabled:tw-opacity-60"
+                                disabled={deleteMutation.isLoading}
+                            >
+                                {deleteMutation.isLoading ? 'Deleting…' : 'Delete'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             ) : null}
         </section>
