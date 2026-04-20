@@ -117,28 +117,6 @@ const seedDatabase = async () => {
         await mentor1.save();
         console.log('   ✓ Created Mentor 1 account (mentor1@mentoring-system.com / MentorPass123!)');
 
-        // Mentor Account 2
-        const mentor2 = new User({
-            firstname: 'Michael',
-            lastname: 'Chen',
-            email: 'mentor2@mentoring-system.com',
-            password: 'MentorPass123!',
-            role: 'mentor',
-            applicationStatus: 'approved',
-            applicationRole: 'mentor',
-            applicationData: {
-                bio: 'Product manager with focus on tech leadership and strategy',
-                expertise: ['Product Management', 'Leadership', 'Startups', 'Growth'],
-                yearsOfExperience: 8,
-                availability: 'Evenings',
-                timezone: 'UTC-8'
-            },
-            profileImage: null,
-            verified: true
-        });
-        await mentor2.save();
-        console.log('   ✓ Created Mentor 2 account (mentor2@mentoring-system.com / MentorPass123!)');
-
         // Mentee Account 1
         const mentee1 = new User({
             firstname: 'Alex',
@@ -183,36 +161,12 @@ const seedDatabase = async () => {
         await mentee2.save();
         console.log('   ✓ Created Mentee 2 account (mentee2@mentoring-system.com / MenteePass123!)');
 
-        // Mentee Account 3
-        const mentee3 = new User({
-            firstname: 'James',
-            lastname: 'Smith',
-            email: 'mentee3@mentoring-system.com',
-            password: 'MenteePass123!',
-            role: 'mentee',
-            applicationStatus: 'pending',
-            applicationRole: 'mentee',
-            applicationData: {
-                bio: 'Recent graduate looking for guidance in tech career',
-                learningGoals: ['Land first tech job', 'Learn industry practices'],
-                currentSkills: ['Python', 'Basic algorithms'],
-                availability: 'Flexible',
-                timezone: 'UTC+5'
-            },
-            profileImage: null,
-            verified: false
-        });
-        await mentee3.save();
-        console.log('   ✓ Created Mentee 3 account (pending approval) (mentee3@mentoring-system.com / MenteePass123!)');
-
         console.log('\n✅ Database seeding completed successfully!');
         console.log('\n📋 Test Accounts:');
         console.log('   Admin:  admin@mentoring-system.com / AdminPass123!');
         console.log('   Mentor 1: mentor1@mentoring-system.com / MentorPass123!');
-        console.log('   Mentor 2: mentor2@mentoring-system.com / MentorPass123!');
         console.log('   Mentee 1: mentee1@mentoring-system.com / MenteePass123!');
         console.log('   Mentee 2: mentee2@mentoring-system.com / MenteePass123!');
-        console.log('   Mentee 3: mentee3@mentoring-system.com / MenteePass123! (pending)');
 
         await mongoose.disconnect();
         process.exit(0);
