@@ -22,19 +22,19 @@ const MentorSessionList: React.FC<MentorSessionListProps> = ({
     openFeedbackModal,
 }) => {
     return (
-        <div className="tw-overflow-x-auto">
-            <table className="tw-min-w-full tw-divide-y tw-divide-gray-200">
-                <thead className="tw-bg-gray-50">
+        <div className="tw-overflow-x-auto tw-rounded-xl tw-border tw-border-gray-100 tw-shadow-sm">
+            <table className="tw-min-w-full tw-divide-y tw-divide-gray-100 tw-bg-white">
+                <thead>
                     <tr>
-                        <th className="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">Session</th>
-                        <th className="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">Schedule</th>
-                        <th className="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">Location & capacity</th>
-                        <th className="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">Attendance</th>
-                        <th className="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">Status</th>
-                        <th className="tw-px-6 tw-py-3 tw-text-right tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">Actions</th>
+                        <th className="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-semibold tw-text-gray-400 tw-uppercase tw-tracking-wider">Session</th>
+                        <th className="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-semibold tw-text-gray-400 tw-uppercase tw-tracking-wider">Schedule</th>
+                        <th className="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-semibold tw-text-gray-400 tw-uppercase tw-tracking-wider">Location & capacity</th>
+                        <th className="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-semibold tw-text-gray-400 tw-uppercase tw-tracking-wider">Attendance</th>
+                        <th className="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-semibold tw-text-gray-400 tw-uppercase tw-tracking-wider">Status</th>
+                        <th className="tw-px-6 tw-py-3 tw-text-right tw-text-xs tw-font-semibold tw-text-gray-400 tw-uppercase tw-tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody className="tw-bg-white tw-divide-y tw-divide-gray-200">
+                <tbody className="tw-bg-white tw-divide-y tw-divide-gray-100">
                     {isLoading || isFetching ? (
                         [...Array(3)].map((_, index) => (
                             <tr key={`loading-${index}`}>
@@ -54,7 +54,7 @@ const MentorSessionList: React.FC<MentorSessionListProps> = ({
                             const cancelHintId = `mentor-session-cancel-hint-${session.id}`;
 
                             return (
-                                <tr key={session.id} className="hover:tw-bg-gray-50">
+                                <tr key={session.id} className="hover:tw-bg-gray-50 tw-transition-colors">
                                     <td className="tw-px-6 tw-py-4 tw-align-top">
                                         <div className="tw-text-sm tw-font-semibold tw-text-gray-900">{session.subject}</div>
                                         <div className="tw-mt-2 tw-flex tw-flex-wrap tw-gap-1">
@@ -62,7 +62,7 @@ const MentorSessionList: React.FC<MentorSessionListProps> = ({
                                                 visibleParticipants.map((participant) => (
                                                     <span
                                                         key={`${session.id}-${participant.id}`}
-                                                        className="tw-inline-flex tw-items-center tw-rounded-full tw-bg-gray-100 tw-text-gray-700 tw-text-xs tw-font-medium tw-px-3 tw-py-1"
+                                                        className="tw-inline-flex tw-items-center tw-rounded-full tw-bg-gray-50 tw-text-gray-700 tw-text-xs tw-font-medium tw-px-3 tw-py-1"
                                                     >
                                                         {participant.name}
                                                     </span>
@@ -71,7 +71,7 @@ const MentorSessionList: React.FC<MentorSessionListProps> = ({
                                                 <span className="tw-text-xs tw-text-gray-500">No participants yet</span>
                                             )}
                                             {overflow > 0 ? (
-                                                <span className="tw-inline-flex tw-items-center tw-rounded-full tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-font-medium tw-px-3 tw-py-1">+{overflow} more</span>
+                                                <span className="tw-inline-flex tw-items-center tw-rounded-full tw-bg-gray-50 tw-text-gray-600 tw-text-xs tw-font-medium tw-px-3 tw-py-1">+{overflow} more</span>
                                             ) : null}
                                         </div>
                                     </td>
@@ -86,7 +86,7 @@ const MentorSessionList: React.FC<MentorSessionListProps> = ({
                                         </p>
                                         <span
                                             className={`tw-inline-flex tw-items-center tw-gap-1 tw-text-[11px] tw-font-semibold tw-rounded-full tw-px-2 tw-py-0.5 tw-mt-2 ${
-                                                session.isGroup ? 'tw-bg-blue-50 tw-text-blue-700' : 'tw-bg-purple-50 tw-text-purple-700'
+                                                session.isGroup ? 'tw-bg-blue-50 tw-text-blue-700' : 'tw-bg-primary/10 tw-text-primary'
                                             }`}
                                         >
                                             {session.isGroup ? 'Group session' : '1:1 session'}
@@ -176,7 +176,7 @@ const MentorSessionList: React.FC<MentorSessionListProps> = ({
                                                     aria-label="Give feedback"
                                                     className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white tw-text-sm tw-font-semibold tw-text-gray-700 tw-px-3 tw-py-2 hover:tw-bg-gray-50 focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-gray-200"
                                                 >
-                                                    Provide feedback
+                                                    Provide Feedback
                                                 </button>
                                             ) : null}
                                         </div>

@@ -1,6 +1,29 @@
 import React from 'react';
 import { useMenteeProgress } from '../../shared/hooks/useMenteeProgress';
 
+const getPercentWidthClass = (value: number) => {
+    if (value >= 95) return 'tw-w-full';
+    if (value >= 85) return 'tw-w-11/12';
+    if (value >= 75) return 'tw-w-3/4';
+    if (value >= 65) return 'tw-w-2/3';
+    if (value >= 55) return 'tw-w-7/12';
+    if (value >= 45) return 'tw-w-1/2';
+    if (value >= 35) return 'tw-w-5/12';
+    if (value >= 25) return 'tw-w-1/3';
+    if (value >= 15) return 'tw-w-1/4';
+    if (value > 0) return 'tw-w-1/6';
+    return 'tw-w-0';
+};
+
+const getCompetencyWidthClass = (level: number) => {
+    if (level >= 5) return 'tw-w-full';
+    if (level === 4) return 'tw-w-4/5';
+    if (level === 3) return 'tw-w-3/5';
+    if (level === 2) return 'tw-w-2/5';
+    if (level === 1) return 'tw-w-1/5';
+    return 'tw-w-0';
+};
+
 interface MenteeProgressModalProps {
     open: boolean;
     onClose: () => void;
@@ -64,6 +87,12 @@ const MenteeProgressModal: React.FC<MenteeProgressModalProps> = ({
 
     const goalStats = calculateGoalStats();
     const topCompetencies = progressData?.competencies?.slice(0, 5) || [];
+    const averageProgress = Math.round(progressData?.averageProgress ?? 0);
+    const overallProgressWidthClass = getPercentWidthClass(averageProgress);
+    const milestonesPercent = progressData?.totalMilestones
+        ? (progressData.milestonesAchieved / progressData.totalMilestones) * 100
+        : 0;
+    const milestonesWidthClass = getPercentWidthClass(milestonesPercent);
 
     return (
         <div className="tw-fixed tw-inset-0 tw-z-50 tw-flex tw-items-center tw-justify-center tw-bg-black/50">
@@ -83,7 +112,7 @@ const MenteeProgressModal: React.FC<MenteeProgressModalProps> = ({
                             />
                         )}
                         {!menteeAvatar && (
-                            <div className="tw-w-12 tw-h-12 tw-rounded-full tw-bg-gradient-to-r tw-from-primary tw-to-purple-500 tw-flex tw-items-center tw-justify-center tw-text-white tw-font-semibold tw-flex-shrink-0">
+                            <div className="tw-w-12 tw-h-12 tw-rounded-full tw-bg-primary/10 tw-flex tw-items-center tw-justify-center tw-text-primary tw-font-semibold tw-flex-shrink-0">
                                 {menteeName.charAt(0).toUpperCase()}
                             </div>
                         )}
@@ -110,7 +139,7 @@ const MenteeProgressModal: React.FC<MenteeProgressModalProps> = ({
                     {isLoading && <SkeletonLoader />}
 
                     {error && (
-                        <div className="tw-p-4 tw-bg-red-50 tw-border tw-border-red-200 tw-rounded-lg">
+                        <div className="tw-p-4 tw-bg-red-50 tw-border tw-border-red-100 tw-rounded-xl">
                             <p className="tw-text-sm tw-text-red-800 tw-font-medium">
                                 {error.message || 'Failed to load mentee progress'}
                             </p>
@@ -123,25 +152,23 @@ const MenteeProgressModal: React.FC<MenteeProgressModalProps> = ({
                     {!isLoading && !error && progressData && (
                         <div className="tw-space-y-6">
                             {/* Overall Progress Section */}
-                            <div className="tw-bg-gradient-to-r tw-from-primary/10 tw-to-purple-500/10 tw-rounded-lg tw-p-6 tw-border tw-border-primary/20">
-                                <p className="tw-text-sm tw-text-gray-600 tw-font-medium tw-mb-2">Overall Progress</p>
-                                <div className="tw-flex tw-items-end tw-gap-4">
-                                    <div className="tw-flex-1">
+                            <div className="tw-bg-white tw-rounded-xl tw-p-6 tw-border tw-border-gray-100 tw-shadow-sm">
+                                <p className="tw-text-xs tw-font-semibold tw-tracking-wide tw-uppercase tw-text-gray-500 tw-mb-2">Overall Progress</p>
+                                <div className="tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-end sm:tw-justify-between tw-gap-4">
+                                    <div>
                                         <div className="tw-text-5xl tw-font-bold tw-text-primary">
-                                            {Math.round(progressData.averageProgress)}%
+                                            {averageProgress}%
                                         </div>
+                                        <p className="tw-text-sm tw-text-gray-500 tw-mt-1">Average completion across goals and sessions</p>
                                     </div>
-                                    <div className="tw-flex-1 tw-h-32 tw-bg-gray-200 tw-rounded-lg tw-overflow-hidden">
-                                        <div
-                                            className="tw-h-full tw-bg-gradient-to-r tw-from-primary tw-to-purple-500 tw-transition-all"
-                                            style={{ width: `${progressData.averageProgress}%` }}
-                                        />
+                                    <div className="tw-w-full sm:tw-w-64 tw-h-2 tw-bg-gray-100 tw-rounded-full tw-overflow-hidden">
+                                        <div className={`tw-h-full tw-bg-primary tw-transition-all ${overallProgressWidthClass}`} />
                                     </div>
                                 </div>
                             </div>
 
                             {/* Milestones */}
-                            <div className="tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-p-4">
+                            <div className="tw-bg-white tw-border tw-border-gray-100 tw-rounded-xl tw-p-4 tw-shadow-sm">
                                 <h3 className="tw-text-sm tw-font-semibold tw-text-gray-900 tw-mb-3">
                                     Milestones
                                 </h3>
@@ -154,20 +181,14 @@ const MenteeProgressModal: React.FC<MenteeProgressModalProps> = ({
                                     </div>
                                     <div className="tw-flex-1 tw-h-2 tw-bg-gray-200 tw-rounded-full tw-overflow-hidden">
                                         <div
-                                            className="tw-h-full tw-bg-gradient-to-r tw-from-green-400 tw-to-emerald-600"
-                                            style={{
-                                                width: `${progressData.totalMilestones > 0
-                                                    ? (progressData.milestonesAchieved / progressData.totalMilestones) * 100
-                                                    : 0
-                                                }%`,
-                                            }}
+                                            className={`tw-h-full tw-bg-emerald-500 tw-transition-all ${milestonesWidthClass}`}
                                         />
                                     </div>
                                 </div>
                             </div>
 
                             {/* Goals Summary */}
-                            <div className="tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-p-4">
+                            <div className="tw-bg-white tw-border tw-border-gray-100 tw-rounded-xl tw-p-4 tw-shadow-sm">
                                 <h3 className="tw-text-sm tw-font-semibold tw-text-gray-900 tw-mb-3">
                                     Goals Status
                                 </h3>
@@ -195,7 +216,7 @@ const MenteeProgressModal: React.FC<MenteeProgressModalProps> = ({
 
                             {/* Session Trends */}
                             {progressData.sessionsTrend && progressData.sessionsTrend.length > 0 && (
-                                <div className="tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-p-4">
+                                <div className="tw-bg-white tw-border tw-border-gray-100 tw-rounded-xl tw-p-4 tw-shadow-sm">
                                     <h3 className="tw-text-sm tw-font-semibold tw-text-gray-900 tw-mb-3">
                                         Session Trends (Past 8 Weeks)
                                     </h3>
@@ -242,7 +263,7 @@ const MenteeProgressModal: React.FC<MenteeProgressModalProps> = ({
 
                             {/* Top Competencies */}
                             {topCompetencies.length > 0 && (
-                                <div className="tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-p-4">
+                                <div className="tw-bg-white tw-border tw-border-gray-100 tw-rounded-xl tw-p-4 tw-shadow-sm">
                                     <h3 className="tw-text-sm tw-font-semibold tw-text-gray-900 tw-mb-3">
                                         Top Competencies
                                     </h3>
@@ -259,8 +280,7 @@ const MenteeProgressModal: React.FC<MenteeProgressModalProps> = ({
                                                 </div>
                                                 <div className="tw-w-full tw-h-2 tw-bg-gray-200 tw-rounded-full tw-overflow-hidden">
                                                     <div
-                                                        className="tw-h-full tw-bg-gradient-to-r tw-from-indigo-400 tw-to-indigo-600"
-                                                        style={{ width: `${(competency.level / 5) * 100}%` }}
+                                                        className={`tw-h-full tw-bg-primary tw-transition-all ${getCompetencyWidthClass(competency.level)}`}
                                                     />
                                                 </div>
                                             </div>

@@ -249,11 +249,11 @@ const MentorSessionsManager: React.FC = () => {
 
     return (
         <>
-        <section className="tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border tw-border-gray-100 tw-p-6">
+        <section className="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-100 tw-p-6">
             <div className="tw-flex tw-flex-col lg:tw-flex-row lg:tw-justify-between lg:tw-items-start tw-gap-6 tw-mb-6">
                 <div className="tw-space-y-3">
                     <div>
-                        <p className="tw-text-sm tw-font-semibold tw-text-primary">Mentor tools</p>
+                        <p className="tw-text-xs tw-font-bold tw-tracking-wide tw-uppercase tw-text-primary">Mentor tools</p>
                         <h2 className="tw-text-2xl tw-font-bold tw-text-gray-900">Manage student sessions</h2>
                         <p className="tw-text-sm tw-text-gray-500">
                             Log attendance, capture notes, and unlock mentee feedback as soon as your session wraps.
@@ -327,7 +327,7 @@ const MentorSessionsManager: React.FC = () => {
                         onChange={(event) => setSearchTerm(event.target.value)}
                         placeholder="Search by student or subject"
                         aria-label="Search sessions"
-                        className="tw-w-full tw-px-4 tw-py-2 tw-pr-10 tw-border tw-border-gray-300 tw-rounded-lg tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary"
+                        className="tw-w-full tw-px-4 tw-py-2 tw-pr-10 tw-border tw-border-gray-200 tw-rounded-lg tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary/20 focus:tw-border-primary"
                     />
                     {searchTerm && (
                         <button
@@ -343,7 +343,7 @@ const MentorSessionsManager: React.FC = () => {
                 <select
                     value={statusFilter}
                     onChange={(event) => setStatusFilter(event.target.value as typeof statusFilter)}
-                    className="tw-px-4 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary"
+                    className="tw-px-4 tw-py-2 tw-border tw-border-gray-200 tw-rounded-lg tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary/20 focus:tw-border-primary"
                     aria-label="Filter sessions by status"
                 >
                     <option value="upcoming">Upcoming only</option>
@@ -353,7 +353,7 @@ const MentorSessionsManager: React.FC = () => {
                 <select
                     value={sortBy}
                     onChange={(event) => setSortBy(event.target.value as typeof sortBy)}
-                    className="tw-px-4 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary"
+                    className="tw-px-4 tw-py-2 tw-border tw-border-gray-200 tw-rounded-lg tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary/20 focus:tw-border-primary"
                     aria-label="Sort sessions"
                 >
                     <option value="date">Sort by date</option>
@@ -408,10 +408,10 @@ const MentorSessionsManager: React.FC = () => {
                     aria-modal="true"
                     aria-labelledby="mentor-complete-session-title"
                 >
-                    <div className="tw-bg-white tw-rounded-2xl tw-shadow-2xl tw-w-full tw-max-w-xl tw-p-6 tw-space-y-4">
+                    <div className="tw-bg-white tw-rounded-xl tw-border tw-border-gray-100 tw-shadow-2xl tw-w-full tw-max-w-xl tw-p-6 tw-space-y-4">
                         <div className="tw-flex tw-justify-between tw-items-start">
                             <div>
-                                <p className="tw-text-sm tw-font-semibold tw-text-primary">Update session</p>
+                                <p className="tw-text-xs tw-font-bold tw-tracking-wide tw-uppercase tw-text-primary">Update session</p>
                                 <h3 id="mentor-complete-session-title" className="tw-text-xl tw-font-bold tw-text-gray-900">
                                     {selectedSession.subject}
                                 </h3>
@@ -452,7 +452,7 @@ const MentorSessionsManager: React.FC = () => {
                                     min="0"
                                     value={tasksCompleted}
                                     onChange={(event) => setTasksCompleted(event.target.value)}
-                                    className="tw-mt-1 tw-w-full tw-border tw-border-gray-300 tw-rounded-lg tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-primary focus:tw-border-transparent"
+                                    className="tw-mt-1 tw-w-full tw-border tw-border-gray-200 tw-rounded-lg tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-primary/20 focus:tw-border-primary"
                                 />
                             </div>
 
@@ -465,7 +465,7 @@ const MentorSessionsManager: React.FC = () => {
                                     rows={3}
                                     value={notes}
                                     onChange={(event) => setNotes(event.target.value)}
-                                    className="tw-mt-1 tw-w-full tw-border tw-border-gray-300 tw-rounded-lg tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-primary focus:tw-border-transparent"
+                                    className="tw-mt-1 tw-w-full tw-border tw-border-gray-200 tw-rounded-lg tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-primary/20 focus:tw-border-primary"
                                 />
                             </div>
 
@@ -526,7 +526,7 @@ const MentorSessionsManager: React.FC = () => {
                     aria-modal="true"
                     aria-labelledby="mentor-cancel-session-title"
                 >
-                    <div className="tw-w-full tw-max-w-xl tw-rounded-2xl tw-bg-white tw-shadow-2xl tw-p-6">
+                    <div className="tw-w-full tw-max-w-xl tw-rounded-xl tw-border tw-border-gray-100 tw-bg-white tw-shadow-2xl tw-p-6">
                         <div className="tw-flex tw-items-start tw-justify-between tw-gap-4 tw-mb-4">
                             <div>
                                 <h3 id="mentor-cancel-session-title" className="tw-text-xl tw-font-bold tw-text-gray-900">
@@ -542,7 +542,7 @@ const MentorSessionsManager: React.FC = () => {
                                 className="tw-text-gray-400 hover:tw-text-gray-600"
                                 aria-label="Close"
                             >
-                                x
+                                ×
                             </button>
                         </div>
 
@@ -576,7 +576,7 @@ const MentorSessionsManager: React.FC = () => {
                                     placeholder="Add a short reason to help the mentee understand"
                                     maxLength={500}
                                     rows={4}
-                                    className="tw-w-full tw-rounded-lg tw-border tw-border-gray-300 tw-px-3 tw-py-2 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary"
+                                    className="tw-w-full tw-rounded-lg tw-border tw-border-gray-200 tw-px-3 tw-py-2 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary/20 focus:tw-border-primary"
                                 />
                                 <p className="tw-mt-1 tw-text-xs tw-text-gray-500">{cancelReason.length}/500</p>
                             </div>

@@ -86,9 +86,9 @@ const MaterialUpload: React.FC<MaterialUploadProps> = ({ sessionId, menteeIds, o
     }, [files, hasFiles]);
 
     return (
-        <form onSubmit={handleSubmit} className="tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-p-4 tw-space-y-4">
+        <form onSubmit={handleSubmit} className="tw-space-y-4">
             <div>
-                <label htmlFor="materials" className="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">
+                <label htmlFor="materials" className="tw-block tw-text-xs tw-font-bold tw-tracking-wide tw-uppercase tw-text-gray-500 tw-mb-2">
                     Upload materials
                 </label>
                 <input
@@ -97,7 +97,7 @@ const MaterialUpload: React.FC<MaterialUploadProps> = ({ sessionId, menteeIds, o
                     type="file"
                     multiple
                     onChange={(e) => onFilesSelected(e.target.files)}
-                    className="tw-block tw-w-full tw-text-sm tw-text-gray-900 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500 tw-cursor-pointer tw-bg-gray-50"
+                    className="tw-block tw-w-full tw-text-sm tw-text-gray-900 tw-border tw-border-gray-200 tw-rounded-lg focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary/20 focus:tw-border-primary tw-cursor-pointer tw-bg-white"
                     aria-describedby={error ? 'materials-error' : undefined}
                 />
                 {error && (
@@ -113,9 +113,9 @@ const MaterialUpload: React.FC<MaterialUploadProps> = ({ sessionId, menteeIds, o
             </div>
 
             {hasFiles && showFileList && (
-                <div className="tw-rounded-md tw-border tw-border-gray-200 tw-bg-gray-50 tw-p-3 tw-space-y-2" aria-live="polite">
+                <div className="tw-rounded-xl tw-border tw-border-gray-100 tw-bg-gray-50 tw-p-3 tw-space-y-2" aria-live="polite">
                     <div className="tw-flex tw-items-center tw-justify-between">
-                        <p className="tw-text-xs tw-font-medium tw-text-gray-700">Selected files</p>
+                        <p className="tw-text-xs tw-font-semibold tw-text-gray-600 tw-uppercase tw-tracking-wide">Selected files</p>
                         <button
                             type="button"
                             onClick={() => setShowFileList(false)}
@@ -148,7 +148,7 @@ const MaterialUpload: React.FC<MaterialUploadProps> = ({ sessionId, menteeIds, o
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className="tw-inline-flex tw-items-center tw-justify-center tw-px-4 tw-py-2 tw-border tw-border-transparent tw-text-sm tw-font-medium tw-rounded-md tw-text-white tw-bg-blue-600 hover:tw-bg-blue-700 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
+                    className="tw-inline-flex tw-items-center tw-justify-center tw-px-4 tw-py-2 tw-border tw-border-transparent tw-text-sm tw-font-semibold tw-rounded-lg tw-text-white tw-bg-primary hover:tw-bg-primary/90 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
                 >
                     {isLoading ? 'Uploading…' : 'Upload'}
                 </button>

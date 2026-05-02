@@ -37,7 +37,7 @@ const AvailabilityList: React.FC<AvailabilityListProps> = ({ availability, slots
 
     if (availability.length === 0) {
         return (
-            <div className="tw-text-center tw-py-12 tw-bg-white tw-border tw-border-dashed tw-border-gray-300 tw-rounded-2xl">
+            <div className="tw-text-center tw-py-12 tw-bg-white tw-border tw-border-dashed tw-border-gray-200 tw-rounded-xl tw-shadow-sm">
                 <p className="tw-text-lg tw-font-semibold tw-text-gray-900">No availability published</p>
                 <p className="tw-text-sm tw-text-gray-600 tw-mt-1">
                     Create a recurring schedule or a one-off slot to let mentees book with you.
@@ -53,7 +53,7 @@ const AvailabilityList: React.FC<AvailabilityListProps> = ({ availability, slots
                 const nextSlots = entrySlots.slice(0, 3);
                 const totalRemaining = entrySlots.reduce((sum, slot) => sum + Math.max(slot.remaining, 0), 0);
                 return (
-                    <article key={entry.id} className="tw-bg-white tw-border tw-border-gray-200 tw-rounded-2xl tw-shadow-sm tw-p-5 tw-space-y-4">
+                    <article key={entry.id} className="tw-bg-white tw-border tw-border-gray-100 tw-rounded-xl tw-shadow-sm tw-p-5 tw-space-y-4">
                         <div className="tw-flex tw-flex-col lg:tw-flex-row lg:tw-justify-between tw-gap-4">
                             <div className="tw-space-y-1">
                                 <div className="tw-flex tw-items-center tw-gap-3">

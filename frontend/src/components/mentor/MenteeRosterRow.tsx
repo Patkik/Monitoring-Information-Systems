@@ -1,15 +1,34 @@
 import React from 'react';
 import { MentorRosterEntry } from '../../shared/services/mentorService';
 
+const getProgressWidthClass = (progress: number) => {
+    if (progress >= 95) return 'tw-w-full';
+    if (progress >= 85) return 'tw-w-11/12';
+    if (progress >= 75) return 'tw-w-3/4';
+    if (progress >= 65) return 'tw-w-2/3';
+    if (progress >= 55) return 'tw-w-7/12';
+    if (progress >= 45) return 'tw-w-1/2';
+    if (progress >= 35) return 'tw-w-5/12';
+    if (progress >= 25) return 'tw-w-1/3';
+    if (progress >= 15) return 'tw-w-1/4';
+    if (progress > 0) return 'tw-w-1/6';
+    return 'tw-w-0';
+};
+
 const StatusPill: React.FC<{ status?: string }> = ({ status = 'inactive' }) => {
-    const base = 'tw-inline-flex tw-items-center tw-px-2.5 tw-py-1 tw-rounded-full tw-text-xs tw-font-semibold';
+    const base = 'tw-inline-flex tw-items-center tw-gap-1.5 tw-px-2.5 tw-py-1 tw-rounded-full tw-text-xs tw-font-semibold tw-capitalize';
     const colorMap: Record<string, string> = {
-        active: 'tw-bg-green-100 tw-text-green-800',
-        inactive: 'tw-bg-gray-100 tw-text-gray-700',
-        paused: 'tw-bg-yellow-100 tw-text-yellow-800',
+        active: 'tw-bg-emerald-50 tw-text-emerald-700',
+        inactive: 'tw-bg-gray-100 tw-text-gray-600',
+        paused: 'tw-bg-amber-50 tw-text-amber-700',
     };
     const cls = colorMap[status] || colorMap.inactive;
-    return <span className={`${base} ${cls}`}>{status}</span>;
+    return (
+        <span className={`${base} ${cls}`}>
+            <span aria-hidden="true">●</span>
+            {status}
+        </span>
+    );
 };
 
 interface MenteeRosterRowProps {
@@ -19,6 +38,7 @@ interface MenteeRosterRowProps {
 
 const MenteeRosterRow: React.FC<MenteeRosterRowProps> = ({ mentee, onViewProgress }) => {
     const progress = mentee.progress ?? 0;
+    const progressWidthClass = getProgressWidthClass(progress);
 
     return (
         <>
@@ -42,8 +62,7 @@ const MenteeRosterRow: React.FC<MenteeRosterRowProps> = ({ mentee, onViewProgres
                     <div className="tw-flex tw-items-center tw-gap-2">
                         <div className="tw-w-32 tw-h-2 tw-bg-gray-200 tw-rounded-full tw-overflow-hidden">
                             <div
-                                className="tw-h-full tw-bg-gradient-to-r tw-from-primary tw-to-purple-500 tw-transition-all"
-                                style={{ width: `${progress}%` }}
+                                className={`tw-h-full tw-bg-primary tw-transition-all ${progressWidthClass}`}
                             />
                         </div>
                         <span className="tw-text-sm tw-font-semibold tw-text-gray-700 tw-min-w-fit">{progress}%</span>
@@ -81,8 +100,7 @@ const MenteeRosterRow: React.FC<MenteeRosterRowProps> = ({ mentee, onViewProgres
                     </div>
                     <div className="tw-w-full tw-h-2 tw-bg-gray-200 tw-rounded-full tw-overflow-hidden">
                         <div
-                            className="tw-h-full tw-bg-gradient-to-r tw-from-primary tw-to-purple-500 tw-transition-all"
-                            style={{ width: `${progress}%` }}
+                            className={`tw-h-full tw-bg-primary tw-transition-all ${progressWidthClass}`}
                         />
                     </div>
                     <button className="tw-w-full tw-px-3 tw-py-2 tw-rounded-lg tw-text-sm tw-font-medium tw-text-white tw-bg-primary hover:tw-bg-primary/90 tw-transition-colors focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-primary"

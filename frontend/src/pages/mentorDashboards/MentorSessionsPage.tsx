@@ -5,17 +5,27 @@ import MentorRecognitionPanel from '../../components/mentor/MentorRecognitionPan
 
 const MentorSessionsPage: React.FC = () => (
     <DashboardLayout>
-        <div className="tw-max-w-7xl tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-py-8 tw-space-y-6">
-            <div className="tw-bg-gradient-to-r tw-from-primary tw-to-purple-500 tw-rounded-2xl tw-p-6 tw-text-white tw-shadow-xl">
-                <p className="tw-text-sm tw-uppercase tw-tracking-wide tw-font-semibold tw-text-white/80">Mentor workspace</p>
-                <h1 className="tw-text-3xl tw-font-bold tw-mt-1">Session management</h1>
-                <p className="tw-mt-2 tw-text-sm tw-text-white/80">
-                    Review upcoming meetings, capture outcomes, and instantly open feedback for your mentees with one click.
-                </p>
-            </div>
+        <div className="tw-max-w-7xl tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-py-10 tw-space-y-8">
 
+            {/* ── Page Header ── */}
+            <header className="tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-end sm:tw-justify-between tw-gap-4">
+                <div className="tw-pl-4 tw-border-l-4 tw-border-primary">
+                    <p className="tw-text-xs tw-font-bold tw-tracking-widest tw-text-primary tw-uppercase tw-mb-1">
+                        Mentor workspace
+                    </p>
+                    <h1 className="tw-text-3xl tw-font-bold tw-text-gray-900 tw-leading-tight">
+                        Session Management
+                    </h1>
+                    <p className="tw-text-sm tw-text-gray-500 tw-mt-1">
+                        Review upcoming meetings, capture outcomes, and open feedback for your mentees.
+                    </p>
+                </div>
+            </header>
+
+            {/* ── Recognition Panel ── */}
             <MentorRecognitionPanel />
 
+            {/* ── Sessions Manager ── */}
             <MentorSessionsManager />
         </div>
     </DashboardLayout>

@@ -29,6 +29,7 @@ const FeedbackReviewTicket = require('../models/FeedbackReviewTicket');
 const MatchAudit = require('../models/MatchAudit');
 const Announcement = require('../models/Announcement');
 const BookingLock = require('../models/BookingLock');
+const { DEMO_PASSWORD } = require('./demoSeedConfig');
 
 const allModels = [
     User,
@@ -81,7 +82,7 @@ const seedDatabase = async () => {
             firstname: 'Admin',
             lastname: 'User',
             email: 'admin@mentoring-system.com',
-            password: 'AdminPass123!', // Will be hashed by pre-save hook
+            password: DEMO_PASSWORD, // Will be hashed by pre-save hook
             role: 'admin',
             applicationStatus: 'approved',
             applicationRole: 'admin',
@@ -93,14 +94,14 @@ const seedDatabase = async () => {
             verified: true
         });
         await adminUser.save();
-        console.log('   ✓ Created Admin account (admin@mentoring-system.com / AdminPass123!)');
+        console.log('   ✓ Created Admin account (admin@mentoring-system.com / Password123!)');
 
         // Mentor Account 1
         const mentor1 = new User({
             firstname: 'Sarah',
             lastname: 'Johnson',
             email: 'mentor1@mentoring-system.com',
-            password: 'MentorPass123!',
+            password: DEMO_PASSWORD,
             role: 'mentor',
             applicationStatus: 'approved',
             applicationRole: 'mentor',
@@ -115,14 +116,14 @@ const seedDatabase = async () => {
             verified: true
         });
         await mentor1.save();
-        console.log('   ✓ Created Mentor 1 account (mentor1@mentoring-system.com / MentorPass123!)');
+        console.log('   ✓ Created Mentor 1 account (mentor1@mentoring-system.com / Password123!)');
 
         // Mentee Account 1
         const mentee1 = new User({
             firstname: 'Alex',
             lastname: 'Rodriguez',
             email: 'mentee1@mentoring-system.com',
-            password: 'MenteePass123!',
+            password: DEMO_PASSWORD,
             role: 'mentee',
             applicationStatus: 'approved',
             applicationRole: 'mentee',
@@ -137,14 +138,14 @@ const seedDatabase = async () => {
             verified: true
         });
         await mentee1.save();
-        console.log('   ✓ Created Mentee 1 account (mentee1@mentoring-system.com / MenteePass123!)');
+        console.log('   ✓ Created Mentee 1 account (mentee1@mentoring-system.com / Password123!)');
 
         // Mentee Account 2
         const mentee2 = new User({
             firstname: 'Emma',
             lastname: 'Williams',
             email: 'mentee2@mentoring-system.com',
-            password: 'MenteePass123!',
+            password: DEMO_PASSWORD,
             role: 'mentee',
             applicationStatus: 'approved',
             applicationRole: 'mentee',
@@ -159,14 +160,14 @@ const seedDatabase = async () => {
             verified: true
         });
         await mentee2.save();
-        console.log('   ✓ Created Mentee 2 account (mentee2@mentoring-system.com / MenteePass123!)');
+        console.log('   ✓ Created Mentee 2 account (mentee2@mentoring-system.com / Password123!)');
 
         console.log('\n✅ Database seeding completed successfully!');
         console.log('\n📋 Test Accounts:');
-        console.log('   Admin:  admin@mentoring-system.com / AdminPass123!');
-        console.log('   Mentor 1: mentor1@mentoring-system.com / MentorPass123!');
-        console.log('   Mentee 1: mentee1@mentoring-system.com / MenteePass123!');
-        console.log('   Mentee 2: mentee2@mentoring-system.com / MenteePass123!');
+        console.log('   Admin:  admin@mentoring-system.com / Password123!');
+        console.log('   Mentor 1: mentor1@mentoring-system.com / Password123!');
+        console.log('   Mentee 1: mentee1@mentoring-system.com / Password123!');
+        console.log('   Mentee 2: mentee2@mentoring-system.com / Password123!');
 
         await mongoose.disconnect();
         process.exit(0);

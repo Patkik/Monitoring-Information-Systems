@@ -1,6 +1,7 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const User = require('../models/User');
+const { DEMO_MENTEE_EMAIL, DEMO_PASSWORD } = require('./demoSeedConfig');
 
 const pickArg = (key, fallback = undefined) => {
   const prefix = `--${key}=`;
@@ -15,12 +16,7 @@ const menteeId = pickArg('menteeId');
 const menteeEmail = pickArg('menteeEmail');
 const count = Number(pickArg('count', 3));
 const emailPrefix = pickArg('prefix', `seed-mentor`);
-
-if (!menteeId && !menteeEmail) {
-  // eslint-disable-next-line no-console
-  console.error('Usage: node src/scripts/createMatchingMentors.js --menteeId=<id> or --menteeEmail=address@example.com [--count=3] [--prefix=seed-mentor]');
-  process.exit(1);
-}
+const targetMenteeEmail = menteeEmail || DEMO_MENTEE_EMAIL;
 
 const normalize = (text) => {
   if (!text) return [];
@@ -57,10 +53,10 @@ const run = async () => {
   // eslint-disable-next-line no-console
   console.info('Connected to DB');
 
-  const mentee = menteeId ? await User.findById(menteeId).lean() : await User.findOne({ email: menteeEmail?.toLowerCase() }).lean();
+  const mentee = menteeId ? await User.findById(menteeId).lean() : await User.findOne({ email: targetMenteeEmail.toLowerCase() }).lean();
   if (!mentee) {
     // eslint-disable-next-line no-console
-    console.error('Mentee not found');
+    console.error(`Mentee not found for ${targetMenteeEmail}`);
     process.exit(1);
   }
 
@@ -94,7 +90,7 @@ const run = async () => {
       firstname: name.first,
       lastname: name.last,
       email,
-      password: 'ChangeMe123!',
+      password: DEMO_PASSWORD,
       role: 'mentor',
       applicationStatus: 'approved',
       applicationRole: 'mentor',
