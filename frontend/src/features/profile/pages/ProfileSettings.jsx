@@ -581,11 +581,39 @@ export default function ProfileSettings() {
 
   return (
     <DashboardLayout>
-      <div className="tw-max-w-4xl tw-mx-auto tw-p-4">
-        <h1 className="tw-text-2xl tw-font-semibold tw-mb-4">Profile settings</h1>
+      <div className="tw-space-y-6">
+        <div className="tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border tw-border-gray-100 tw-overflow-hidden">
+          <div className="tw-flex tw-items-center tw-justify-between tw-p-6 tw-border-b tw-border-gray-100">
+            <div>
+              <h1 className="tw-text-lg tw-font-semibold tw-text-gray-900">Profile Settings</h1>
+              <p className="tw-text-sm tw-text-gray-500">Update your personal information and preferences</p>
+            </div>
+            <a 
+              href="/profile" 
+              className="tw-inline-flex tw-items-center tw-gap-2 tw-px-4 tw-py-2 tw-bg-gray-100 tw-text-gray-700 tw-text-sm tw-font-medium tw-rounded-lg hover:tw-bg-gray-200 tw-transition-colors"
+            >
+              Back to Profile
+            </a>
+          </div>
 
-        {error && <div className="tw-mb-4 tw-bg-red-50 tw-border tw-border-red-200 tw-text-red-700 tw-p-3 tw-rounded">{error}</div>}
-        {success && <div className="tw-mb-4 tw-bg-green-50 tw-border tw-border-green-200 tw-text-green-700 tw-p-3 tw-rounded">{success}</div>}
+          <div className="tw-p-6">
+            {error && (
+              <div className="tw-mb-6 tw-flex tw-items-center tw-gap-3 tw-p-4 tw-rounded-xl tw-bg-red-50 tw-border tw-border-red-100 tw-text-red-700">
+                <svg className="tw-w-5 tw-h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="tw-text-sm tw-font-medium">{error}</p>
+              </div>
+            )}
+            
+            {success && (
+              <div className="tw-mb-6 tw-flex tw-items-center tw-gap-3 tw-p-4 tw-rounded-xl tw-bg-green-50 tw-border tw-border-green-100 tw-text-green-700">
+                <svg className="tw-w-5 tw-h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <p className="tw-text-sm tw-font-medium">{success}</p>
+              </div>
+            )}
 
         <form onSubmit={onSave} className="tw-space-y-6">
           {/* Avatar & Display name */}
@@ -954,9 +982,11 @@ export default function ProfileSettings() {
             </div>
 
           <div className="tw-flex tw-justify-end">
-            <button className="tw-bg-purple-600 hover:tw-bg-purple-700 tw-text-white tw-rounded-lg tw-px-4 tw-py-2 tw-font-medium">Save changes</button>
+            <button className="tw-bg-primary hover:tw-bg-primary/90 tw-text-white tw-rounded-lg tw-px-6 tw-py-2.5 tw-font-medium tw-transition-colors">Save changes</button>
           </div>
         </form>
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );

@@ -352,7 +352,31 @@ const MentorSessionComposer: React.FC<MentorSessionComposerProps> = ({ isOpen, o
                             ) : rosterQuery.isError ? (
                                 <div className="tw-p-6 tw-text-center tw-text-sm tw-text-red-600">Unable to load mentees.</div>
                             ) : filteredRoster.length === 0 ? (
-                                <div className="tw-p-6 tw-text-center tw-text-sm tw-text-gray-500">No mentees match your search.</div>
+                                <ul className="tw-divide-y tw-divide-gray-100">
+                                    <li>
+                                        <div className="tw-flex tw-items-center tw-justify-between tw-px-4 tw-py-3 hover:tw-bg-gray-50">
+                                            <div className="tw-flex tw-items-center tw-gap-3">
+                                                <div className="tw-w-8 tw-h-8 tw-rounded-full tw-bg-gray-200 tw-flex tw-items-center tw-justify-center tw-text-gray-500 tw-font-bold tw-text-xs">
+                                                    ?
+                                                </div>
+                                                <div>
+                                                    <p className="tw-text-sm tw-font-semibold tw-text-gray-900">No mentees found</p>
+                                                    <p className="tw-text-xs tw-text-gray-500">You don't have any mentees in your roster.</p>
+                                                </div>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    alert("Invite functionality to be implemented.");
+                                                }}
+                                                className="tw-px-3 tw-py-1.5 tw-bg-primary tw-text-white tw-rounded-md tw-text-xs tw-font-medium hover:tw-bg-primary/90"
+                                            >
+                                                Invite
+                                            </button>
+                                        </div>
+                                    </li>
+                                </ul>
                             ) : (
                                 <ul className="tw-divide-y tw-divide-gray-100">
                                     {filteredRoster.map((mentee) => {

@@ -358,25 +358,35 @@ const AdminUserManagementPanel: React.FC = () => {
                                             <button
                                                 type="button"
                                                 onClick={() => setSelectedUserId(user.id)}
-                                                className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-px-3 tw-py-1.5 tw-text-xs tw-font-medium tw-bg-blue-50 tw-text-blue-700 hover:tw-bg-blue-100 tw-transition-colors"
+                                                className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-p-1.5 tw-bg-blue-50 tw-text-blue-700 hover:tw-bg-blue-100 tw-transition-colors"
+                                                title="Inspect"
                                             >
-                                                Inspect
+                                                <svg className="tw-w-4 tw-h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                </svg>
                                             </button>
                                             {user.hasPendingApplication && (
                                                 <>
                                                     <button
                                                         type="button"
                                                         onClick={() => openActionModal('approve', user)}
-                                                        className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-px-3 tw-py-1.5 tw-text-xs tw-font-medium tw-bg-emerald-50 tw-text-emerald-700 hover:tw-bg-emerald-100 tw-transition-colors"
+                                                        className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-p-1.5 tw-bg-emerald-50 tw-text-emerald-700 hover:tw-bg-emerald-100 tw-transition-colors"
+                                                        title="Approve"
                                                     >
-                                                        Approve
+                                                        <svg className="tw-w-4 tw-h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                                        </svg>
                                                     </button>
                                                     <button
                                                         type="button"
                                                         onClick={() => openActionModal('reject', user)}
-                                                        className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-px-3 tw-py-1.5 tw-text-xs tw-font-medium tw-bg-red-50 tw-text-red-700 hover:tw-bg-red-100 tw-transition-colors"
+                                                        className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-p-1.5 tw-bg-red-50 tw-text-red-700 hover:tw-bg-red-100 tw-transition-colors"
+                                                        title="Reject"
                                                     >
-                                                        Reject
+                                                        <svg className="tw-w-4 tw-h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                        </svg>
                                                     </button>
                                                 </>
                                             )}
@@ -384,18 +394,24 @@ const AdminUserManagementPanel: React.FC = () => {
                                                 <button
                                                     type="button"
                                                     onClick={() => openActionModal('deactivate', user)}
-                                                    className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-px-3 tw-py-1.5 tw-text-xs tw-font-medium tw-bg-amber-50 tw-text-amber-700 hover:tw-bg-amber-100 tw-transition-colors"
+                                                    className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-p-1.5 tw-bg-amber-50 tw-text-amber-700 hover:tw-bg-amber-100 tw-transition-colors"
+                                                    title="Deactivate"
                                                 >
-                                                    Deactivate
+                                                    <svg className="tw-w-4 tw-h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+                                                    </svg>
                                                 </button>
                                             )}
                                             {user.accountStatus !== 'active' && (
                                                 <button
                                                     type="button"
                                                     onClick={() => openActionModal('reactivate', user)}
-                                                    className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-px-3 tw-py-1.5 tw-text-xs tw-font-medium tw-bg-emerald-50 tw-text-emerald-700 hover:tw-bg-emerald-100 tw-transition-colors"
+                                                    className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-p-1.5 tw-bg-emerald-50 tw-text-emerald-700 hover:tw-bg-emerald-100 tw-transition-colors"
+                                                    title="Reactivate"
                                                 >
-                                                    Reactivate
+                                                    <svg className="tw-w-4 tw-h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                                    </svg>
                                                 </button>
                                             )}
                                         </div>

@@ -74,8 +74,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [dropdownOpen, notifOpen]);
 
-  // Sidebar link groups
-  const navGroups = [
+  const adminNavGroups = [
     {
       label: 'System',
       items: [
@@ -106,6 +105,73 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
   ];
 
+  const mentorNavGroups = [
+    {
+      label: 'Dashboard',
+      items: [
+        { label: 'Overview', to: '/mentor/dashboard', matches: ['/mentor/dashboard'] }
+      ]
+    },
+    {
+      label: 'Mentorship',
+      items: [
+        { label: 'Sessions', to: '/mentor/sessions', matches: ['/mentor/sessions', '/mentor/chat'] },
+        { label: 'My Mentees', to: '/mentor/roster', matches: ['/mentor/roster'] },
+        { label: 'Availability', to: '/mentor/availability', matches: ['/mentor/availability'] }
+      ]
+    },
+    {
+      label: 'Resources',
+      items: [
+        { label: 'Materials', to: '/mentor/materials/upload', matches: ['/mentor/materials/upload'] }
+      ]
+    },
+    {
+      label: 'Activity',
+      items: [
+        { label: 'Announcements', to: '/mentor/announcements', matches: ['/mentor/announcements'] },
+        { label: 'Recognition', to: '/mentor/recognition', matches: ['/mentor/recognition'] }
+      ]
+    }
+  ];
+
+  const menteeNavGroups = [
+    {
+      label: 'Dashboard',
+      items: [
+        { label: 'Overview', to: '/mentee/dashboard', matches: ['/mentee/dashboard'] }
+      ]
+    },
+    {
+      label: 'Mentorship',
+      items: [
+        { label: 'My Mentor', to: '/mentee/my-mentor', matches: ['/mentee/my-mentor'] },
+        { label: 'Sessions', to: '/mentee/session', matches: ['/mentee/session', '/mentee/chat'] },
+        { label: 'Apply', to: '/mentee/apply', matches: ['/mentee/apply'] }
+      ]
+    },
+    {
+      label: 'Progress',
+      items: [
+        { label: 'Goals', to: '/mentee/goals', matches: ['/mentee/goals'] }
+      ]
+    },
+    {
+      label: 'Activity',
+      items: [
+        { label: 'Announcements', to: '/mentee/announcements', matches: ['/mentee/announcements'] },
+        { label: 'Recognition', to: '/mentee/recognition', matches: ['/mentee/recognition'] }
+      ]
+    }
+  ];
+
+  const navGroups = useMemo(() => {
+    if (user?.role === 'admin') return adminNavGroups;
+    if (user?.role === 'mentor') return mentorNavGroups;
+    if (user?.role === 'mentee') return menteeNavGroups;
+    return [];
+  }, [user?.role]);
+
   const isActive = (matches: string[]) => {
     return matches.some(path => location.pathname.startsWith(path));
   };
@@ -123,17 +189,42 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return profilePhoto || user?.photoUrl || null;
   }, [user?.profile, user?.photoUrl]);
 
+  const homePath = useMemo(() => {
+    switch (user?.role) {
+      case 'admin': return '/admin/dashboard';
+      case 'mentor': return '/mentor/dashboard';
+      case 'mentee': return '/mentee/dashboard';
+      default: return '/';
+    }
+  }, [user?.role]);
+
   // Compute Page Title from location
   const pageTitle = useMemo(() => {
     const path = location.pathname;
-    if (path.includes('/admin/users')) return 'Users';
-    if (path.includes('/admin/applications')) return 'Applications';
-    if (path.includes('/admin/matching')) return 'Matching';
-    if (path.includes('/admin/sessions')) return 'Sessions';
-    if (path.includes('/admin/feedback')) return 'Feedback';
-    if (path.includes('/admin/announcements')) return 'Announcements';
-    if (path.includes('/admin/recognition')) return 'Recognition';
-    return 'Admin Dashboard';
+    
+    // Core/Common
+    if (path.includes('/profile')) return 'Profile';
+    if (path.includes('/messages')) return 'Messages';
+    
+    // People / Mentorship
+    if (path.includes('/users')) return 'Users';
+    if (path.includes('/applications')) return 'Applications';
+    if (path.includes('/roster') || path.includes('/my-mentor')) return 'Mentorship';
+    if (path.includes('/apply')) return 'Application';
+    if (path.includes('/matching')) return 'Matching';
+    if (path.includes('/sessions') || path.includes('/session') || path.includes('/chat')) return 'Sessions';
+    if (path.includes('/schedule') || path.includes('/availability')) return 'Availability';
+    
+    // Resources & Progress
+    if (path.includes('/materials')) return 'Materials';
+    if (path.includes('/goals')) return 'Goals';
+    
+    // Activity
+    if (path.includes('/feedback')) return 'Feedback';
+    if (path.includes('/announcements')) return 'Announcements';
+    if (path.includes('/recognition')) return 'Recognition';
+    
+    return 'Dashboard';
   }, [location.pathname]);
 
   return (
@@ -152,8 +243,10 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         className={`tw-fixed md:tw-static tw-top-0 tw-bottom-0 tw-left-0 tw-z-50 tw-w-[260px] lg:tw-w-[280px] tw-bg-white tw-shadow-[1px_0_0_0_rgba(0,0,0,0.05)] tw-transition-transform tw-duration-300 tw-ease-in-out md:tw-translate-x-0 tw-row-span-2 tw-flex tw-flex-col ${sidebarOpen ? 'tw-translate-x-0' : 'tw--translate-x-full'}`}
       >
         <div className="tw-h-16 tw-flex tw-items-center tw-px-6 tw-flex-shrink-0">
-          <Link to="/admin/dashboard" className="tw-text-xl tw-font-bold tw-text-primary">
-            ComSoc <span className="tw-text-sm tw-text-gray-500 tw-font-normal">Admin</span>
+          <Link to={homePath} className="tw-text-xl tw-font-bold tw-text-primary">
+            ComSoc <span className="tw-text-sm tw-text-gray-500 tw-font-normal">
+              {user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : ''}
+            </span>
           </Link>
         </div>
         
