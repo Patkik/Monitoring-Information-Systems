@@ -24,37 +24,47 @@ type NavItem = {
   hash?: string;
 };
 
+// Categorized navigation with clear groupings
 const NAV_MAP: Record<string, NavItem[]> = {
   admin: [
+    // Core
     { label: 'Dashboard', to: '/admin/dashboard', matches: ['/admin/dashboard'], hash: '' },
+    // Management
+    { label: 'Users', to: '/admin/users', matches: ['/admin/users'] },
+    { label: 'Applications', to: '/admin/applications', matches: ['/admin/applications'] },
     { label: 'Matching', to: '/admin/matching', matches: ['/admin/matching'] },
+    // Activity
     { label: 'Sessions', to: '/admin/sessions', matches: ['/admin/sessions'] },
     { label: 'Feedback', to: '/admin/feedback', matches: ['/admin/feedback'] },
-    { label: 'Applications', to: '/admin/applications', matches: ['/admin/applications'] },
-    { label: 'Users', to: '/admin/users', matches: ['/admin/users'] },
+    // Communication
     { label: 'Announcements', to: '/admin/announcements', matches: ['/admin/announcements'] },
-    { label: 'Recognition', to: '/admin/recognition', matches: ['/admin/recognition'] }
+    { label: 'Recognition', to: '/admin/recognition', matches: ['/admin/recognition'] },
   ],
   mentor: [
+    // Core
     { label: 'Dashboard', to: '/mentor/dashboard', matches: ['/mentor/dashboard'] },
-    { label: 'Sessions', to: '/mentor/sessions', matches: ['/mentor/sessions'] },
+    // Mentoring
+    { label: 'Sessions', to: '/mentor/sessions', matches: ['/mentor/sessions', '/mentor/chat'] },
     { label: 'My Mentees', to: '/mentor/roster', matches: ['/mentor/roster'] },
     { label: 'Availability', to: '/mentor/availability', matches: ['/mentor/availability'] },
-    { label: 'Upload', to: '/mentor/materials/upload', matches: ['/mentor/materials/upload'] },
-    { label: 'Recognition', to: '/mentor/recognition', matches: ['/mentor/recognition'] },
-    { label: 'Achievements', to: '/mentor/achievements', matches: ['/mentor/achievements'] },
+    // Resources
+    { label: 'Materials', to: '/mentor/materials/upload', matches: ['/mentor/materials/upload'] },
+    // Communication
     { label: 'Announcements', to: '/mentor/announcements', matches: ['/mentor/announcements'] },
-    { label: 'Chat', to: '/mentor/chat', matches: ['/mentor/chat'] }
+    { label: 'Recognition', to: '/mentor/recognition', matches: ['/mentor/recognition'] },
   ],
   mentee: [
-    { label: 'Home', to: '/mentee/dashboard', matches: ['/mentee/dashboard'] },
+    // Core
+    { label: 'Dashboard', to: '/mentee/dashboard', matches: ['/mentee/dashboard'] },
+    // Mentoring
     { label: 'My Mentor', to: '/mentee/my-mentor', matches: ['/mentee/my-mentor'] },
-    { label: 'Session', to: '/mentee/session', matches: ['/mentee/session'] },
-    { label: 'Goals', to: '/mentee/goals', matches: ['/mentee/goals'] },
+    { label: 'Sessions', to: '/mentee/session', matches: ['/mentee/session', '/mentee/chat'] },
     { label: 'Apply', to: '/mentee/apply', matches: ['/mentee/apply'] },
-    { label: 'Recognition', to: '/mentee/recognition', matches: ['/mentee/recognition'] },
+    // Progress
+    { label: 'Goals', to: '/mentee/goals', matches: ['/mentee/goals'] },
+    // Communication
     { label: 'Announcements', to: '/mentee/announcements', matches: ['/mentee/announcements'] },
-    { label: 'Chat', to: '/mentee/chat', matches: ['/mentee/chat'] }
+    { label: 'Recognition', to: '/mentee/recognition', matches: ['/mentee/recognition'] },
   ]
 };
 
@@ -91,6 +101,7 @@ const Header: React.FC = () => {
   const [user, setUser] = useState<UserSummary | null>(() => getStoredUser());
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const {
     notifications,
     unreadCount,
@@ -238,21 +249,40 @@ const Header: React.FC = () => {
           </div>
 
           {!hideNav && navItems.length > 0 && (
-            <nav className="tw-hidden md:tw-flex tw-items-center tw-space-x-6">
-              {navItems.map((item) => (
-                <Link
-                  key={item.label}
-                  to={item.to}
-                  className={`tw-font-medium tw-transition-colors ${
-                    isActive(item)
-                      ? 'tw-bg-white tw-text-primary tw-px-3 tw-py-1 tw-rounded'
-                      : 'tw-text-white hover:tw-text-purple-200'
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
+            <>
+              {/* Desktop nav */}
+              <nav className="tw-hidden lg:tw-flex tw-items-center tw-space-x-1">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.label}
+                    to={item.to}
+                    className={`tw-font-medium tw-text-sm tw-px-3 tw-py-1.5 tw-rounded-lg tw-transition-colors ${
+                      isActive(item)
+                        ? 'tw-bg-white tw-text-primary'
+                        : 'tw-text-white/90 hover:tw-bg-white/10'
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+
+              {/* Mobile menu button */}
+              <button
+                type="button"
+                className="lg:tw-hidden tw-h-10 tw-w-10 tw-rounded-lg tw-bg-white/10 tw-flex tw-items-center tw-justify-center hover:tw-bg-white/20 tw-transition-colors"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Toggle navigation"
+              >
+                <svg className="tw-w-5 tw-h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {mobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+            </>
           )}
 
           <div className="tw-flex tw-items-center tw-space-x-3">
@@ -362,10 +392,31 @@ const Header: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Mobile navigation dropdown */}
+        {!hideNav && mobileMenuOpen && navItems.length > 0 && (
+          <nav className="lg:tw-hidden tw-pb-4 tw-border-t tw-border-white/20 tw-pt-3">
+            <div className="tw-flex tw-flex-wrap tw-gap-2">
+              {navItems.map((item) => (
+                <Link
+                  key={item.label}
+                  to={item.to}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`tw-font-medium tw-text-sm tw-px-3 tw-py-1.5 tw-rounded-lg tw-transition-colors ${
+                    isActive(item)
+                      ? 'tw-bg-white tw-text-primary'
+                      : 'tw-text-white/90 hover:tw-bg-white/10'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </nav>
+        )}
       </div>
     </header>
   );
 };
 
 export default Header;
-

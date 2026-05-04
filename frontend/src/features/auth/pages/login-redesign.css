@@ -1,10 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap');
 
 .login-redesign {
-  --ink-950: #0f2a33;
-  --ink-700: #194a57;
-  --aqua-500: #2ea8c6;
-  --mist-100: #f3f6f8;
+  --ink-950: #1a0a2e;
+  --ink-700: #3b1671;
+  --aqua-500: #7a2bcb;
+  --mist-100: #f5f0fa;
   font-family: 'Manrope', 'Segoe UI', sans-serif;
 }
 
@@ -26,10 +26,10 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 15% 24%, rgba(91, 206, 225, 0.32), transparent 30%),
-    radial-gradient(circle at 84% 18%, rgba(20, 161, 190, 0.3), transparent 36%),
-    radial-gradient(circle at 72% 78%, rgba(135, 225, 242, 0.2), transparent 34%),
-    linear-gradient(146deg, #07222b 0%, #0d3b47 42%, #114e5f 100%);
+    radial-gradient(circle at 15% 24%, rgba(160, 91, 225, 0.32), transparent 30%),
+    radial-gradient(circle at 84% 18%, rgba(122, 43, 203, 0.3), transparent 36%),
+    radial-gradient(circle at 72% 78%, rgba(180, 135, 242, 0.2), transparent 34%),
+    linear-gradient(146deg, #1a0a2e 0%, #2d1055 42%, #3b1671 100%);
 }
 
 .login-redesign__grit {
@@ -49,7 +49,7 @@
   top: -180px;
   left: -180px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(88, 223, 247, 0.26) 0%, rgba(88, 223, 247, 0.08) 38%, transparent 72%);
+  background: radial-gradient(circle, rgba(160, 88, 247, 0.26) 0%, rgba(160, 88, 247, 0.08) 38%, transparent 72%);
   animation: orbitDrift 8s ease-in-out infinite;
 }
 
@@ -62,7 +62,7 @@
   position: absolute;
   width: 40px;
   height: 40px;
-  border: 1px solid rgba(145, 236, 255, 0.24);
+  border: 1px solid rgba(200, 160, 255, 0.24);
   transform: rotate(45deg);
   animation: floaty 18s ease-in-out infinite;
 }

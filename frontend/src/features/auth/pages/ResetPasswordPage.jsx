@@ -27,9 +27,21 @@ export default function ResetPasswordPage() {
  };
 
  return (
- <AuthLayout title="WELCOME!" subtitle="Your path to guided learning and mentorship starts here.">
+ <AuthLayout 
+  title="Create your\nnew password." 
+  subtitle="Set a strong password to secure your account."
+ >
+  <header className="tw-mb-8">
+    <p className="tw-text-[11px] tw-font-semibold tw-uppercase tw-tracking-[0.2em] tw-text-primary">Reset Password</p>
+    <h2 className="login-redesign__form-title tw-mt-2 tw-leading-[1.02] tw-text-[#1d2931]">
+      Almost
+      <br />
+      there.
+    </h2>
+  </header>
+
  <form onSubmit={onSubmit} className="tw-space-y-4">
- {error && <div className="tw-p-3 tw-rounded tw-bg-red-50 tw-text-red-700 tw-text-sm ">{error}</div>}
+ {error && <div className="tw-p-3 tw-rounded-xl tw-bg-red-50 tw-text-red-700 tw-text-sm ">{error}</div>}
  
  {/* Password Input with Icon */}
  <div className="tw-relative">
@@ -43,7 +55,7 @@ export default function ResetPasswordPage() {
  value={password} 
  onChange={(e)=>setPassword(e.target.value)} 
  placeholder="Enter new password" 
- className="tw-w-full tw-pl-10 tw-pr-4 tw-py-3 tw-border-2 tw-border-gray-300 focus:tw-border-purple-500 tw-rounded-xl tw-outline-none tw-transition-colors" 
+ className="tw-w-full tw-h-12 tw-pl-11 tw-pr-4 tw-rounded-xl tw-border tw-border-gray-200 tw-bg-[#fbfcfd] focus:tw-bg-white focus:tw-border-primary focus:tw-ring-4 focus:tw-ring-primary/15 tw-outline-none tw-transition" 
  required 
  />
  </div>
@@ -51,7 +63,7 @@ export default function ResetPasswordPage() {
  {/* Verify Button */}
  <button 
  disabled={loading} 
- className="tw-px-6 tw-py-3 tw-bg-purple-600 hover:tw-bg-purple-700 tw-text-white tw-rounded-xl tw-w-32 tw-font-semibold tw-transition-colors disabled:tw-opacity-70"
+ className="tw-w-full tw-h-[52px] tw-rounded-xl tw-bg-primary hover:tw-bg-primary-dark tw-text-white tw-font-semibold tw-tracking-[0.14em] tw-uppercase tw-transition tw-shadow-[0_10px_30px_rgba(91,22,163,0.35)] hover:tw--translate-y-[1px] disabled:tw-opacity-70 disabled:tw-transform-none"
  >
  {loading ? 'Saving...' : 'Verify'}
  </button>

@@ -12,45 +12,68 @@ const expertiseOptions = [
     'Cloud Computing', 'Cybersecurity', 'Project Management', 'Product Strategy',
 ];
 
+// Academic-only mentoring topics
 const mentoringTopicsOptions = [
-    'Career Guidance', 'Technical Coaching', 'Soft Skills', 'Interview Preparation',
-    'Leadership', 'Capstone Support', 'Entrepreneurship', 'Research Mentoring',
+    'Academic Tutoring', 'Thesis / Capstone Support', 'Study Skills',
+    'Research Methodology', 'Course Guidance', 'Lab / Practicum Help',
+    'Academic Writing', 'Exam Preparation',
 ];
 
 const availabilityDaysOptions = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const meetingFormatsOptions   = ['On-site', 'Virtual', 'Hybrid'];
 
+// Role dropdown options
+const roleOptions = [
+    { value: '', label: 'Select your role' },
+    { value: 'Student Peer Mentor', label: 'Student Peer Mentor' },
+    { value: 'Teaching Assistant', label: 'Teaching Assistant' },
+    { value: 'Instructor', label: 'Instructor' },
+    { value: 'Faculty Advisor', label: 'Faculty Advisor' },
+    { value: 'Lab Facilitator', label: 'Lab Facilitator' },
+    { value: 'Research Mentor', label: 'Research Mentor' },
+];
+
+// ── Validation helpers ──────────────────────────────────────────────────────
+const LETTERS_ONLY = /^[A-Za-zÀ-ÿ\s'-]+$/;
+
+const validateName = (value: string): string | null => {
+    if (!value.trim()) return 'This field is required.';
+    if (!LETTERS_ONLY.test(value)) return 'Only letters, spaces, hyphens, and apostrophes are allowed.';
+    return null;
+};
+
 // ── Shared sub-components ──────────────────────────────────────────────────
 
 const SectionHeader: React.FC<{ step: number; title: string; description?: string }> = ({ step, title, description }) => (
     <div className="tw-flex tw-items-start tw-gap-4 tw-mb-6">
-        <div className="tw-flex-shrink-0 tw-w-8 tw-h-8 tw-rounded-full tw-bg-primary/10 tw-flex tw-items-center tw-justify-center">
-            <span className="tw-text-xs tw-font-bold tw-text-primary">{step}</span>
+        <div className="tw-flex-shrink-0 tw-w-10 tw-h-10 tw-rounded-2xl tw-bg-primary/10 tw-flex tw-items-center tw-justify-center tw-text-primary tw-font-bold tw-text-sm tw-shadow-sm tw-border tw-border-primary/20">
+            {step}
         </div>
-        <div>
-            <h2 className="tw-text-lg tw-font-bold tw-text-gray-900">{title}</h2>
-            {description && <p className="tw-text-sm tw-text-gray-500 tw-mt-0.5">{description}</p>}
+        <div className="tw-flex-1">
+            <h2 className="tw-text-xl tw-font-bold tw-text-gray-900 tw-tracking-tight">{title}</h2>
+            {description && <p className="tw-text-sm tw-text-gray-500 tw-mt-1 tw-leading-relaxed">{description}</p>}
         </div>
     </div>
 );
 
 const FieldLabel: React.FC<{ htmlFor?: string; children: React.ReactNode; optional?: boolean }> = ({ htmlFor, children, optional }) => (
-    <label htmlFor={htmlFor} className="tw-block tw-text-xs tw-font-bold tw-tracking-wide tw-uppercase tw-text-gray-500 tw-mb-1.5">
+    <label htmlFor={htmlFor} className="tw-block tw-mb-2 tw-text-[11px] tw-font-bold tw-tracking-[0.15em] tw-uppercase tw-text-slate-500">
         {children}
-        {optional && <span className="tw-ml-1.5 tw-normal-case tw-font-normal tw-text-gray-400">(optional)</span>}
+        {optional && <span className="tw-ml-1.5 tw-normal-case tw-font-medium tw-text-slate-400 tw-tracking-normal">(optional)</span>}
     </label>
 );
 
-const textInputCls = "tw-w-full tw-px-3.5 tw-py-2.5 tw-border tw-border-gray-200 focus:tw-border-primary tw-rounded-lg tw-text-sm tw-text-gray-900 tw-placeholder-gray-400 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary/20 tw-transition-colors";
+const textInputCls = "tw-w-full tw-h-12 tw-px-4 tw-rounded-xl tw-border tw-border-gray-200 tw-bg-[#fbfcfd] focus:tw-bg-white focus:tw-border-primary focus:tw-ring-4 focus:tw-ring-primary/15 tw-outline-none tw-transition-all tw-text-sm tw-text-gray-900 tw-placeholder-gray-400";
+const errorInputCls = "tw-w-full tw-h-12 tw-px-4 tw-rounded-xl tw-border tw-border-red-300 tw-bg-[#fbfcfd] focus:tw-bg-white focus:tw-border-red-500 focus:tw-ring-4 focus:tw-ring-red-500/15 tw-outline-none tw-transition-all tw-text-sm tw-text-gray-900 tw-placeholder-gray-400";
 
 const ChipButton: React.FC<{ selected: boolean; onClick: () => void; children: React.ReactNode }> = ({ selected, onClick, children }) => (
     <button
         type="button"
         onClick={onClick}
-        className={`tw-px-3.5 tw-py-2 tw-rounded-lg tw-text-sm tw-font-semibold tw-transition-all tw-duration-150 tw-border ${
+        className={`tw-px-4 tw-py-2.5 tw-rounded-xl tw-text-sm tw-font-semibold tw-transition-all tw-duration-200 tw-border ${
             selected
-                ? 'tw-bg-primary tw-text-white tw-border-primary tw-shadow-sm'
-                : 'tw-bg-white tw-text-gray-600 tw-border-gray-200 hover:tw-border-primary/40 hover:tw-text-primary'
+                ? 'tw-bg-primary tw-text-white tw-border-transparent tw-shadow-[inset_0_-2px_0_rgba(0,0,0,0.2),_0_4px_12px_rgba(var(--color-primary),0.2)] tw-scale-[1.02] active:tw-shadow-none active:tw-translate-y-[2px]'
+                : 'tw-bg-white tw-text-gray-600 tw-border-gray-200 tw-shadow-[0_2px_0_rgba(0,0,0,0.04)] hover:tw-border-gray-300 hover:tw-text-primary hover:tw-bg-gray-50 active:tw-shadow-none active:tw-translate-y-[2px]'
         }`}
     >
         {children}
@@ -58,7 +81,7 @@ const ChipButton: React.FC<{ selected: boolean; onClick: () => void; children: R
 );
 
 const Card: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
-    <div className={`tw-bg-white tw-rounded-xl tw-border tw-border-gray-100 tw-shadow-sm tw-p-6 ${className}`}>
+    <div className={`tw-bg-white tw-rounded-2xl tw-border tw-border-gray-100 tw-shadow-sm hover:tw-shadow-md tw-transition-shadow tw-duration-300 tw-p-6 md:tw-p-8 ${className}`}>
         {children}
     </div>
 );
@@ -69,17 +92,17 @@ export default function MentorApplicationForm() {
     const navigate = useNavigate();
     const [form, setForm] = useState({
         firstname: '', lastname: '', email: '',
-        currentRole: '', organization: '',
+        currentRole: '',
         educationRole: 'student',
         educationProgram: '', educationYearLevel: '', educationMajor: '',
-        yearsOfExperience: '', mentoringGoals: '', professionalSummary: '',
-        achievements: '', linkedinUrl: '', portfolioUrl: '', motivation: '',
+        mentoringGoals: '', motivation: '',
         availabilityHoursPerWeek: '',
         expertiseAreas: [] as string[],
         mentoringTopics: [] as string[],
         availabilityDays: [] as string[],
         meetingFormats: [] as string[],
     });
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string | null>>({});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [recaptchaToken, setRecaptchaToken] = useState('');
@@ -104,9 +127,31 @@ export default function MentorApplicationForm() {
         }
     }, []);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setForm((prev) => ({ ...prev, [name]: value }));
+
+        // Clear field error on change
+        if (fieldErrors[name]) {
+            setFieldErrors((prev) => ({ ...prev, [name]: null }));
+        }
+    };
+
+    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        // Allow only letters, spaces, hyphens, apostrophes
+        const sanitized = value.replace(/[^A-Za-zÀ-ÿ\s'-]/g, '');
+        setForm((prev) => ({ ...prev, [name]: sanitized }));
+
+        if (fieldErrors[name]) {
+            setFieldErrors((prev) => ({ ...prev, [name]: null }));
+        }
+    };
+
+    const handleNameBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        const err = validateName(value);
+        setFieldErrors((prev) => ({ ...prev, [name]: err }));
     };
 
     const toggleSelection = (key: string, value: string) => {
@@ -122,11 +167,21 @@ export default function MentorApplicationForm() {
         setRecaptchaError('');
         if (!recaptchaToken) { setRecaptchaError('Please complete the verification step.'); return; }
 
+        // Validate names
+        const firstnameErr = validateName(form.firstname);
+        const lastnameErr = validateName(form.lastname);
+        if (firstnameErr || lastnameErr) {
+            setFieldErrors({ firstname: firstnameErr, lastname: lastnameErr });
+            setError('Please fix the name fields before submitting.');
+            return;
+        }
+
         const trimmedProgram = form.educationProgram.trim();
         const trimmedYear    = form.educationYearLevel.trim();
 
         if (!trimmedProgram) { setError('Program / Department is required.'); return; }
         if (form.educationRole === 'student' && !trimmedYear) { setError('Year level is required for students.'); return; }
+        if (!form.currentRole) { setError('Please select your role.'); return; }
 
         setLoading(true);
         try {
@@ -138,7 +193,6 @@ export default function MentorApplicationForm() {
                     educationProgram: trimmedProgram,
                     educationYearLevel: trimmedYear,
                     educationMajor: form.educationMajor.trim(),
-                    yearsOfExperience: form.yearsOfExperience ? Number(form.yearsOfExperience) : undefined,
                     availabilityHoursPerWeek: form.availabilityHoursPerWeek ? Number(form.availabilityHoursPerWeek) : undefined,
                     recaptchaToken,
                 }),
@@ -172,23 +226,24 @@ export default function MentorApplicationForm() {
                     {/* ── Page Header ── */}
                     <div className="tw-mb-8 tw-pl-4 tw-border-l-4 tw-border-primary">
                         <p className="tw-text-xs tw-font-bold tw-tracking-widest tw-text-primary tw-uppercase tw-mb-1">Apply</p>
-                        <h1 className="tw-text-3xl tw-font-bold tw-text-gray-900">Mentor Application</h1>
+                        <h1 className="tw-text-3xl tw-font-bold tw-text-gray-900 tw-tracking-tight">Mentor Application Form</h1>
                         <p className="tw-text-sm tw-text-gray-500 tw-mt-1">
                             Share your expertise to help mentees accelerate their growth.
                         </p>
                     </div>
 
-                    {/* ── Role hint ── */}
-                    <div className="tw-mb-6 tw-bg-primary/5 tw-border tw-border-primary/20 tw-rounded-xl tw-p-4 tw-flex tw-items-center tw-justify-between tw-gap-4">
-                        <p className="tw-text-sm tw-text-gray-600">
-                            Not the right path? If you meant to register as a Mentee instead, you can change your role.
-                        </p>
+                    {/* Role hint */}
+                    <div className="tw-mb-6 tw-bg-primary/5 tw-border tw-border-primary/20 tw-rounded-2xl tw-p-5 tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-center tw-justify-between tw-gap-4">
+                        <div>
+                            <p className="tw-text-sm tw-font-semibold tw-text-gray-900">Not the right path?</p>
+                            <p className="tw-text-sm tw-text-gray-600 tw-mt-0.5">If you meant to register as a Mentee instead, you can change your role.</p>
+                        </div>
                         <button
                             type="button"
                             onClick={() => navigate('/role-selection')}
-                            className="tw-flex-shrink-0 tw-inline-flex tw-items-center tw-rounded-lg tw-bg-white tw-text-primary tw-border tw-border-primary/30 hover:tw-border-primary tw-px-3.5 tw-py-1.5 tw-text-sm tw-font-semibold tw-transition-colors"
+                            className="tw-flex-shrink-0 tw-inline-flex tw-items-center tw-justify-center tw-rounded-xl tw-bg-white tw-text-primary tw-border tw-border-gray-200 tw-shadow-[0_2px_0_rgba(0,0,0,0.06)] hover:tw-border-primary hover:tw-bg-gray-50 active:tw-shadow-none active:tw-translate-y-[2px] tw-px-4 tw-py-2 tw-text-sm tw-font-bold tw-transition-all"
                         >
-                            Change role
+                            Change Role
                         </button>
                     </div>
 
@@ -205,20 +260,44 @@ export default function MentorApplicationForm() {
                         <Card>
                             <SectionHeader step={1} title="Personal Information" />
                             <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-5">
-                                {[
-                                    { label: 'First name', name: 'firstname', type: 'text', required: true },
-                                    { label: 'Last name',  name: 'lastname',  type: 'text', required: true },
-                                    { label: 'Institutional email', name: 'email', type: 'email', required: true },
-                                ].map(({ label, name, type, required }) => (
-                                    <div key={name}>
-                                        <FieldLabel htmlFor={name}>{label}</FieldLabel>
-                                        <input
-                                            id={name} type={type} name={name}
-                                            value={(form as any)[name]} onChange={handleInputChange}
-                                            className={textInputCls} required={required}
-                                        />
-                                    </div>
-                                ))}
+                                <div>
+                                    <FieldLabel htmlFor="firstname">First name</FieldLabel>
+                                    <input
+                                        id="firstname" type="text" name="firstname"
+                                        value={form.firstname} onChange={handleNameChange}
+                                        onBlur={handleNameBlur}
+                                        className={fieldErrors.firstname ? errorInputCls : textInputCls}
+                                        required
+                                        pattern="[A-Za-zÀ-ÿ\s'\-]+"
+                                        title="Only letters, spaces, hyphens, and apostrophes are allowed"
+                                    />
+                                    {fieldErrors.firstname && (
+                                        <p className="tw-mt-1 tw-text-xs tw-text-red-600">{fieldErrors.firstname}</p>
+                                    )}
+                                </div>
+                                <div>
+                                    <FieldLabel htmlFor="lastname">Last name</FieldLabel>
+                                    <input
+                                        id="lastname" type="text" name="lastname"
+                                        value={form.lastname} onChange={handleNameChange}
+                                        onBlur={handleNameBlur}
+                                        className={fieldErrors.lastname ? errorInputCls : textInputCls}
+                                        required
+                                        pattern="[A-Za-zÀ-ÿ\s'\-]+"
+                                        title="Only letters, spaces, hyphens, and apostrophes are allowed"
+                                    />
+                                    {fieldErrors.lastname && (
+                                        <p className="tw-mt-1 tw-text-xs tw-text-red-600">{fieldErrors.lastname}</p>
+                                    )}
+                                </div>
+                                <div>
+                                    <FieldLabel htmlFor="email">Institutional email</FieldLabel>
+                                    <input
+                                        id="email" type="email" name="email"
+                                        value={form.email} onChange={handleInputChange}
+                                        className={textInputCls} required
+                                    />
+                                </div>
                             </div>
                         </Card>
 
@@ -229,6 +308,26 @@ export default function MentorApplicationForm() {
                                 title="Academic / Teaching Background"
                                 description="Tell us whether you currently mentor as a student peer or an instructor."
                             />
+
+                            {/* Role Dropdown */}
+                            <div className="tw-mb-5">
+                                <FieldLabel htmlFor="currentRole">Your Role</FieldLabel>
+                                <select
+                                    id="currentRole"
+                                    name="currentRole"
+                                    value={form.currentRole}
+                                    onChange={handleInputChange}
+                                    className={textInputCls}
+                                    required
+                                >
+                                    {roleOptions.map(opt => (
+                                        <option key={opt.value} value={opt.value} disabled={opt.value === ''}>
+                                            {opt.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
                             <fieldset className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-3 tw-mb-5" aria-label="Education role">
                                 <legend className="tw-sr-only">Education role</legend>
                                 {(['student', 'instructor'] as const).map((role) => {
@@ -293,50 +392,10 @@ export default function MentorApplicationForm() {
                             </div>
                         </Card>
 
-                        {/* 3 ── Professional Background */}
-                        <Card>
-                            <SectionHeader step={3} title="Professional Background" />
-                            <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-5">
-                                <div>
-                                    <FieldLabel htmlFor="currentRole">Current role / position</FieldLabel>
-                                    <input id="currentRole" type="text" name="currentRole"
-                                        value={form.currentRole} onChange={handleInputChange}
-                                        placeholder="e.g., Senior Software Engineer" className={textInputCls} required />
-                                </div>
-                                <div>
-                                    <FieldLabel htmlFor="organization" optional>Organization / affiliation</FieldLabel>
-                                    <input id="organization" type="text" name="organization"
-                                        value={form.organization} onChange={handleInputChange}
-                                        placeholder="Company, Institution, or Organization" className={textInputCls} />
-                                </div>
-                                <div>
-                                    <FieldLabel htmlFor="yearsOfExperience">Years of experience</FieldLabel>
-                                    <input id="yearsOfExperience" type="number" min="0" name="yearsOfExperience"
-                                        value={form.yearsOfExperience} onChange={handleInputChange}
-                                        placeholder="e.g., 5"
-                                        className={textInputCls} required />
-                                </div>
-                                <div className="tw-grid tw-grid-cols-2 tw-gap-4">
-                                    <div>
-                                        <FieldLabel htmlFor="linkedinUrl" optional>LinkedIn</FieldLabel>
-                                        <input id="linkedinUrl" type="url" name="linkedinUrl"
-                                            value={form.linkedinUrl} onChange={handleInputChange}
-                                            placeholder="https://" className={textInputCls} />
-                                    </div>
-                                    <div>
-                                        <FieldLabel htmlFor="portfolioUrl" optional>Portfolio</FieldLabel>
-                                        <input id="portfolioUrl" type="url" name="portfolioUrl"
-                                            value={form.portfolioUrl} onChange={handleInputChange}
-                                            placeholder="https://" className={textInputCls} />
-                                    </div>
-                                </div>
-                            </div>
-                        </Card>
-
-                        {/* 4 ── Areas of Expertise */}
+                        {/* 3 ── Areas of Expertise */}
                         <Card>
                             <SectionHeader
-                                step={4}
+                                step={3}
                                 title="Areas of Expertise"
                                 description="Select the domains where you can provide the most value. Choose all that apply."
                             />
@@ -349,12 +408,12 @@ export default function MentorApplicationForm() {
                             </div>
                         </Card>
 
-                        {/* 5 ── Mentoring Focus */}
+                        {/* 4 ── Mentoring Focus (Academic Only) */}
                         <Card>
                             <SectionHeader
-                                step={5}
+                                step={4}
                                 title="Mentoring Focus"
-                                description="Indicate the topics you are most comfortable guiding mentees through."
+                                description="Indicate the academic topics you are most comfortable guiding mentees through."
                             />
                             <div className="tw-flex tw-flex-wrap tw-gap-2.5">
                                 {mentoringTopicsOptions.map((opt) => (
@@ -365,9 +424,9 @@ export default function MentorApplicationForm() {
                             </div>
                         </Card>
 
-                        {/* 6 ── Availability */}
+                        {/* 5 ── Availability */}
                         <Card>
-                            <SectionHeader step={6} title="Availability & Commitment" />
+                            <SectionHeader step={5} title="Availability & Commitment" />
                             <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-8">
                                 <div>
                                     <FieldLabel>Preferred days</FieldLabel>
@@ -400,25 +459,26 @@ export default function MentorApplicationForm() {
                             </div>
                         </Card>
 
-                        {/* 7 ── Mentorship Style */}
+                        {/* 6 ── Mentorship Style */}
                         <Card>
-                            <SectionHeader step={7} title="Your Mentorship Style" />
+                            <SectionHeader step={6} title="Your Mentorship Style" />
                             <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-5">
-                                {[
-                                    { label: 'Professional summary', name: 'professionalSummary', placeholder: 'Highlight your expertise, teaching style, and mentoring philosophy.', required: true },
-                                    { label: 'Notable achievements', name: 'achievements', placeholder: 'Awards, certifications, successful projects, or mentorship highlights.', optional: true },
-                                    { label: 'Mentoring goals', name: 'mentoringGoals', placeholder: 'What outcomes do you hope your mentees achieve?', required: true },
-                                    { label: 'Why do you want to mentor?', name: 'motivation', placeholder: 'Tell us about your motivation for joining the mentoring program.', optional: true },
-                                ].map(({ label, name, placeholder, required, optional }) => (
-                                    <div key={name}>
-                                        <FieldLabel htmlFor={name} optional={optional}>{label}</FieldLabel>
-                                        <textarea id={name} name={name}
-                                            value={(form as any)[name]} onChange={handleInputChange}
-                                            rows={4} placeholder={placeholder} required={required}
-                                            className={`${textInputCls} tw-resize-none`}
-                                        />
-                                    </div>
-                                ))}
+                                <div>
+                                    <FieldLabel htmlFor="mentoringGoals">Mentoring goals</FieldLabel>
+                                    <textarea id="mentoringGoals" name="mentoringGoals"
+                                        value={form.mentoringGoals} onChange={handleInputChange}
+                                        rows={4} placeholder="What outcomes do you hope your mentees achieve?" required
+                                        className={`${textInputCls} tw-resize-none`}
+                                    />
+                                </div>
+                                <div>
+                                    <FieldLabel htmlFor="motivation" optional>Why do you want to mentor?</FieldLabel>
+                                    <textarea id="motivation" name="motivation"
+                                        value={form.motivation} onChange={handleInputChange}
+                                        rows={4} placeholder="Tell us about your motivation for joining the mentoring program."
+                                        className={`${textInputCls} tw-resize-none`}
+                                    />
+                                </div>
                             </div>
                         </Card>
 
@@ -436,7 +496,7 @@ export default function MentorApplicationForm() {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="tw-px-8 tw-py-3 tw-bg-primary hover:tw-bg-primary/90 tw-text-white tw-font-bold tw-rounded-xl tw-transition-colors tw-text-sm tw-tracking-wide tw-uppercase disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
+                                    className="tw-px-8 tw-py-3.5 tw-bg-primary hover:tw-bg-primary/90 tw-text-white tw-font-bold tw-rounded-xl tw-transition-all tw-text-sm tw-tracking-wide tw-uppercase disabled:tw-opacity-50 disabled:tw-cursor-not-allowed tw-shadow-[inset_0_-3px_0_rgba(0,0,0,0.2),_0_4px_14px_rgba(var(--color-primary),0.3)] active:tw-shadow-none active:tw-translate-y-[3px]"
                                 >
                                     {loading ? 'Submitting…' : 'Submit Application'}
                                 </button>

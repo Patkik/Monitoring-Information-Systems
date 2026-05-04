@@ -87,39 +87,63 @@ export default function SetPasswordPage() {
   };
 
   return (
-    <AuthLayout title="Set your password" subtitle="Secure your account to enable email/password login.">
+    <AuthLayout 
+      title="Set your\npassword." 
+      subtitle="Secure your account to enable email/password login."
+    >
+      <header className="tw-mb-8">
+        <p className="tw-text-[11px] tw-font-semibold tw-uppercase tw-tracking-[0.2em] tw-text-primary">Set Password</p>
+        <h2 className="login-redesign__form-title tw-mt-2 tw-leading-[1.02] tw-text-[#1d2931]">
+          Secure your
+          <br />
+          account.
+        </h2>
+      </header>
+
       <form ref={formRef} onSubmit={onSubmit} className="tw-space-y-4">
-        {error && <div className="tw-p-3 tw-rounded tw-bg-red-50 tw-text-red-700 tw-text-sm">{error}</div>}
-        {success && <div className="tw-p-3 tw-rounded tw-bg-green-50 tw-text-green-700 tw-text-sm">{success}</div>}
+        {error && <div className="tw-p-3 tw-rounded-xl tw-bg-red-50 tw-text-red-700 tw-text-sm">{error}</div>}
+        {success && <div className="tw-p-3 tw-rounded-xl tw-bg-green-50 tw-text-green-700 tw-text-sm">{success}</div>}
 
         <div>
-          <label className="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">New password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-300 focus:tw-border-purple-500 tw-rounded-xl tw-outline-none"
-            minLength={8}
-            required
-          />
+          <label className="tw-block tw-mb-2 tw-text-[11px] tw-font-semibold tw-tracking-[0.14em] tw-uppercase tw-text-slate-500">New password</label>
+          <div className="tw-relative">
+            <svg className="tw-absolute tw-h-4 tw-w-4 tw-left-4 tw-top-1/2 tw--translate-y-1/2 tw-text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="tw-w-full tw-h-12 tw-pl-11 tw-pr-4 tw-rounded-xl tw-border tw-border-gray-200 tw-bg-[#fbfcfd] focus:tw-bg-white focus:tw-border-primary focus:tw-ring-4 focus:tw-ring-primary/15 tw-outline-none tw-transition"
+              minLength={8}
+              placeholder="........"
+              required
+            />
+          </div>
         </div>
 
         <div>
-          <label className="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">Confirm password</label>
-          <input
-            type="password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            className="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-300 focus:tw-border-purple-500 tw-rounded-xl tw-outline-none"
-            minLength={8}
-            required
-          />
+          <label className="tw-block tw-mb-2 tw-text-[11px] tw-font-semibold tw-tracking-[0.14em] tw-uppercase tw-text-slate-500">Confirm password</label>
+          <div className="tw-relative">
+            <svg className="tw-absolute tw-h-4 tw-w-4 tw-left-4 tw-top-1/2 tw--translate-y-1/2 tw-text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <input
+              type="password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              className="tw-w-full tw-h-12 tw-pl-11 tw-pr-4 tw-rounded-xl tw-border tw-border-gray-200 tw-bg-[#fbfcfd] focus:tw-bg-white focus:tw-border-primary focus:tw-ring-4 focus:tw-ring-primary/15 tw-outline-none tw-transition"
+              minLength={8}
+              placeholder="........"
+              required
+            />
+          </div>
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="tw-w-full tw-bg-purple-600 hover:tw-bg-purple-700 tw-text-white tw-rounded-xl tw-py-3 tw-font-semibold tw-transition-colors tw-uppercase disabled:tw-opacity-70"
+          className="tw-w-full tw-h-[52px] tw-rounded-xl tw-bg-primary hover:tw-bg-primary-dark tw-text-white tw-font-semibold tw-tracking-[0.14em] tw-uppercase tw-transition tw-shadow-[0_10px_30px_rgba(91,22,163,0.35)] hover:tw--translate-y-[1px] disabled:tw-opacity-70 disabled:tw-transform-none"
         >
           {loading ? 'Saving...' : 'Set Password'}
         </button>

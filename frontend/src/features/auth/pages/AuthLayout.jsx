@@ -1,90 +1,107 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import itcsLogo from './itcs-logo.png';
+import './login-redesign.css';
 
-export default function AuthLayout({ title, subtitle, children }) {
+export default function AuthLayout({ 
+  title, 
+  subtitle, 
+  children,
+  leftTopText = "Welcome to the CMIS Portal",
+  stats = [
+    { value: "12k+", label: "Students" },
+    { value: "340+", label: "Courses" },
+    { value: "98%", label: "Satisfaction" }
+  ]
+}) {
+
+  // We map the incoming title/subtitle to the left Hero Title if provided,
+  // or provide a default fallback so it looks great on all auth pages.
+  const heroTitle = title ? title.split('\n').map((line, i, arr) => (
+    <React.Fragment key={i}>
+      {line}
+      {i < arr.length - 1 && <br />}
+    </React.Fragment>
+  )) : (
+    <>Sign in and<br />continue your momentum.</>
+  );
+
+  const heroSubtitle = subtitle || "Mentoring, progress tracking, and guided learning are waiting on the other side.";
 
   return (
-    <div className="tw-min-h-screen tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-bg-white tw-text-gray-900  ">
-      {/* Left Side - Purple Gradient */}
-      <div className="tw-bg-gradient-to-br tw-from-purple-700 tw-to-purple-900 tw-p-10 tw-text-white tw-flex tw-flex-col tw-justify-between tw-relative  ">
-        {/* Solid trail touching the top, with circular badge overlapping near its lower end */}
-  <div className="tw-absolute tw-top-0 tw-left-3 md:tw-left-4 lg:tw-left-6 tw-select-none">
-          <div className="tw-relative">
-            {/* Trail (solid panel) */}
-            <div className="
-              tw-w-32 md:tw-w-44 lg:tw-w-56
-              tw-h-40 md:tw-h-52 lg:tw-h-64
-              tw-bg-gray-100 tw-rounded-br-3xl
-            "></div>
+    <div className="login-redesign tw-min-h-screen tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-bg-[#f7f8fa] tw-text-slate-900">
+      <aside className="tw-hidden md:tw-flex tw-relative tw-overflow-hidden tw-flex-col tw-justify-between tw-p-10 lg:tw-p-12">
+        <div className="login-redesign__mesh" aria-hidden="true" />
+        <div className="login-redesign__grit" aria-hidden="true" />
+        <div className="login-redesign__orbit" aria-hidden="true" />
+        <div className="login-redesign__diamonds" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
 
-            {/* Badge positioned centered on the trail */}
-            <div className="tw-absolute tw-left-1/2 tw--translate-x-1/2 tw-top-24 md:tw-top-32 lg:tw-top-40">
-              <div
-                className="
-                  tw-relative
-                  tw-w-32 tw-h-32 md:tw-w-44 md:tw-h-44 lg:tw-w-56 lg:tw-h-56
-                  tw-rounded-full tw-bg-gradient-to-br tw-from-white tw-to-gray-200
-                  tw-shadow-2xl tw-ring-1 tw-ring-white/60
-                "
-              >
-                <div className="tw-absolute tw-inset-2 md:tw-inset-3 lg:tw-inset-4 tw-rounded-full tw-bg-gray-50 tw-shadow-xl tw-ring-1 tw-ring-gray-200 tw-flex tw-items-center tw-justify-center">
-                  <img
-                    src="/itcs-logo.png"
-                    alt="Information Technology Computer Society logo"
-                    className="tw-w-[70%] tw-h-[70%] tw-object-contain tw-rounded-full tw-drop-shadow-md"
-                    loading="eager"
-                    decoding="async"
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = '/logo.svg';
-                    }}
-                  />
+        <div className="tw-relative tw-z-10 tw-flex tw-items-center tw-gap-3 tw-animate-[fadeUp_.8s_cubic-bezier(0.16,1,0.3,1)_both]">
+          <div className="tw-relative tw-h-14 tw-w-14 tw-rounded-full tw-bg-white/15 tw-backdrop-blur-md tw-ring-1 tw-ring-white/40 tw-flex tw-items-center tw-justify-center tw-overflow-hidden login-redesign__badge-ring">
+            <img
+              src={itcsLogo}
+              alt="Information Technology Computer Society logo"
+              className="tw-w-[72%] tw-h-[72%] tw-object-contain tw-drop-shadow-md login-redesign__badge-logo"
+              loading="eager"
+              decoding="async"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = '/logo.svg';
+              }}
+            />
+          </div>
+          <div>
+            <p className="tw-text-[11px] tw-uppercase tw-tracking-[0.24em] tw-text-purple-200/80">CMIS Portal</p>
+            <p className="tw-text-xs tw-tracking-[0.08em] tw-uppercase tw-text-white/70">Activate Project Access</p>
+          </div>
+        </div>
+
+        <div className="tw-relative tw-z-10 tw-max-w-[32rem] tw-space-y-5">
+          <p className="tw-text-[11px] tw-font-semibold tw-uppercase tw-tracking-[0.24em] tw-text-purple-200/85">{leftTopText}</p>
+          <h1 className="login-redesign__hero-title tw-leading-[0.95] tw-text-white">
+            {heroTitle}
+          </h1>
+          <p className="tw-max-w-[30ch] tw-text-sm tw-leading-7 tw-text-purple-100/70">
+            {heroSubtitle}
+          </p>
+          <div className="tw-h-[2px] tw-w-14 tw-bg-gradient-to-r tw-from-purple-300 tw-to-transparent" />
+          {stats && stats.length > 0 && (
+            <div className="tw-flex tw-gap-8 tw-pt-3">
+              {stats.map((s, i) => (
+                <div key={i}>
+                  <p className="tw-text-3xl tw-font-semibold tw-text-white">{s.value}</p>
+                  <p className="tw-mt-1 tw-text-[10px] tw-tracking-[0.14em] tw-uppercase tw-text-purple-200/70">{s.label}</p>
                 </div>
-              </div>
+              ))}
             </div>
-          </div>
+          )}
         </div>
+      </aside>
 
-        {/* Main Content */}
-        <div className="tw-flex tw-flex-col tw-justify-center tw-flex-1">
-          <div className="tw-max-w-xl tw-mx-auto tw-text-center">
-            <h1 className="tw-text-4xl md:tw-text-5xl tw-font-extrabold tw-tracking-tight tw-mb-4">
-              {title}
-            </h1>
-            {subtitle && <p className="tw-text-lg tw-opacity-90">{subtitle}</p>}
-          </div>
-        </div>
+      <main className="tw-relative tw-flex tw-items-center tw-justify-center tw-p-6 md:tw-p-10 lg:tw-p-14 tw-bg-white">
+        <div className="tw-absolute tw-top-0 tw-left-0 tw-right-0 tw-h-[3px] tw-bg-gradient-to-r tw-from-primary tw-via-purple-400 tw-to-transparent" aria-hidden="true" />
 
-        {/* Decorative Wave Elements */}
-        <div className="tw-absolute tw-bottom-0 tw-left-0 tw-right-0 tw-h-32 tw-overflow-hidden">
-          <svg
-            className="tw-w-full tw-h-full"
-            viewBox="0 0 1200 120"
-            preserveAspectRatio="none"
+        <div className="tw-w-full tw-max-w-xl tw-rounded-3xl tw-bg-white/90 tw-backdrop-blur-sm tw-border tw-border-purple-100 tw-shadow-[0_24px_80px_rgba(91,22,163,0.08)] tw-p-6 sm:tw-p-8 md:tw-p-10">
+          <Link
+            to="/"
+            className="tw-inline-flex tw-items-center tw-gap-2 tw-text-sm tw-font-semibold tw-text-slate-500 hover:tw-text-primary tw-transition-colors"
           >
-            <path
-              d="M0,60 Q300,20 600,60 T1200,60 L1200,120 L0,120 Z"
-              fill="rgba(255,255,255,0.1)"
-            />
-            <path
-              d="M0,80 Q300,40 600,80 T1200,80 L1200,120 L0,120 Z"
-              fill="rgba(255,255,255,0.05)"
-            />
-            {/* Dots */}
-            <circle cx="200" cy="50" r="2" fill="rgba(255,255,255,0.3)" />
-            <circle cx="400" cy="45" r="2" fill="rgba(255,255,255,0.3)" />
-            <circle cx="600" cy="55" r="2" fill="rgba(255,255,255,0.3)" />
-            <circle cx="800" cy="48" r="2" fill="rgba(255,255,255,0.3)" />
-            <circle cx="1000" cy="52" r="2" fill="rgba(255,255,255,0.3)" />
-          </svg>
-        </div>
-      </div>
+            <span aria-hidden="true">&larr;</span>
+            Return to landing page
+          </Link>
 
-      {/* Right Side - White Background */}
-      <div className="tw-flex tw-items-center tw-justify-center tw-p-6 md:tw-p-10 tw-bg-white ">
-        <div className="tw-w-full tw-max-w-xl tw-space-y-6">
-          <div className="tw-w-full">{children}</div>
+          <div className="tw-w-full tw-mt-8">
+            {children}
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
