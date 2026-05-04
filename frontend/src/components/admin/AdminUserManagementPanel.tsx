@@ -435,7 +435,13 @@ const AdminUserManagementPanel: React.FC = () => {
                     >
                         Next
                     </button>
+                    <label htmlFor="admin-users-rows-per-page" className="tw-sr-only">
+                        Rows per page
+                    </label>
                     <select
+                        id="admin-users-rows-per-page"
+                        aria-label="Rows per page"
+                        title="Rows per page"
                         value={filters.limit}
                         onChange={(event) => handleFilterChange('limit', Number(event.target.value))}
                         className="tw-rounded-lg tw-border tw-border-gray-300 tw-px-3 tw-py-1.5 tw-text-sm"

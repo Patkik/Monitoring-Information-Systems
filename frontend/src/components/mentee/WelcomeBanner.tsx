@@ -134,6 +134,7 @@ const WelcomeBanner: React.FC = () => {
       </h1>
       <div className="tw-relative">
         <input
+          id="welcome-search-input"
           type="text"
           placeholder="Search mentors, sessions, or resources..."
           value={query}
@@ -145,14 +146,14 @@ const WelcomeBanner: React.FC = () => {
           }}
           onKeyDown={handleKeyDown}
           className="tw-w-full tw-px-4 tw-py-3 tw-pl-12 tw-pr-12 tw-rounded-lg tw-text-gray-900 tw-bg-white focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-purple-300"
-          aria-autocomplete="list"
-          aria-expanded={isFocused}
-          aria-controls="welcome-search-results"
+          aria-label="Search mentors, sessions, or resources"
+          title="Search mentors, sessions, or resources"
         />
         {query && (
             <button
               type="button"
               aria-label="Clear search"
+              title="Clear search"
               onClick={() => {
                   setQuery('');
                   setActiveIndex(0);
@@ -166,15 +167,17 @@ const WelcomeBanner: React.FC = () => {
         {isFocused && filteredShortcuts.length > 0 && (
             <div
               id="welcome-search-results"
-              role="listbox"
+              aria-label="Search suggestions"
+              title="Search suggestions"
               className="tw-absolute tw-left-0 tw-right-0 tw-mt-2 tw-bg-white tw-rounded-xl tw-shadow-lg tw-border tw-border-gray-100 tw-z-10"
             >
               {filteredShortcuts.map((shortcut, index) => (
                   <button
+                    id={`welcome-search-option-${shortcut.id}`}
                     key={shortcut.id}
                     type="button"
-                    role="option"
-                    aria-selected={activeIndex === index}
+                    aria-label={shortcut.label}
+                    title={shortcut.label}
                     onMouseDown={(event) => event.preventDefault()}
                     onClick={() => handleNavigate(shortcut.path)}
                     className={`tw-w-full tw-text-left tw-px-4 tw-py-3 tw-transition tw-duration-150 ${

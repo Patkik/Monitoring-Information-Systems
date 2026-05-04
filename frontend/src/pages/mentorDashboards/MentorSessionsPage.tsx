@@ -78,20 +78,20 @@ const MentorSessionsPage: React.FC = () => {
 
                 {/* Chat Tab */}
                 {activeTab === 'chat' && (
-                    <div className="tw-grid tw-grid-cols-1 lg:tw-grid-cols-12 tw-gap-5 lg:tw-gap-6" style={{ minHeight: '500px' }}>
+                    <div className="tw-grid tw-grid-cols-1 lg:tw-grid-cols-12 tw-gap-5 lg:tw-gap-6 tw-min-h-[500px]">
                         <aside className="lg:tw-col-span-4">
-                            <div className="tw-bg-white tw-rounded-2xl tw-border tw-border-gray-100 tw-shadow-sm tw-overflow-hidden" style={{ height: '500px' }}>
+                            <div className="tw-bg-white tw-rounded-2xl tw-border tw-border-gray-100 tw-shadow-sm tw-overflow-hidden tw-h-[500px]">
                                 <div className="tw-px-4 tw-py-3 tw-border-b tw-border-gray-100 tw-bg-gray-50">
                                     <h3 className="tw-text-sm tw-font-bold tw-text-gray-900">Mentee Conversations</h3>
                                     <p className="tw-text-xs tw-text-gray-500">Chat with your mentees</p>
                                 </div>
-                                <div className="tw-overflow-y-auto" style={{ height: 'calc(100% - 52px)' }}>
+                                <div className="tw-overflow-y-auto tw-h-[calc(100%-52px)]">
                                     <ChatThreadList />
                                 </div>
                             </div>
                         </aside>
                         <section className="lg:tw-col-span-8">
-                            <div className="tw-bg-white tw-rounded-2xl tw-border tw-border-gray-100 tw-shadow-sm tw-overflow-hidden" style={{ height: '500px' }}>
+                            <div className="tw-bg-white tw-rounded-2xl tw-border tw-border-gray-100 tw-shadow-sm tw-overflow-hidden tw-h-[500px]">
                                 <ChatWindow />
                             </div>
                         </section>

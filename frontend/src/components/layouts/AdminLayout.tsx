@@ -195,7 +195,10 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             type="button"
             className="md:tw-hidden tw-p-2 tw-rounded-md tw-text-gray-500 hover:tw-bg-gray-100"
             onClick={() => setSidebarOpen(true)}
+            aria-label="Open admin navigation"
+            title="Open admin navigation"
           >
+            <span className="tw-sr-only">Open admin navigation</span>
             <svg className="tw-w-5 tw-h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
@@ -210,7 +213,10 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               type="button"
               onClick={() => setNotifOpen(!notifOpen)}
               className="tw-relative tw-p-2 tw-text-gray-500 hover:tw-text-gray-700 tw-rounded-full hover:tw-bg-gray-100 tw-transition-colors"
+              aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
+              title="Notifications"
             >
+              <span className="tw-sr-only">Notifications</span>
               <svg className="tw-w-5 tw-h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
               </svg>
@@ -259,7 +265,10 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               type="button"
               onClick={() => setDropdownOpen(!dropdownOpen)}
               className="tw-flex tw-items-center tw-gap-2 tw-p-1 tw-rounded-full hover:tw-bg-gray-100 tw-transition-colors"
+              aria-label="Open profile menu"
+              title="Open profile menu"
             >
+              <span className="tw-sr-only">Open profile menu</span>
               <div className="tw-h-8 tw-w-8 tw-rounded-full tw-bg-primary tw-text-white tw-flex tw-items-center tw-justify-center tw-text-sm tw-font-semibold tw-overflow-hidden">
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Avatar" className="tw-w-full tw-h-full tw-object-cover" />

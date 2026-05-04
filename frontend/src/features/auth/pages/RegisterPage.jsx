@@ -84,23 +84,6 @@ export default function RegisterPage() {
 			localStorage.setItem('user', JSON.stringify(sanitizedUser));
 			localStorage.setItem('accountStatus', accountStatus);
 
-<<<<<<< HEAD
-			if (role === 'mentor') {
-				localStorage.removeItem('token');
-				localStorage.removeItem('user');
-				navigate(`/verify-email?email=${encodeURIComponent(form.email)}&role=mentor`);
-				return;
-			}
-
-			// If backend returned token+user, auto-login and navigate into the application flow
-			if (result?.token && result?.user) {
-				localStorage.setItem('token', result.token);
-				localStorage.setItem('user', JSON.stringify(result.user));
-			}
-
-			if (role === 'mentee') {
-				navigate('/mentee/application');
-=======
 			if (!normalizedRole) {
 				window.location.href = '/role-selection';
 				return;
@@ -109,7 +92,6 @@ export default function RegisterPage() {
 				window.location.href = '/mentor/application';
 			} else if (normalizedRole === 'mentee') {
 				window.location.href = '/mentee/application';
->>>>>>> rescue-01fad88
 			} else {
 				window.location.href = '/';
 			}

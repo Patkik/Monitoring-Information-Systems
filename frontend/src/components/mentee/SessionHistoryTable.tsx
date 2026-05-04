@@ -295,13 +295,10 @@ const FlagFeedbackModal: React.FC<FlagFeedbackModalProps> = ({ session, onClose 
 
 const SessionHistoryTable: React.FC = () => {
   const [sortBy, setSortBy] = useState<SortKey>('date');
-<<<<<<< HEAD
   const [selectedSession, setSelectedSession] = useState<MenteeSession | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-=======
   const [editingSession, setEditingSession] = useState<MenteeSession | null>(null);
   const [flaggingSession, setFlaggingSession] = useState<MenteeSession | null>(null);
->>>>>>> 547c03aabbcc2e1d315e79f0cefbe52a57b051d1
   const { data: sessions = [], isLoading, isError, refetch } = useMenteeSessions();
 
   const historySessions = useMemo(
@@ -489,8 +486,6 @@ const SessionHistoryTable: React.FC = () => {
         </table>
       </div>
 
-<<<<<<< HEAD
-      {/* Session Detail Modal */}
       <SessionDetailModal
         session={selectedSession}
         isOpen={isDetailModalOpen}
@@ -499,7 +494,7 @@ const SessionHistoryTable: React.FC = () => {
           setSelectedSession(null);
         }}
       />
-=======
+
       {editingSession ? (
         <EditFeedbackModal session={editingSession} onClose={() => setEditingSession(null)} />
       ) : null}
@@ -507,7 +502,6 @@ const SessionHistoryTable: React.FC = () => {
       {flaggingSession ? (
         <FlagFeedbackModal session={flaggingSession} onClose={() => setFlaggingSession(null)} />
       ) : null}
->>>>>>> 547c03aabbcc2e1d315e79f0cefbe52a57b051d1
     </div>
   );
 };

@@ -296,6 +296,9 @@ export default function MentorApplicationForm() {
                                         id="email" type="email" name="email"
                                         value={form.email} onChange={handleInputChange}
                                         className={textInputCls} required
+                                        placeholder="name@student.buksu.edu.ph"
+                                        aria-label="Institutional email"
+                                        title="Institutional email"
                                     />
                                 </div>
                             </div>
@@ -318,6 +321,8 @@ export default function MentorApplicationForm() {
                                     value={form.currentRole}
                                     onChange={handleInputChange}
                                     className={textInputCls}
+                                    aria-label="Your role"
+                                    title="Your role"
                                     required
                                 >
                                     {roleOptions.map(opt => (
@@ -368,7 +373,10 @@ export default function MentorApplicationForm() {
                                     </FieldLabel>
                                     <select id="educationProgram" name="educationProgram"
                                         value={form.educationProgram} onChange={handleInputChange}
-                                        className={textInputCls} required>
+                                        className={textInputCls} required
+                                        aria-label="Program"
+                                        title="Program"
+                                    >
                                         <option value="" disabled>Select your program</option>
                                         <option value="BSIT">BSIT</option>
                                         <option value="BSEMC">BSEMC</option>
