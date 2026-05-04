@@ -53,9 +53,10 @@ const MentorSessionDetails: React.FC<MentorSessionDetailsProps> = ({
         <aside className="tw-hidden lg:tw-block lg:tw-col-span-1">
             {selectedSession ? (
                 <div className="tw-sticky tw-top-6 tw-space-y-4">
-                    <div className="tw-bg-white tw-rounded-xl tw-border tw-border-gray-100 tw-p-4">
+                    <div className="tw-bg-white tw-rounded-xl tw-border tw-border-gray-100 tw-shadow-sm tw-p-4">
                         <div className="tw-flex tw-justify-between tw-items-start">
                             <div>
+                                <p className="tw-text-xs tw-font-bold tw-tracking-wide tw-uppercase tw-text-primary tw-mb-1">Session details</p>
                                 <h3 className="tw-text-sm tw-font-semibold tw-text-gray-900">{selectedSession.subject}</h3>
                                 <p className="tw-text-xs tw-text-gray-500">Mentee: {selectedSession.mentee?.name || selectedSession.participants?.[0]?.name || '—'}</p>
                                 <p className="tw-text-xs tw-text-gray-400 tw-mt-2">{formatDate(selectedSession.date)}</p>
@@ -114,7 +115,7 @@ const MentorSessionDetails: React.FC<MentorSessionDetailsProps> = ({
                                 type="button"
                                 onClick={() => handleOpenChat(selectedSession.chatThreadId)}
                                 disabled={!selectedSession.chatThreadId}
-                                className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white tw-text-sm tw-font-semibold tw-text-gray-700 tw-px-3 tw-py-2 hover:tw-bg-gray-50 disabled:tw-opacity-50"
+                                className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white tw-text-sm tw-font-semibold tw-text-gray-700 tw-px-3 tw-py-2 hover:tw-bg-gray-50 focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-gray-200 disabled:tw-opacity-50"
                             >
                                 Open chat
                             </button>
@@ -122,7 +123,7 @@ const MentorSessionDetails: React.FC<MentorSessionDetailsProps> = ({
                             <button
                                 type="button"
                                 onClick={() => openCompletionModal(selectedSession)}
-                                className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-bg-primary tw-text-white tw-text-sm tw-font-semibold tw-px-3 tw-py-2 hover:tw-bg-primary/90"
+                                className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-bg-primary tw-text-white tw-text-sm tw-font-semibold tw-px-3 tw-py-2 hover:tw-bg-primary/90 focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-primary"
                             >
                                 {selectedSession.attended ? 'Update' : 'Mark complete'}
                             </button>
@@ -144,7 +145,6 @@ const MentorSessionDetails: React.FC<MentorSessionDetailsProps> = ({
                             <button
                                 type="button"
                                 onClick={() => openAttendanceModal(selectedSession)}
-                                aria-disabled={!attendanceReady}
                                 title={attendanceReady ? undefined : 'Attendance opens at the session start time.'}
                                 className={`tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white tw-text-sm tw-font-semibold tw-text-gray-700 tw-px-3 tw-py-2 hover:tw-bg-gray-50 ${
                                     attendanceReady ? '' : 'tw-opacity-60 tw-cursor-not-allowed'
@@ -193,7 +193,7 @@ const MentorSessionDetails: React.FC<MentorSessionDetailsProps> = ({
                                                 setFeedbackSession(selectedSession);
                                                 setFeedbackOpen(true);
                                             }}
-                                            className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white tw-text-xs tw-font-semibold tw-text-gray-700 tw-px-3 tw-py-2 hover:tw-bg-gray-100"
+                                            className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white tw-text-xs tw-font-semibold tw-text-gray-700 tw-px-3 tw-py-2 hover:tw-bg-gray-100 focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-gray-200"
                                         >
                                             View Feedback
                                         </button>
@@ -202,7 +202,7 @@ const MentorSessionDetails: React.FC<MentorSessionDetailsProps> = ({
                                             <button
                                                 type="button"
                                                 onClick={() => openFeedbackModal(selectedSession)}
-                                                className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-bg-primary tw-text-white tw-text-xs tw-font-semibold tw-px-3 tw-py-2 hover:tw-bg-primary/90"
+                                                className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-bg-primary tw-text-white tw-text-xs tw-font-semibold tw-px-3 tw-py-2 hover:tw-bg-primary/90 focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-primary"
                                             >
                                                 Edit Feedback
                                             </button>
@@ -218,7 +218,7 @@ const MentorSessionDetails: React.FC<MentorSessionDetailsProps> = ({
                     </div>
 
                     <div className="tw-hidden lg:tw-block">
-                        <div className="tw-mt-4 tw-bg-white tw-rounded-xl tw-border tw-border-gray-100 tw-p-4">
+                        <div className="tw-mt-4 tw-bg-white tw-rounded-xl tw-border tw-border-gray-100 tw-shadow-sm tw-p-4">
                             <ProgressDashboard menteeId={selectedSession.mentee?.id || (selectedSession.participants?.[0]?.id ?? null)} />
                         </div>
                     </div>
@@ -228,7 +228,7 @@ const MentorSessionDetails: React.FC<MentorSessionDetailsProps> = ({
                     <ProgressDashboard menteeId={feedbackSession.mentee?.id || (feedbackSession.participants?.[0]?.id ?? null)} />
                 </div>
             ) : (
-                <div className="tw-bg-white tw-rounded-xl tw-border tw-border-gray-100 tw-p-4 tw-text-sm tw-text-gray-500">
+                <div className="tw-bg-white tw-rounded-xl tw-border tw-border-gray-100 tw-shadow-sm tw-p-4 tw-text-sm tw-text-gray-500">
                     Select a session (click View details) to view the mentee's progress snapshot + session actions here.
                 </div>
             )}

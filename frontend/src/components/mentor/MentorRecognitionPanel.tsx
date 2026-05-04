@@ -146,10 +146,10 @@ const MentorRecognitionPanel: React.FC = () => {
     };
 
     return (
-        <section className="tw-bg-white tw-border tw-border-gray-200 tw-rounded-2xl tw-shadow-sm tw-p-6">
+        <section className="tw-bg-white tw-border tw-border-gray-100 tw-rounded-xl tw-shadow-sm tw-p-6">
             <div className="tw-flex tw-flex-col lg:tw-flex-row lg:tw-items-start tw-justify-between tw-gap-6">
                 <div className="tw-space-y-2">
-                    <p className="tw-text-sm tw-font-semibold tw-text-primary tw-uppercase">Recognition queue</p>
+                    <p className="tw-text-xs tw-font-bold tw-tracking-wide tw-text-primary tw-uppercase">Recognition queue</p>
                     <h2 className="tw-text-2xl tw-font-bold tw-text-gray-900">Certificates you’ve issued</h2>
                     <p className="tw-text-sm tw-text-gray-600">
                         Track which mentees have already received recognition, resend downloads, and quickly share verification links.
@@ -178,7 +178,7 @@ const MentorRecognitionPanel: React.FC = () => {
                         value={searchTerm}
                         onChange={(event) => setSearchTerm(event.target.value)}
                         placeholder="Search mentee, program, or serial number"
-                        className="tw-w-full tw-px-4 tw-py-2 tw-pr-10 tw-border tw-border-gray-300 tw-rounded-lg tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary"
+                            className="tw-w-full tw-px-4 tw-py-2 tw-pr-10 tw-border tw-border-gray-200 tw-rounded-lg tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary/20 focus:tw-border-primary"
                         aria-label="Search certificates"
                     />
                     {searchTerm ? (
@@ -328,7 +328,7 @@ const MentorRecognitionPanel: React.FC = () => {
                     onClick={handleCloseSignatureModal}
                 >
                     <div
-                        className="tw-bg-white tw-rounded-2xl tw-shadow-2xl tw-w-full tw-max-w-lg tw-p-6 tw-space-y-4"
+                        className="tw-bg-white tw-rounded-xl tw-border tw-border-gray-100 tw-shadow-2xl tw-w-full tw-max-w-lg tw-p-6 tw-space-y-4"
                         onClick={(event) => event.stopPropagation()}
                     >
                         <header className="tw-space-y-1">
@@ -357,7 +357,7 @@ const MentorRecognitionPanel: React.FC = () => {
                                     onChange={(event) => setSignatureStatement(event.target.value)}
                                     rows={3}
                                     maxLength={500}
-                                    className="tw-mt-1 tw-w-full tw-rounded-lg tw-border tw-border-gray-300 tw-px-3 tw-py-2 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary"
+                                    className="tw-mt-1 tw-w-full tw-rounded-lg tw-border tw-border-gray-200 tw-px-3 tw-py-2 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary/20 focus:tw-border-primary"
                                     placeholder="E.g., Completed all capstone requirements and attended exit interview."
                                 />
                             </label>
@@ -367,7 +367,7 @@ const MentorRecognitionPanel: React.FC = () => {
                                     type="text"
                                     value={signatureTitle}
                                     onChange={(event) => setSignatureTitle(event.target.value)}
-                                    className="tw-mt-1 tw-w-full tw-rounded-lg tw-border tw-border-gray-300 tw-px-3 tw-py-2 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary"
+                                    className="tw-mt-1 tw-w-full tw-rounded-lg tw-border tw-border-gray-200 tw-px-3 tw-py-2 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary/20 focus:tw-border-primary"
                                     placeholder="Mentor, Industry Coach, etc."
                                 />
                             </label>

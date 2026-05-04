@@ -114,8 +114,6 @@ const start = async () => {
     }
   }
 
-  const sanitizeMongoUri = (value) => String(value).replace(/(mongodb(?:\+srv)?:\/\/)([^@/]+)@/i, '$1<credentials>@');
-
   const connOptions = {
     // rely on modern mongoose defaults
     serverSelectionTimeoutMS: 10000,
@@ -125,10 +123,8 @@ const start = async () => {
 
   const getConnOptionsForUri = (mongoUri) => {
     const options = { ...connOptions };
-    // Enable TLS only for SRV (Atlas) URIs or when explicitly requested via env.
     if (String(mongoUri).startsWith('mongodb+srv://') || process.env.MONGODB_TLS === 'true') {
       options.tls = true;
-      options.tlsAllowInvalidCertificates = process.env.MONGODB_TLS_ALLOW_INVALID === 'true';
     }
     return options;
   };
@@ -175,7 +171,7 @@ const start = async () => {
         usingFallbackUri = true;
         activeUri = fallbackUri;
         logger.warn('MongoDB SRV lookup failed; switching to fallback MongoDB URI for subsequent retries', {
-          fallbackUri: sanitizeMongoUri(fallbackUri),
+          fallbackUri: fallbackUri.replace(/(mongodb(?:\+srv)?:\/\/)([^@/]+)@/i, '$1<credentials>@'),
         });
       }
 

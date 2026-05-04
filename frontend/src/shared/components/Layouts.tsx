@@ -141,13 +141,17 @@ export const CardGrid: React.FC<CardGridProps> = ({
     ? Math.min(Math.max(Math.floor(columns), 1), 6)
     : 3;
 
+  const cardGridColsClassMap: Record<1 | 2 | 3 | 4 | 5 | 6, string> = {
+    1: 'tw-grid-cols-1',
+    2: 'tw-grid-cols-1 sm:tw-grid-cols-2',
+    3: 'tw-grid-cols-1 sm:tw-grid-cols-2 lg:tw-grid-cols-3',
+    4: 'tw-grid-cols-1 sm:tw-grid-cols-2 lg:tw-grid-cols-4',
+    5: 'tw-grid-cols-1 sm:tw-grid-cols-2 lg:tw-grid-cols-3 xl:tw-grid-cols-5',
+    6: 'tw-grid-cols-1 sm:tw-grid-cols-2 lg:tw-grid-cols-3 xl:tw-grid-cols-6',
+  };
+
   return (
-    <div
-      className={`card-grid ${className}`.trim()}
-      style={{
-        gridTemplateColumns: `repeat(auto-fill, minmax(calc((100% - ((var(--spacing-6)) * ${safeColumns - 1})) / ${safeColumns}), 1fr))`,
-      }}
-    >
+    <div className={`card-grid tw-grid tw-gap-6 ${cardGridColsClassMap[safeColumns as 1 | 2 | 3 | 4 | 5 | 6]} ${className}`.trim()}>
       {children}
     </div>
   );
@@ -166,18 +170,25 @@ interface FlexRowProps {
 }
 
 const gapMap = {
-  sm: 'var(--spacing-2)',
-  md: 'var(--spacing-4)',
-  lg: 'var(--spacing-6)',
-  xl: 'var(--spacing-8)',
+  sm: 'tw-gap-2',
+  md: 'tw-gap-4',
+  lg: 'tw-gap-6',
+  xl: 'tw-gap-8',
+};
+
+const alignMap = {
+  start: 'tw-items-start',
+  center: 'tw-items-center',
+  end: 'tw-items-end',
+  stretch: 'tw-items-stretch',
 };
 
 const justifyMap = {
-  start: 'flex-start',
-  center: 'center',
-  end: 'flex-end',
-  between: 'space-between',
-  around: 'space-around',
+  start: 'tw-justify-start',
+  center: 'tw-justify-center',
+  end: 'tw-justify-end',
+  between: 'tw-justify-between',
+  around: 'tw-justify-around',
 };
 
 /**
@@ -192,14 +203,7 @@ export const FlexRow: React.FC<FlexRowProps> = ({
   className = '',
 }) => {
   return (
-    <div
-      className={`layout-flex-row-base ${className}`.trim()}
-      style={{
-        gap: gapMap[gap],
-        alignItems: align,
-        justifyContent: justifyMap[justify],
-      }}
-    >
+    <div className={`layout-flex-row-base ${gapMap[gap]} ${alignMap[align]} ${justifyMap[justify]} ${className}`.trim()}>
       {children}
     </div>
   );
@@ -225,14 +229,7 @@ export const FlexCol: React.FC<FlexColProps> = ({
   className = '',
 }) => {
   return (
-    <div
-      className={`layout-flex-col-base ${className}`.trim()}
-      style={{
-        gap: gapMap[gap],
-        alignItems: align,
-        justifyContent: justifyMap[justify],
-      }}
-    >
+    <div className={`layout-flex-col-base ${gapMap[gap]} ${alignMap[align]} ${justifyMap[justify]} ${className}`.trim()}>
       {children}
     </div>
   );
@@ -250,19 +247,19 @@ interface ContainerProps {
 }
 
 const maxWidthMap = {
-  sm: '640px',
-  md: '768px',
-  lg: '1024px',
-  xl: '1280px',
-  '2xl': '1536px',
-  full: '100%',
+  sm: 'tw-max-w-screen-sm',
+  md: 'tw-max-w-screen-md',
+  lg: 'tw-max-w-screen-lg',
+  xl: 'tw-max-w-screen-xl',
+  '2xl': 'tw-max-w-screen-2xl',
+  full: 'tw-max-w-full',
 };
 
 const paddingMap = {
-  sm: 'var(--spacing-4)',
-  md: 'var(--spacing-6)',
-  lg: 'var(--spacing-8)',
-  xl: 'var(--spacing-12)',
+  sm: 'tw-p-4',
+  md: 'tw-p-6',
+  lg: 'tw-p-8',
+  xl: 'tw-p-12',
 };
 
 /**
@@ -276,13 +273,7 @@ export const Container: React.FC<ContainerProps> = ({
   className = '',
 }) => {
   return (
-    <div
-      className={`layout-container-base ${className}`.trim()}
-      style={{
-        maxWidth: maxWidthMap[maxWidth],
-        padding: paddingMap[padding],
-      }}
-    >
+    <div className={`layout-container-base tw-mx-auto tw-w-full ${maxWidthMap[maxWidth]} ${paddingMap[padding]} ${className}`.trim()}>
       {children}
     </div>
   );

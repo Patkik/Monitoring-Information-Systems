@@ -65,18 +65,22 @@ const ProgressDashboard: React.FC<{ menteeId?: string | null }> = ({ menteeId })
           <div className="tw-space-y-2">
             {monthlyTrend.map((trend: SnapshotTrendPoint) => {
               const clamped = Math.max(0, Math.min(5, trend.avg));
-              const widthPercent = (clamped / 5) * 100;
+              const filledSegments = Math.round((clamped / 5) * 10);
               return (
                 <div key={trend.month} className="tw-flex tw-items-center tw-gap-3">
                   <div className="tw-w-20 tw-text-xs tw-font-medium tw-text-gray-600">
                     {formatMonthLabel(trend.month)}
                   </div>
                   <div className="tw-flex-1 tw-flex tw-items-center tw-gap-2">
-                    <div className="tw-relative tw-h-2 tw-w-full tw-rounded-full tw-bg-gray-100">
-                      <div
-                        className="tw-absolute tw-left-0 tw-top-0 tw-h-2 tw-rounded-full tw-bg-blue-500"
-                        style={{ width: `${widthPercent}%` }}
-                      />
+                    <div className="tw-h-2 tw-w-full tw-rounded-full tw-bg-gray-100 tw-overflow-hidden">
+                      <div className="tw-flex tw-h-full tw-w-full tw-gap-[2px]">
+                        {Array.from({ length: 10 }).map((_, index) => (
+                          <span
+                            key={`${trend.month}-${index}`}
+                            className={`tw-h-full tw-flex-1 tw-rounded-full ${index < filledSegments ? 'tw-bg-blue-500' : 'tw-bg-gray-200'}`}
+                          />
+                        ))}
+                      </div>
                     </div>
                     <div className="tw-flex tw-flex-col tw-items-end tw-min-w-[4.5rem] tw-text-[11px] tw-text-gray-600">
                       <span className="tw-font-semibold tw-text-gray-900">

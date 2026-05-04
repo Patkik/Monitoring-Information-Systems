@@ -358,7 +358,7 @@ const AdminUserManagementPanel: React.FC = () => {
                                             <button
                                                 type="button"
                                                 onClick={() => setSelectedUserId(user.id)}
-                                                className="tw-text-blue-600 hover:tw-text-blue-800"
+                                                className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-px-3 tw-py-1.5 tw-text-xs tw-font-medium tw-bg-blue-50 tw-text-blue-700 hover:tw-bg-blue-100 tw-transition-colors"
                                             >
                                                 Inspect
                                             </button>
@@ -367,14 +367,14 @@ const AdminUserManagementPanel: React.FC = () => {
                                                     <button
                                                         type="button"
                                                         onClick={() => openActionModal('approve', user)}
-                                                        className="tw-text-emerald-600 hover:tw-text-emerald-800"
+                                                        className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-px-3 tw-py-1.5 tw-text-xs tw-font-medium tw-bg-emerald-50 tw-text-emerald-700 hover:tw-bg-emerald-100 tw-transition-colors"
                                                     >
                                                         Approve
                                                     </button>
                                                     <button
                                                         type="button"
                                                         onClick={() => openActionModal('reject', user)}
-                                                        className="tw-text-red-600 hover:tw-text-red-800"
+                                                        className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-px-3 tw-py-1.5 tw-text-xs tw-font-medium tw-bg-red-50 tw-text-red-700 hover:tw-bg-red-100 tw-transition-colors"
                                                     >
                                                         Reject
                                                     </button>
@@ -384,7 +384,7 @@ const AdminUserManagementPanel: React.FC = () => {
                                                 <button
                                                     type="button"
                                                     onClick={() => openActionModal('deactivate', user)}
-                                                    className="tw-text-amber-600 hover:tw-text-amber-800"
+                                                    className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-px-3 tw-py-1.5 tw-text-xs tw-font-medium tw-bg-amber-50 tw-text-amber-700 hover:tw-bg-amber-100 tw-transition-colors"
                                                 >
                                                     Deactivate
                                                 </button>
@@ -393,18 +393,11 @@ const AdminUserManagementPanel: React.FC = () => {
                                                 <button
                                                     type="button"
                                                     onClick={() => openActionModal('reactivate', user)}
-                                                    className="tw-text-emerald-600 hover:tw-text-emerald-800"
+                                                    className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-px-3 tw-py-1.5 tw-text-xs tw-font-medium tw-bg-emerald-50 tw-text-emerald-700 hover:tw-bg-emerald-100 tw-transition-colors"
                                                 >
                                                     Reactivate
                                                 </button>
                                             )}
-                                            <button
-                                                type="button"
-                                                onClick={() => openActionModal('delete', user)}
-                                                className="tw-text-red-600 hover:tw-text-red-800"
-                                            >
-                                                Delete
-                                            </button>
                                         </div>
                                     </td>
                                 </tr>

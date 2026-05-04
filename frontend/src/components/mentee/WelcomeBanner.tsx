@@ -67,7 +67,7 @@ const SEARCH_SHORTCUTS: SearchShortcut[] = [
     id: 'chat',
     label: 'Chat',
     description: 'Continue conversations with mentors or peers.',
-    path: '/mentee/chat',
+    path: '/mentee/session',
     keywords: ['chat', 'messages', 'conversation'],
   },
   {

@@ -3,61 +3,73 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import AuthLayout from './AuthLayout.jsx';
 import { resetPassword, mapErrorCodeToMessage } from '../services/api.js';
+import FormInput from '../components/FormInput.jsx';
+import ErrorAlert from '../components/ErrorAlert.jsx';
+import SubmitButton from '../components/SubmitButton.jsx';
 
 export default function ResetPasswordPage() {
- const { token } = useParams();
- const navigate = useNavigate();
- const [password, setPassword] = useState('');
- const [error, setError] = useState('');
- const [loading, setLoading] = useState(false);
+	const { token } = useParams();
+	const navigate = useNavigate();
+	const [password, setPassword] = useState('');
+	const [error, setError] = useState('');
+	const [loading, setLoading] = useState(false);
 
- const onSubmit = async (e) => {
- e.preventDefault();
- setError('');
- setLoading(true);
- try {
- await resetPassword(token, { password });
- navigate('/login');
- } catch (err) {
- const code = err?.response?.data?.error;
- setError(mapErrorCodeToMessage(code));
- } finally {
- setLoading(false);
- }
- };
+	const handleChange = (e) => {
+		setPassword(e.target.value);
+	};
 
- return (
- <AuthLayout title="WELCOME!" subtitle="Your path to guided learning and mentorship starts here.">
- <form onSubmit={onSubmit} className="tw-space-y-4">
- {error && <div className="tw-p-3 tw-rounded tw-bg-red-50 tw-text-red-700 tw-text-sm ">{error}</div>}
- 
- {/* Password Input with Icon */}
- <div className="tw-relative">
- <div className="tw-absolute tw-inset-y-0 tw-left-0 tw-pl-3 tw-flex tw-items-center tw-pointer-events-none">
- <svg className="tw-h-5 tw-w-5 tw-text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
- </svg>
- </div>
- <input 
- type="password" 
- value={password} 
- onChange={(e)=>setPassword(e.target.value)} 
- placeholder="Enter new password" 
- className="tw-w-full tw-pl-10 tw-pr-4 tw-py-3 tw-border-2 tw-border-gray-300 focus:tw-border-purple-500 tw-rounded-xl tw-outline-none tw-transition-colors" 
- required 
- />
- </div>
+	const onSubmit = async (e) => {
+		e.preventDefault();
+		setError('');
+		setLoading(true);
+		try {
+			await resetPassword(token, { password });
+			navigate('/login');
+		} catch (err) {
+			const code = err?.response?.data?.error;
+			setError(mapErrorCodeToMessage(code));
+		} finally {
+			setLoading(false);
+		}
+	};
 
- {/* Verify Button */}
- <button 
- disabled={loading} 
- className="tw-px-6 tw-py-3 tw-bg-purple-600 hover:tw-bg-purple-700 tw-text-white tw-rounded-xl tw-w-32 tw-font-semibold tw-transition-colors disabled:tw-opacity-70"
- >
- {loading ? 'Saving...' : 'Verify'}
- </button>
- </form>
- </AuthLayout>
- );
+	return (
+		<AuthLayout 
+			title="Create your\nnew password." 
+			subtitle="Set a strong password to secure your account."
+		>
+			<header className="tw-mb-6">
+				<p className="tw-text-[10px] tw-font-semibold tw-uppercase tw-tracking-[0.2em] tw-text-primary">Reset Password</p>
+				<h2 className="login-redesign__form-title tw-mt-2 tw-leading-[1.1] tw-text-[#1d2931]">
+					Almost
+					<br />
+					there.
+				</h2>
+			</header>
+
+			<form onSubmit={onSubmit} className="tw-space-y-3">
+				{error && <ErrorAlert message={error} type="error" />}
+				
+				<FormInput
+					label="New Password"
+					name="password"
+					type="password"
+					value={password}
+					onChange={handleChange}
+					placeholder="Enter new password"
+					icon={(props) => (
+						<svg {...props} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+						</svg>
+					)}
+					required
+				/>
+
+				<SubmitButton loading={loading} text="Verify" />
+			</form>
+		</AuthLayout>
+	);
 }
+
 
 

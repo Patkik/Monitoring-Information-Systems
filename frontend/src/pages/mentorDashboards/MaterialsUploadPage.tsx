@@ -34,89 +34,107 @@ const MaterialsUploadPage: React.FC = () => {
 
     return (
         <DashboardLayout>
-            <div className="tw-max-w-4xl tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-py-8 tw-space-y-6">
-                <header className="tw-mb-6">
-                    <h1 className="tw-text-3xl tw-font-bold tw-text-gray-900">Class materials</h1>
-                    <p className="tw-text-sm tw-text-gray-600 tw-mt-2">
-                        Upload handouts, slide decks, and reference files to share with mentees for each session.
-                    </p>
+            <div className="tw-max-w-4xl tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-py-10 tw-space-y-8">
+
+                {/* ── Page Header ── */}
+                <header>
+                    <div className="tw-pl-4 tw-border-l-4 tw-border-primary">
+                        <p className="tw-text-xs tw-font-bold tw-tracking-widest tw-text-primary tw-uppercase tw-mb-1">
+                            Resources
+                        </p>
+                        <h1 className="tw-text-3xl tw-font-bold tw-text-gray-900 tw-leading-tight">
+                            Class Materials
+                        </h1>
+                        <p className="tw-text-sm tw-text-gray-500 tw-mt-1">
+                            Upload handouts, slide decks, and reference files to share with your mentees.
+                        </p>
+                    </div>
                 </header>
 
-                <section className="tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-p-4 tw-space-y-4">
-                    <div>
-                        <label htmlFor="session-select" className="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">
-                            Select session
-                        </label>
-                        {isLoading && <p className="tw-text-sm tw-text-gray-500">Loading sessions…</p>}
-                        {isError && (
-                            <div className="tw-bg-red-50 tw-border tw-border-red-200 tw-rounded tw-p-3" role="alert">
-                                <p className="tw-text-sm tw-text-red-700">Unable to load your sessions.</p>
-                                <button
-                                    type="button"
-                                    onClick={() => refetch()}
-                                    className="tw-mt-2 tw-text-sm tw-font-medium tw-text-red-700 hover:tw-text-red-900"
+                {/* ── Upload Section ── */}
+                <section className="tw-bg-white tw-rounded-xl tw-border tw-border-gray-100 tw-shadow-sm tw-overflow-hidden">
+                    <div className="tw-px-6 tw-py-4 tw-border-b tw-border-gray-50">
+                        <h2 className="tw-text-sm tw-font-bold tw-text-gray-800">Upload files</h2>
+                        <p className="tw-text-xs tw-text-gray-400 tw-mt-0.5">Attach materials to a specific session.</p>
+                    </div>
+                    <div className="tw-p-6 tw-space-y-5">
+                        <div>
+                            <label htmlFor="session-select" className="tw-block tw-text-xs tw-font-bold tw-tracking-wide tw-uppercase tw-text-gray-500 tw-mb-2">
+                                Select session
+                            </label>
+
+                            {isLoading && (
+                                <div className="tw-h-10 tw-bg-gray-100 tw-rounded-lg tw-animate-pulse" />
+                            )}
+
+                            {isError && (
+                                <div className="tw-bg-red-50 tw-border tw-border-red-100 tw-rounded-lg tw-p-3" role="alert">
+                                    <p className="tw-text-sm tw-text-red-700 tw-font-medium">Unable to load your sessions.</p>
+                                    <button
+                                        type="button"
+                                        onClick={() => refetch()}
+                                        className="tw-mt-1.5 tw-text-xs tw-font-semibold tw-text-red-600 hover:tw-text-red-800 tw-underline"
+                                    >
+                                        Retry
+                                    </button>
+                                </div>
+                            )}
+
+                            {!isLoading && !isError && formattedSessions.length === 0 && (
+                                <p className="tw-text-sm tw-text-gray-400 tw-italic">
+                                    No scheduled sessions yet. Once a session is created, you can attach materials here.
+                                </p>
+                            )}
+
+                            {!isLoading && !isError && formattedSessions.length > 0 && (
+                                <select
+                                    id="session-select"
+                                    className="tw-block tw-w-full tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white tw-px-3 tw-py-2.5 tw-text-sm tw-text-gray-800 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary/20 focus:tw-border-primary tw-transition-colors"
+                                    value={selectedSessionId}
+                                    onChange={(e) => setSelectedSessionId(e.target.value)}
+                                    aria-label="Choose which session to attach materials to"
                                 >
-                                    Retry
-                                </button>
-                            </div>
-                        )}
-                        {!isLoading && !isError && formattedSessions.length === 0 && (
-                            <p className="tw-text-sm tw-text-gray-500">
-                                You don’t have any scheduled sessions yet. Once a session is created, you can attach materials here.
-                            </p>
-                        )}
-                        {!isLoading && !isError && formattedSessions.length > 0 && (
-                            <select
-                                id="session-select"
-                                className="tw-mt-1 tw-block tw-w-full tw-rounded-md tw-border tw-border-gray-300 tw-bg-white tw-px-3 tw-py-2 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500"
-                                value={selectedSessionId}
-                                onChange={(event) => setSelectedSessionId(event.target.value)}
-                                aria-label="Choose which session to attach materials to"
-                            >
-                                <option value="" disabled>
-                                    Choose a session
-                                </option>
-                                {formattedSessions.map((session) => (
-                                    <option key={session.id} value={session.id}>
-                                        {session.label}
-                                    </option>
-                                ))}
-                            </select>
+                                    <option value="" disabled>Choose a session</option>
+                                    {formattedSessions.map((s) => (
+                                        <option key={s.id} value={s.id}>{s.label}</option>
+                                    ))}
+                                </select>
+                            )}
+                        </div>
+
+                        {selectedSessionId && formattedSessions.length > 0 && (
+                            <MaterialUpload sessionId={selectedSessionId} onUploadSuccess={handleUploadSuccess} />
                         )}
                     </div>
-
-                    {selectedSessionId && formattedSessions.length > 0 && (
-                        <MaterialUpload sessionId={selectedSessionId} onUploadSuccess={handleUploadSuccess} />
-                    )}
                 </section>
 
-                <section className="tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-p-4 tw-space-y-4">
-                    <div className="tw-flex tw-flex-col md:tw-flex-row md:tw-items-center md:tw-justify-between tw-gap-3">
+                {/* ── Manage Files Section ── */}
+                <section className="tw-bg-white tw-rounded-xl tw-border tw-border-gray-100 tw-shadow-sm tw-overflow-hidden">
+                    <div className="tw-px-6 tw-py-4 tw-border-b tw-border-gray-50 tw-flex tw-flex-col md:tw-flex-row md:tw-items-center md:tw-justify-between tw-gap-3">
                         <div>
-                            <h2 className="tw-text-xl tw-font-semibold tw-text-gray-900">Manage files</h2>
-                            <p className="tw-text-sm tw-text-gray-600">Download or remove shared materials.</p>
+                            <h2 className="tw-text-sm tw-font-bold tw-text-gray-800">Manage files</h2>
+                            <p className="tw-text-xs tw-text-gray-400 tw-mt-0.5">Download or remove shared materials.</p>
                         </div>
-                        <div className="tw-flex tw-gap-2 tw-items-center">
-                            <label htmlFor="materials-filter" className="tw-text-xs tw-font-medium tw-text-gray-600">
-                                Show
+                        <div className="tw-flex tw-items-center tw-gap-2">
+                            <label htmlFor="materials-filter" className="tw-text-xs tw-font-bold tw-text-gray-400 tw-uppercase tw-tracking-wide">
+                                Filter
                             </label>
                             <select
                                 id="materials-filter"
-                                className="tw-rounded-md tw-border tw-border-gray-300 tw-bg-white tw-px-3 tw-py-2 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-purple-500"
+                                className="tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white tw-px-3 tw-py-1.5 tw-text-sm tw-text-gray-700 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary/20 focus:tw-border-primary tw-transition-colors"
                                 value={materialsFilter}
-                                onChange={(event) => setMaterialsFilter(event.target.value)}
+                                onChange={(e) => setMaterialsFilter(e.target.value)}
                             >
                                 <option value="all">All sessions</option>
-                                {formattedSessions.map((session) => (
-                                    <option key={`filter-${session.id}`} value={session.id}>
-                                        {session.label}
-                                    </option>
+                                {formattedSessions.map((s) => (
+                                    <option key={`filter-${s.id}`} value={s.id}>{s.label}</option>
                                 ))}
                             </select>
                         </div>
                     </div>
-
-                    <MentorMaterialsList sessionId={materialsFilter === 'all' ? undefined : materialsFilter} />
+                    <div className="tw-p-6">
+                        <MentorMaterialsList sessionId={materialsFilter === 'all' ? undefined : materialsFilter} />
+                    </div>
                 </section>
             </div>
         </DashboardLayout>

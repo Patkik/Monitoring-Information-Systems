@@ -173,18 +173,32 @@ const MentorFeedbackForm: React.FC<Props> = ({ sessionId, sessionSubject, mentee
                         <label className="tw-text-sm tw-font-medium tw-text-gray-700" htmlFor="mentor-feedback-rating-input">
                             Rating <span className="tw-text-red-500">*</span>
                         </label>
-                        <input
-                            id="mentor-feedback-rating-input"
-                            type="number"
-                            min={1}
-                            max={5}
-                            required
-                            value={rating || ''}
-                            onChange={(event) => handleRatingChange(Number(event.target.value))}
-                            className="tw-mt-1 tw-w-24 tw-rounded-lg tw-border tw-border-gray-300 tw-px-3 tw-py-2 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary"
-                            aria-invalid={Boolean(ratingError)}
-                            aria-describedby={ratingError ? 'mentor-feedback-rating-error' : undefined}
-                        />
+                        {ratingError ? (
+                            <input
+                                id="mentor-feedback-rating-input"
+                                type="number"
+                                min={1}
+                                max={5}
+                                required
+                                value={rating || ''}
+                                onChange={(event) => handleRatingChange(Number(event.target.value))}
+                                className="tw-mt-1 tw-w-24 tw-rounded-lg tw-border tw-border-gray-300 tw-px-3 tw-py-2 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary"
+                                aria-invalid="true"
+                                aria-describedby="mentor-feedback-rating-error"
+                            />
+                        ) : (
+                            <input
+                                id="mentor-feedback-rating-input"
+                                type="number"
+                                min={1}
+                                max={5}
+                                required
+                                value={rating || ''}
+                                onChange={(event) => handleRatingChange(Number(event.target.value))}
+                                className="tw-mt-1 tw-w-24 tw-rounded-lg tw-border tw-border-gray-300 tw-px-3 tw-py-2 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary"
+                                aria-invalid="false"
+                            />
+                        )}
                         <div className="tw-flex tw-gap-2 tw-mt-2" role="radiogroup" aria-label="Rating">
                             {[1, 2, 3, 4, 5].map((value) => (
                                 <label key={value} className="tw-cursor-pointer">

@@ -1,11 +1,11 @@
 import React from 'react';
-import DashboardLayout from '../../components/layouts/DashboardLayout';
+import AdminLayout from '../../components/layouts/AdminLayout';
 import AdminCertificatePanel from '../../components/admin/AdminCertificatePanel';
 
 const AdminRecognitionPage: React.FC = () => {
     return (
-        <DashboardLayout>
-            <div className="tw-p-6 tw-space-y-6">
+        <AdminLayout>
+            <div className="tw-space-y-6">
                 <header className="tw-space-y-1">
                     <p className="tw-text-xs tw-font-semibold tw-text-purple-600 tw-uppercase">Recognition</p>
                     <h1 className="tw-text-3xl tw-font-bold tw-text-gray-900">Certificates & Issuance</h1>
@@ -16,7 +16,7 @@ const AdminRecognitionPage: React.FC = () => {
 
                 <AdminCertificatePanel />
             </div>
-        </DashboardLayout>
+        </AdminLayout>
     );
 };
 

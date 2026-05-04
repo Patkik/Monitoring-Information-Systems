@@ -10,6 +10,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "seed": "node src/scripts/seedDatabase.js",
+    "seed:demo": "npm run seed && npm run seed:matching-mentors && npm run seed:matching-mentees && npm run seed:attendance-test && npm run seed:late-cancel && npm run seed:matches",
     "seed:late-cancel": "node src/scripts/seedLateCancelSession.js",
     "seed:attendance-test": "node src/scripts/seedAttendanceSession.js",
     "seed:admin": "node src/scripts/createAdmin.js",

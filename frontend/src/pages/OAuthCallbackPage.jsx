@@ -112,9 +112,9 @@ export default function OAuthCallbackPage() {
 
   if (loading) {
     return (
-      <div className="tw-min-h-screen tw-flex tw-items-center tw-justify-center tw-bg-gray-50">
-        <div className="tw-text-center">
-          <div className="tw-animate-spin tw-rounded-full tw-h-12 tw-w-12 tw-border-b-2 tw-border-purple-500 tw-mx-auto tw-mb-4"></div>
+      <div className="tw-min-h-screen tw-flex tw-items-center tw-justify-center tw-bg-gradient-to-br tw-from-purple-50 tw-to-white">
+        <div className="tw-text-center tw-bg-white tw-rounded-2xl tw-shadow-lg tw-p-10 tw-border tw-border-purple-100">
+          <div className="tw-animate-spin tw-rounded-full tw-h-12 tw-w-12 tw-border-b-2 tw-border-primary tw-mx-auto tw-mb-4"></div>
           <h2 className="tw-text-xl tw-font-semibold tw-text-gray-900 tw-mb-2">
             Completing Authentication...
           </h2>
@@ -128,9 +128,9 @@ export default function OAuthCallbackPage() {
 
   if (error) {
     return (
-      <div className="tw-min-h-screen tw-flex tw-items-center tw-justify-center tw-bg-gray-50">
+      <div className="tw-min-h-screen tw-flex tw-items-center tw-justify-center tw-bg-gradient-to-br tw-from-purple-50 tw-to-white">
         <div className="tw-text-center tw-max-w-md tw-mx-auto tw-px-4">
-          <div className="tw-bg-red-50 tw-border tw-border-red-200 tw-rounded-lg tw-p-6">
+          <div className="tw-bg-red-50 tw-border tw-border-red-200 tw-rounded-2xl tw-p-8 tw-shadow-lg">
             <div className="tw-text-red-600 tw-text-6xl tw-mb-4">⚠️</div>
             <h2 className="tw-text-xl tw-font-semibold tw-text-red-800 tw-mb-2">
               Authentication Failed

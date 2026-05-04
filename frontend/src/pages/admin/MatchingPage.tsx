@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import DashboardLayout from '../../components/layouts/DashboardLayout';
+import AdminLayout from '../../components/layouts/AdminLayout';
 import AdminPairingsTable from '../../components/admin/AdminPairingsTable';
 import PairingDetailModal from '../../components/admin/PairingDetailModal';
 import { PairingFilters, PairingStatus, usePairingDetail, usePairings, useUpdatePairing } from '../../features/admin/hooks/usePairings';
@@ -73,8 +73,8 @@ const MatchingPage: React.FC = () => {
     };
 
     return (
-        <DashboardLayout>
-            <div className="tw-space-y-6 tw-p-6">
+        <AdminLayout>
+            <div className="tw-space-y-6">
                 <header className="tw-flex tw-flex-col tw-gap-3">
                     <div>
                         <p className="tw-text-sm tw-text-gray-500">Admin workspace</p>
@@ -154,7 +154,7 @@ const MatchingPage: React.FC = () => {
                     onSave={handleSave}
                 />
             </div>
-        </DashboardLayout>
+        </AdminLayout>
     );
 };
 

@@ -80,11 +80,11 @@ const MentorMaterialsList: React.FC<MentorMaterialsListProps> = ({ sessionId }) 
     };
 
     return (
-        <section className="tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-p-4 tw-space-y-4">
+        <section className="tw-space-y-4">
             <div className="tw-flex tw-flex-col lg:tw-flex-row lg:tw-items-center lg:tw-justify-between tw-gap-3">
                 <div>
-                    <h2 className="tw-text-xl tw-font-semibold tw-text-gray-900">Uploaded files</h2>
-                    <p className="tw-text-sm tw-text-gray-600">Review, download, or delete materials previously shared with mentees.</p>
+                    <h2 className="tw-text-sm tw-font-bold tw-text-gray-800">Uploaded files</h2>
+                    <p className="tw-text-xs tw-text-gray-400 tw-mt-0.5">Review, download, or delete materials previously shared with mentees.</p>
                 </div>
                 <div className="tw-flex tw-flex-col sm:tw-flex-row tw-gap-2 tw-w-full sm:tw-w-auto">
                     <div className="tw-relative tw-flex-1">
@@ -93,7 +93,7 @@ const MentorMaterialsList: React.FC<MentorMaterialsListProps> = ({ sessionId }) 
                             value={searchTerm}
                             onChange={(event) => setSearchTerm(event.target.value)}
                             placeholder="Search files"
-                            className="tw-w-full tw-rounded-lg tw-border tw-border-gray-300 tw-px-3 tw-py-2 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-purple-500"
+                            className="tw-w-full tw-rounded-lg tw-border tw-border-gray-200 tw-px-3 tw-py-2 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary/20 focus:tw-border-primary"
                             aria-label="Search uploaded files"
                         />
                         {searchTerm && (
@@ -110,7 +110,7 @@ const MentorMaterialsList: React.FC<MentorMaterialsListProps> = ({ sessionId }) 
                     <button
                         type="button"
                         onClick={() => refetch()}
-                        className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-gray-300 tw-bg-white tw-px-4 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-700 hover:tw-border-purple-400"
+                        className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white tw-px-4 tw-py-2 tw-text-sm tw-font-semibold tw-text-gray-700 hover:tw-bg-gray-50"
                         disabled={isFetching}
                     >
                         {isFetching ? 'Refreshing…' : 'Refresh'}
@@ -176,7 +176,7 @@ const MentorMaterialsList: React.FC<MentorMaterialsListProps> = ({ sessionId }) 
                                                     href={material.googleDriveDownloadLink}
                                                     target="_blank"
                                                     rel="noreferrer"
-                                                    className="tw-text-xs tw-font-semibold tw-text-blue-600 hover:tw-text-blue-800"
+                                                    className="tw-text-xs tw-font-semibold tw-text-primary hover:tw-text-primary/80"
                                                 >
                                                     Download
                                                 </a>
@@ -205,7 +205,7 @@ const MentorMaterialsList: React.FC<MentorMaterialsListProps> = ({ sessionId }) 
                     aria-modal="true"
                     aria-labelledby="delete-material-title"
                 >
-                    <div className="tw-w-full tw-max-w-md tw-rounded-xl tw-bg-white tw-p-6 tw-shadow-2xl tw-space-y-4">
+                    <div className="tw-w-full tw-max-w-md tw-rounded-xl tw-border tw-border-gray-100 tw-bg-white tw-p-6 tw-shadow-2xl tw-space-y-4">
                         <h3 id="delete-material-title" className="tw-text-lg tw-font-semibold tw-text-gray-900">
                             Delete material?
                         </h3>

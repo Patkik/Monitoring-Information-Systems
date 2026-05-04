@@ -1,5 +1,6 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
+import AdminLayout from '../../components/layouts/AdminLayout';
 
 const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:4000/api').replace(/\/+$/, '');
 const buildApiUrl = (path: string) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
@@ -93,7 +94,7 @@ const ProfilePage: React.FC = () => {
     });
   }, [profile]);
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
@@ -139,8 +140,10 @@ const ProfilePage: React.FC = () => {
     }
   };
 
+  const Layout = profile?.role === 'admin' ? AdminLayout : DashboardLayout;
+
   return (
-    <DashboardLayout>
+    <Layout>
       <div className="tw-max-w-3xl tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-py-10">
         <div className="tw-bg-white tw-border tw-border-gray-200 tw-rounded-2xl tw-shadow-sm tw-p-6 tw-space-y-6">
           <header className="tw-space-y-2">
@@ -205,8 +208,12 @@ const ProfilePage: React.FC = () => {
                         <textarea name="bio" value={form.bio} onChange={onChange} placeholder="Write a short bio" title="Bio" className="tw-w-full tw-px-3 tw-py-2 tw-border tw-rounded" rows={4} />
                       </div>
                       <div>
-                        <label className="tw-block tw-text-sm tw-font-medium tw-text-gray-700">Academic Background</label>
-                        <input name="academicBackground" value={form.academicBackground} onChange={onChange} placeholder="e.g., BS Computer Science" title="Academic Background" className="tw-w-full tw-px-3 tw-py-2 tw-border tw-rounded" />
+                        <label className="tw-block tw-text-sm tw-font-medium tw-text-gray-700">Program / Degree</label>
+                        <select name="academicBackground" value={form.academicBackground} onChange={onChange} title="Academic Background" className="tw-w-full tw-px-3 tw-py-2 tw-border tw-rounded tw-bg-white">
+                          <option value="" disabled>Select your program</option>
+                          <option value="BSIT">BSIT</option>
+                          <option value="BSEMC">BSEMC</option>
+                        </select>
                       </div>
                       <div>
                         <label className="tw-block tw-text-sm tw-font-medium tw-text-gray-700">Interests (comma separated)</label>
@@ -232,7 +239,7 @@ const ProfilePage: React.FC = () => {
           )}
         </div>
       </div>
-    </DashboardLayout>
+    </Layout>
   );
 };
 

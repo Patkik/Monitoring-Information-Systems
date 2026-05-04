@@ -1,11 +1,11 @@
 import React from 'react';
-import DashboardLayout from '../../components/layouts/DashboardLayout';
+import AdminLayout from '../../components/layouts/AdminLayout';
 import AdminAnnouncementCenter from '../../components/admin/AdminAnnouncementCenter';
 
 const AdminAnnouncementsPage: React.FC = () => {
     return (
-        <DashboardLayout>
-            <div className="tw-p-6 tw-space-y-6">
+        <AdminLayout>
+            <div className="tw-space-y-6">
                 <header className="tw-space-y-2">
                     <p className="tw-text-xs tw-uppercase tw-font-semibold tw-text-indigo-500">Admin</p>
                     <h1 className="tw-text-3xl tw-font-bold tw-text-gray-900">Announcements</h1>
@@ -16,7 +16,7 @@ const AdminAnnouncementsPage: React.FC = () => {
                 </header>
                 <AdminAnnouncementCenter />
             </div>
-        </DashboardLayout>
+        </AdminLayout>
     );
 };
 

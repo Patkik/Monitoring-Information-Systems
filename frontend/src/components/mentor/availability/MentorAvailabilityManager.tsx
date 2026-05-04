@@ -190,7 +190,7 @@ const MentorAvailabilityManager: React.FC = () => {
 
     if (!mentorId) {
         return (
-            <section className="tw-bg-white tw-rounded-2xl tw-border tw-border-gray-200 tw-p-6 tw-text-center">
+            <section className="tw-bg-white tw-rounded-xl tw-border tw-border-gray-100 tw-shadow-sm tw-p-6 tw-text-center">
                 <p className="tw-text-lg tw-font-semibold tw-text-gray-900">Mentor account unavailable</p>
                 <p className="tw-text-sm tw-text-gray-600 tw-mt-1">
                     Sign in with a mentor profile to configure booking availability.
@@ -201,29 +201,29 @@ const MentorAvailabilityManager: React.FC = () => {
 
     return (
         <section className="tw-space-y-6">
-            <div className="tw-bg-gradient-to-r tw-from-primary tw-to-purple-500 tw-rounded-2xl tw-text-white tw-p-6 tw-shadow-lg">
-                <p className="tw-text-sm tw-font-semibold tw-uppercase tw-tracking-wide">Mentor scheduling</p>
-                <h2 className="tw-text-3xl tw-font-bold tw-mt-1">Publish open mentoring hours</h2>
-                <p className="tw-text-sm tw-text-white/80 tw-mt-2 tw-max-w-3xl">
+            <div className="tw-bg-white tw-rounded-xl tw-border tw-border-gray-100 tw-shadow-sm tw-p-6">
+                <p className="tw-text-xs tw-font-bold tw-tracking-wide tw-uppercase tw-text-primary">Mentor scheduling</p>
+                <h2 className="tw-text-2xl tw-font-bold tw-text-gray-900 tw-mt-1">Publish open mentoring hours</h2>
+                <p className="tw-text-sm tw-text-gray-500 tw-mt-2 tw-max-w-3xl">
                     Control when mentees can book time with you. Publish recurring office hours, one-off deep-dive windows,
                     and keep everything synced with session requests.
                 </p>
                 <dl className="tw-mt-6 tw-grid tw-grid-cols-2 lg:tw-grid-cols-4 tw-gap-4">
-                    <div className="tw-bg-white/10 tw-rounded-xl tw-p-4">
-                        <dt className="tw-text-xs tw-font-semibold tw-uppercase tw-text-white/80">Active entries</dt>
-                        <dd className="tw-text-2xl tw-font-bold">{stats.active}</dd>
+                    <div className="tw-bg-gray-50 tw-rounded-xl tw-p-4 tw-text-center">
+                        <dt className="tw-text-xs tw-font-semibold tw-uppercase tw-text-gray-500">Active entries</dt>
+                        <dd className="tw-text-2xl tw-font-bold tw-text-gray-900">{stats.active}</dd>
                     </div>
-                    <div className="tw-bg-white/10 tw-rounded-xl tw-p-4">
-                        <dt className="tw-text-xs tw-font-semibold tw-uppercase tw-text-white/80">Inactive</dt>
-                        <dd className="tw-text-2xl tw-font-bold">{stats.inactive}</dd>
+                    <div className="tw-bg-gray-50 tw-rounded-xl tw-p-4 tw-text-center">
+                        <dt className="tw-text-xs tw-font-semibold tw-uppercase tw-text-gray-500">Inactive</dt>
+                        <dd className="tw-text-2xl tw-font-bold tw-text-gray-900">{stats.inactive}</dd>
                     </div>
-                    <div className="tw-bg-white/10 tw-rounded-xl tw-p-4">
-                        <dt className="tw-text-xs tw-font-semibold tw-uppercase tw-text-white/80">Slots next 7 days</dt>
-                        <dd className="tw-text-2xl tw-font-bold">{stats.nextWeekSlots}</dd>
+                    <div className="tw-bg-gray-50 tw-rounded-xl tw-p-4 tw-text-center">
+                        <dt className="tw-text-xs tw-font-semibold tw-uppercase tw-text-gray-500">Slots next 7 days</dt>
+                        <dd className="tw-text-2xl tw-font-bold tw-text-gray-900">{stats.nextWeekSlots}</dd>
                     </div>
-                    <div className="tw-bg-white/10 tw-rounded-xl tw-p-4">
-                        <dt className="tw-text-xs tw-font-semibold tw-uppercase tw-text-white/80">Open seats</dt>
-                        <dd className="tw-text-2xl tw-font-bold">{stats.openSeats}</dd>
+                    <div className="tw-bg-gray-50 tw-rounded-xl tw-p-4 tw-text-center">
+                        <dt className="tw-text-xs tw-font-semibold tw-uppercase tw-text-gray-500">Open seats</dt>
+                        <dd className="tw-text-2xl tw-font-bold tw-text-gray-900">{stats.openSeats}</dd>
                     </div>
                 </dl>
             </div>
@@ -251,7 +251,7 @@ const MentorAvailabilityManager: React.FC = () => {
             ) : null}
 
             <div className="tw-grid tw-grid-cols-1 lg:tw-grid-cols-3 tw-gap-6">
-                <div className="tw-bg-white tw-rounded-2xl tw-border tw-border-gray-200 tw-shadow-sm tw-p-6">
+                <div className="tw-bg-white tw-rounded-xl tw-border tw-border-gray-100 tw-shadow-sm tw-p-6">
                     <div className="tw-flex tw-items-center tw-justify-between tw-mb-4">
                         <div>
                             <p className="tw-text-xs tw-font-semibold tw-text-primary tw-uppercase">New availability</p>
@@ -270,7 +270,7 @@ const MentorAvailabilityManager: React.FC = () => {
                 </div>
                 <div className="lg:tw-col-span-2 tw-space-y-4">
                     <div className="tw-flex tw-flex-wrap tw-items-center tw-justify-between">
-                        <p className="tw-text-sm tw-font-semibold tw-text-gray-900">Your availability</p>
+                        <p className="tw-text-sm tw-font-bold tw-text-gray-800">Your availability</p>
                         <label className="tw-inline-flex tw-items-center tw-gap-2 tw-text-sm tw-text-gray-600">
                             <input
                                 type="checkbox"
@@ -291,7 +291,7 @@ const MentorAvailabilityManager: React.FC = () => {
                     role="dialog"
                     aria-modal="true"
                 >
-                    <div className="tw-bg-white tw-rounded-2xl tw-shadow-2xl tw-w-full tw-max-w-3xl tw-p-6 tw-space-y-4">
+                    <div className="tw-bg-white tw-rounded-xl tw-border tw-border-gray-100 tw-shadow-2xl tw-w-full tw-max-w-3xl tw-p-6 tw-space-y-4">
                         <div className="tw-flex tw-justify-between tw-items-center">
                             <div>
                                 <p className="tw-text-xs tw-font-semibold tw-text-primary tw-uppercase">Edit availability</p>
@@ -325,7 +325,7 @@ const MentorAvailabilityManager: React.FC = () => {
                     role="dialog"
                     aria-modal="true"
                 >
-                    <div className="tw-bg-white tw-rounded-2xl tw-shadow-2xl tw-w-full tw-max-w-md tw-p-6 tw-space-y-4">
+                    <div className="tw-bg-white tw-rounded-xl tw-border tw-border-gray-100 tw-shadow-2xl tw-w-full tw-max-w-md tw-p-6 tw-space-y-4">
                         <h3 className="tw-text-lg tw-font-bold tw-text-gray-900">Remove availability?</h3>
                         <p className="tw-text-sm tw-text-gray-600">
                             This will cancel any unused slots tied to this window. Existing booked sessions remain active.

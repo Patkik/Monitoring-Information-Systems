@@ -55,11 +55,11 @@ const AdminPairingsTable: React.FC<AdminPairingsTableProps> = ({
             <div className="tw-overflow-x-auto tw-rounded-2xl tw-border tw-border-gray-100 tw-bg-white tw-shadow-sm">
                 <table className="tw-min-w-full tw-text-sm">
                     <thead>
-                        <tr className="tw-text-left tw-text-gray-500">
+                        <tr className="tw-text-left tw-text-xs tw-font-semibold tw-text-gray-500 tw-uppercase tw-tracking-wider tw-border-b tw-border-gray-100">
                             <th className="tw-px-4 tw-py-3">Mentor</th>
                             <th className="tw-px-4 tw-py-3">Mentee</th>
                             <th className="tw-px-4 tw-py-3">Status</th>
-                            <th className="tw-px-4 tw-py-3">Sessions</th>
+                            <th className="tw-px-4 tw-py-3 tw-text-right">Sessions</th>
                             <th className="tw-px-4 tw-py-3">Started</th>
                             <th className="tw-px-4 tw-py-3">Updated</th>
                             <th className="tw-px-4 tw-py-3" aria-label="Actions" />
@@ -89,10 +89,10 @@ const AdminPairingsTable: React.FC<AdminPairingsTableProps> = ({
                                         {record.status}
                                     </span>
                                 </td>
-                                <td className="tw-px-4 tw-py-3">{record.sessionsCount}</td>
+                                <td className="tw-px-4 tw-py-3 tw-text-right">{record.sessionsCount}</td>
                                 <td className="tw-px-4 tw-py-3">{formatDate(record.startedAt)}</td>
                                 <td className="tw-px-4 tw-py-3">{formatDate(record.updatedAt)}</td>
-                                <td className="tw-px-4 tw-py-3">
+                                <td className="tw-px-4 tw-py-3 tw-text-right">
                                     <button
                                         type="button"
                                         onClick={() => onInspect(record.id)}

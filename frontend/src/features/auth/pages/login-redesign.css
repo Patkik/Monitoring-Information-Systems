@@ -1,0 +1,198 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap');
+
+.login-redesign {
+  --ink-950: #1a0a2e;
+  --ink-700: #3b1671;
+  --aqua-500: #7a2bcb;
+  --mist-100: #f5f0fa;
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
+}
+
+.login-redesign__hero-title,
+.login-redesign__form-title {
+  font-family: 'Fraunces', Georgia, serif;
+  letter-spacing: -0.02em;
+}
+
+.login-redesign__hero-title {
+  font-size: clamp(2rem, 3.5vw, 3.5rem);
+}
+
+.login-redesign__form-title {
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+}
+
+.login-redesign__mesh {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 15% 24%, rgba(160, 91, 225, 0.32), transparent 30%),
+    radial-gradient(circle at 84% 18%, rgba(122, 43, 203, 0.3), transparent 36%),
+    radial-gradient(circle at 72% 78%, rgba(180, 135, 242, 0.2), transparent 34%),
+    linear-gradient(146deg, #1a0a2e 0%, #2d1055 42%, #3b1671 100%);
+}
+
+.login-redesign__grit {
+  position: absolute;
+  inset: 0;
+  opacity: 0.16;
+  background-image:
+    linear-gradient(0deg, rgba(255, 255, 255, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 34px 34px, 34px 34px;
+}
+
+.login-redesign__orbit {
+  position: absolute;
+  width: 620px;
+  height: 620px;
+  top: -180px;
+  left: -180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(160, 88, 247, 0.26) 0%, rgba(160, 88, 247, 0.08) 38%, transparent 72%);
+  animation: orbitDrift 8s ease-in-out infinite;
+}
+
+.login-redesign__diamonds {
+  position: absolute;
+  inset: 0;
+}
+
+.login-redesign__diamonds span {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(200, 160, 255, 0.24);
+  transform: rotate(45deg);
+  animation: floaty 18s ease-in-out infinite;
+}
+
+.login-redesign__diamonds span:nth-child(1) {
+  top: 14%;
+  left: 15%;
+  width: 62px;
+  height: 62px;
+}
+
+.login-redesign__diamonds span:nth-child(2) {
+  top: 34%;
+  left: 72%;
+  width: 28px;
+  height: 28px;
+  animation-delay: -3s;
+}
+
+.login-redesign__diamonds span:nth-child(3) {
+  top: 66%;
+  left: 12%;
+  width: 76px;
+  height: 76px;
+  animation-delay: -7s;
+}
+
+.login-redesign__diamonds span:nth-child(4) {
+  top: 23%;
+  left: 86%;
+  width: 36px;
+  height: 36px;
+  animation-delay: -5s;
+}
+
+.login-redesign__diamonds span:nth-child(5) {
+  top: 74%;
+  left: 58%;
+  width: 22px;
+  height: 22px;
+  animation-delay: -9s;
+}
+
+.login-redesign__diamonds span:nth-child(6) {
+  top: 50%;
+  left: 40%;
+  width: 52px;
+  height: 52px;
+  animation-delay: -11s;
+}
+
+.login-redesign__badge-ring::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  animation: spinRing 12s linear infinite;
+}
+
+.login-redesign__badge-logo {
+  animation: logoFloat 4.8s ease-in-out infinite;
+}
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: rotate(45deg) translateY(0);
+  }
+  50% {
+    transform: rotate(45deg) translateY(-18px);
+  }
+}
+
+@keyframes orbitDrift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(14px, -10px) scale(1.03);
+  }
+}
+
+@keyframes spinRing {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes logoFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(-4px) rotate(-4deg) scale(1.04);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 767px) {
+  .login-redesign__form-title {
+    font-size: clamp(1.75rem, 6vw, 2.4rem);
+  }
+}
+
+@media (max-width: 1024px) {
+  .login-redesign__hero-title {
+    font-size: clamp(1.75rem, 2.8vw, 3rem);
+  }
+}
+
+
+/* Aside uses sticky positioning – ensure it covers full viewport height */
+@supports (height: 100svh) {
+  .login-redesign aside {
+    height: 100svh;
+  }
+}
