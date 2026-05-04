@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const dns = require('dns');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
@@ -90,15 +91,27 @@ app.use((err, req, res, next) => {
 
 const start = async () => {
   const primaryUri = process.env.MONGODB_URI;
+  const fallbackUri = process.env.MONGODB_URI_FALLBACK;
 
   if (!primaryUri) {
     logger.error('MONGODB_URI environment variable is not set');
     process.exit(1);
   }
 
-  if (!String(primaryUri).startsWith('mongodb+srv://')) {
-    logger.error('MONGODB_URI must use mongodb+srv://');
-    process.exit(1);
+  const configuredDnsServers = String(process.env.MONGODB_DNS_SERVERS || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  if (configuredDnsServers.length > 0) {
+    try {
+      dns.setServers(configuredDnsServers);
+      logger.info('Configured custom DNS servers for MongoDB resolution', { dnsServers: configuredDnsServers });
+    } catch (dnsErr) {
+      logger.warn('Failed to apply MONGODB_DNS_SERVERS; continuing with system DNS', {
+        message: dnsErr && dnsErr.message ? dnsErr.message : String(dnsErr),
+      });
+    }
   }
 
   const connOptions = {
@@ -110,7 +123,7 @@ const start = async () => {
 
   const getConnOptionsForUri = (mongoUri) => {
     const options = { ...connOptions };
-    if (String(mongoUri).startsWith('mongodb+srv://')) {
+    if (String(mongoUri).startsWith('mongodb+srv://') || process.env.MONGODB_TLS === 'true') {
       options.tls = true;
     }
     return options;
@@ -129,14 +142,15 @@ const start = async () => {
 
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  const activeUri = primaryUri;
+  let activeUri = primaryUri;
+  let usingFallbackUri = false;
 
   let attempt = 0;
   while (attempt <= maxRetries) {
     try {
       attempt += 1;
       logger.info(`Attempting MongoDB connection (attempt ${attempt}/${maxRetries + 1})`, {
-        uriType: 'primary',
+        uriType: usingFallbackUri ? 'fallback' : 'primary',
       });
       await mongoose.connect(activeUri, getConnOptionsForUri(activeUri));
       logger.info('MongoDB connection established');
@@ -147,6 +161,19 @@ const start = async () => {
 
       const lowerMsg = msg.toLowerCase();
       const isSrvLookupFailure = lowerMsg.includes('querysrv');
+
+      if (
+        !usingFallbackUri
+        && String(primaryUri).startsWith('mongodb+srv://')
+        && isSrvLookupFailure
+        && fallbackUri
+      ) {
+        usingFallbackUri = true;
+        activeUri = fallbackUri;
+        logger.warn('MongoDB SRV lookup failed; switching to fallback MongoDB URI for subsequent retries', {
+          fallbackUri: fallbackUri.replace(/(mongodb(?:\+srv)?:\/\/)([^@/]+)@/i, '$1<credentials>@'),
+        });
+      }
 
       // If we've exhausted retries, exit with error
       if (attempt > maxRetries) {
