@@ -72,8 +72,8 @@ const ChipButton: React.FC<{ selected: boolean; onClick: () => void; children: R
         onClick={onClick}
         className={`tw-px-4 tw-py-2.5 tw-rounded-xl tw-text-sm tw-font-semibold tw-transition-all tw-duration-200 tw-border ${
             selected
-                ? 'tw-bg-primary tw-text-white tw-border-transparent tw-shadow-[inset_0_-2px_0_rgba(0,0,0,0.2),_0_4px_12px_rgba(var(--color-primary),0.2)] tw-scale-[1.02] active:tw-shadow-none active:tw-translate-y-[2px]'
-                : 'tw-bg-white tw-text-gray-600 tw-border-gray-200 tw-shadow-[0_2px_0_rgba(0,0,0,0.04)] hover:tw-border-gray-300 hover:tw-text-primary hover:tw-bg-gray-50 active:tw-shadow-none active:tw-translate-y-[2px]'
+                ? 'tw-bg-white tw-text-black tw-border-primary tw-ring-1 tw-ring-primary/20 tw-shadow-[0_2px_0_rgba(0,0,0,0.05)] tw-scale-[1.02] active:tw-shadow-none active:tw-translate-y-[2px]'
+                : 'tw-bg-white tw-text-black tw-border-primary/40 tw-shadow-[0_2px_0_rgba(0,0,0,0.04)] hover:tw-border-primary hover:tw-bg-gray-50 active:tw-shadow-none active:tw-translate-y-[2px]'
         }`}
     >
         {children}
@@ -366,10 +366,13 @@ export default function MentorApplicationForm() {
                                     <FieldLabel htmlFor="educationProgram">
                                         {form.educationRole === 'instructor' ? 'Program / Department' : 'Program'}
                                     </FieldLabel>
-                                    <input id="educationProgram" type="text" name="educationProgram"
+                                    <select id="educationProgram" name="educationProgram"
                                         value={form.educationProgram} onChange={handleInputChange}
-                                        placeholder={form.educationRole === 'instructor' ? 'e.g., BSIT Faculty' : 'e.g., BSIT'}
-                                        className={textInputCls} required />
+                                        className={textInputCls} required>
+                                        <option value="" disabled>Select your program</option>
+                                        <option value="BSIT">BSIT</option>
+                                        <option value="BSEMC">BSEMC</option>
+                                    </select>
                                 </div>
                                 <div>
                                     <FieldLabel htmlFor="educationYearLevel">

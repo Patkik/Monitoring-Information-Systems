@@ -1,11 +1,11 @@
 import React from 'react';
-import DashboardLayout from '../../components/layouts/DashboardLayout';
+import AdminLayout from '../../components/layouts/AdminLayout';
 import AdminSessionTrackerPanel from '../../components/admin/AdminSessionTrackerPanel';
 
 const AdminSessionsPage: React.FC = () => {
     return (
-        <DashboardLayout>
-            <div className="tw-p-6 tw-space-y-6">
+        <AdminLayout>
+            <div className="tw-space-y-6">
                 <header className="tw-flex tw-flex-col tw-gap-2">
                     <p className="tw-text-sm tw-uppercase tw-font-semibold tw-tracking-wide tw-text-purple-600">Admin</p>
                     <h1 className="tw-text-3xl tw-font-bold tw-text-gray-900">Session Tracker</h1>
@@ -18,7 +18,7 @@ const AdminSessionsPage: React.FC = () => {
                     <AdminSessionTrackerPanel />
                 </section>
             </div>
-        </DashboardLayout>
+        </AdminLayout>
     );
 };
 

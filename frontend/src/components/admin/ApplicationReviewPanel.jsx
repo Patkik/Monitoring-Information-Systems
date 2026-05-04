@@ -340,14 +340,14 @@ export default function ApplicationReviewPanel() {
                       <button
                         type="button"
                         onClick={() => openApplicationDetails(application)}
-                        className="tw-text-purple-600 hover:tw-text-purple-800"
+                        className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-px-3 tw-py-1.5 tw-text-xs tw-font-medium tw-bg-purple-50 tw-text-purple-700 hover:tw-bg-purple-100 tw-transition-colors"
                       >
                         View Details
                       </button>
                       <button
                         type="button"
                         onClick={() => openRoleModal(application)}
-                        className="tw-text-blue-600 hover:tw-text-blue-800"
+                        className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-px-3 tw-py-1.5 tw-text-xs tw-font-medium tw-bg-blue-50 tw-text-blue-700 hover:tw-bg-blue-100 tw-transition-colors"
                       >
                         Change Role
                       </button>
@@ -356,7 +356,7 @@ export default function ApplicationReviewPanel() {
                           <button
                             type="button"
                             onClick={() => handleApprove(application._id)}
-                            className="tw-text-green-600 hover:tw-text-green-800"
+                            className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-px-3 tw-py-1.5 tw-text-xs tw-font-medium tw-bg-emerald-50 tw-text-emerald-700 hover:tw-bg-emerald-100 tw-transition-colors"
                             disabled={isMutating}
                           >
                             Approve
@@ -364,7 +364,7 @@ export default function ApplicationReviewPanel() {
                           <button
                             type="button"
                             onClick={() => handleReject(application._id)}
-                            className="tw-text-red-600 hover:tw-text-red-800"
+                            className="tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-px-3 tw-py-1.5 tw-text-xs tw-font-medium tw-bg-red-50 tw-text-red-700 hover:tw-bg-red-100 tw-transition-colors"
                             disabled={isMutating}
                           >
                             Reject

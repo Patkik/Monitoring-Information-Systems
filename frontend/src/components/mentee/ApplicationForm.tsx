@@ -138,8 +138,8 @@ const ApplicationForm: React.FC = () => {
                 onClick={() => setSelectedMajor(major)}
                 className={`tw-px-4 tw-py-3 tw-border tw-rounded-lg tw-text-sm tw-font-medium tw-transition-colors ${
                   selectedMajor === major
-                    ? 'tw-bg-primary tw-text-white tw-border-primary'
-                    : 'tw-bg-white tw-text-gray-700 tw-border-gray-300 hover:tw-border-primary hover:tw-text-primary'
+                    ? 'tw-bg-white tw-text-black tw-border-primary tw-ring-1 tw-ring-primary/20'
+                    : 'tw-bg-white tw-text-black tw-border-primary/40 hover:tw-border-primary'
                 }`}
               >
                 {major}

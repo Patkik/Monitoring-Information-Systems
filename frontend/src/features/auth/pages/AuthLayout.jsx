@@ -29,8 +29,8 @@ export default function AuthLayout({
   const heroSubtitle = subtitle || "Mentoring, progress tracking, and guided learning are waiting on the other side.";
 
   return (
-    <div className="login-redesign tw-min-h-screen tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-bg-[#f7f8fa] tw-text-slate-900">
-      <aside className="tw-hidden md:tw-flex tw-relative tw-overflow-hidden tw-flex-col tw-justify-between tw-p-10 lg:tw-p-12">
+    <div className="login-redesign tw-min-h-screen tw-flex tw-flex-col md:tw-grid md:tw-grid-cols-2 tw-bg-[#f7f8fa] tw-text-slate-900">
+      <aside className="tw-hidden md:tw-flex md:tw-sticky md:tw-top-0 md:tw-h-screen md:tw-overflow-hidden tw-relative tw-flex-col tw-justify-between tw-p-8 lg:tw-p-10">
         <div className="login-redesign__mesh" aria-hidden="true" />
         <div className="login-redesign__grit" aria-hidden="true" />
         <div className="login-redesign__orbit" aria-hidden="true" />
@@ -44,7 +44,7 @@ export default function AuthLayout({
         </div>
 
         <div className="tw-relative tw-z-10 tw-flex tw-items-center tw-gap-3 tw-animate-[fadeUp_.8s_cubic-bezier(0.16,1,0.3,1)_both]">
-          <div className="tw-relative tw-h-14 tw-w-14 tw-rounded-full tw-bg-white/15 tw-backdrop-blur-md tw-ring-1 tw-ring-white/40 tw-flex tw-items-center tw-justify-center tw-overflow-hidden login-redesign__badge-ring">
+          <div className="tw-relative tw-h-12 tw-w-12 tw-rounded-full tw-bg-white/15 tw-backdrop-blur-md tw-ring-1 tw-ring-white/40 tw-flex tw-items-center tw-justify-center tw-overflow-hidden login-redesign__badge-ring">
             <img
               src={itcsLogo}
               alt="Information Technology Computer Society logo"
@@ -58,26 +58,26 @@ export default function AuthLayout({
             />
           </div>
           <div>
-            <p className="tw-text-[11px] tw-uppercase tw-tracking-[0.24em] tw-text-purple-200/80">CMIS Portal</p>
+            <p className="tw-text-[10px] tw-uppercase tw-tracking-[0.24em] tw-text-purple-200/80">CMIS Portal</p>
             <p className="tw-text-xs tw-tracking-[0.08em] tw-uppercase tw-text-white/70">Activate Project Access</p>
           </div>
         </div>
 
-        <div className="tw-relative tw-z-10 tw-max-w-[32rem] tw-space-y-5">
-          <p className="tw-text-[11px] tw-font-semibold tw-uppercase tw-tracking-[0.24em] tw-text-purple-200/85">{leftTopText}</p>
+        <div className="tw-relative tw-z-10 tw-max-w-[28rem] tw-space-y-4">
+          <p className="tw-text-[10px] tw-font-semibold tw-uppercase tw-tracking-[0.24em] tw-text-purple-200/85">{leftTopText}</p>
           <h1 className="login-redesign__hero-title tw-leading-[0.95] tw-text-white">
             {heroTitle}
           </h1>
-          <p className="tw-max-w-[30ch] tw-text-sm tw-leading-7 tw-text-purple-100/70">
+          <p className="tw-max-w-[28ch] tw-text-sm tw-leading-6 tw-text-purple-100/70">
             {heroSubtitle}
           </p>
-          <div className="tw-h-[2px] tw-w-14 tw-bg-gradient-to-r tw-from-purple-300 tw-to-transparent" />
+          <div className="tw-h-[2px] tw-w-12 tw-bg-gradient-to-r tw-from-purple-300 tw-to-transparent" />
           {stats && stats.length > 0 && (
-            <div className="tw-flex tw-gap-8 tw-pt-3">
+            <div className="tw-flex tw-gap-6 tw-pt-2">
               {stats.map((s, i) => (
                 <div key={i}>
-                  <p className="tw-text-3xl tw-font-semibold tw-text-white">{s.value}</p>
-                  <p className="tw-mt-1 tw-text-[10px] tw-tracking-[0.14em] tw-uppercase tw-text-purple-200/70">{s.label}</p>
+                  <p className="tw-text-2xl tw-font-semibold tw-text-white">{s.value}</p>
+                  <p className="tw-mt-1 tw-text-[9px] tw-tracking-[0.14em] tw-uppercase tw-text-purple-200/70">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -85,19 +85,20 @@ export default function AuthLayout({
         </div>
       </aside>
 
-      <main className="tw-relative tw-flex tw-items-center tw-justify-center tw-p-6 md:tw-p-10 lg:tw-p-14 tw-bg-white">
-        <div className="tw-absolute tw-top-0 tw-left-0 tw-right-0 tw-h-[3px] tw-bg-gradient-to-r tw-from-primary tw-via-purple-400 tw-to-transparent" aria-hidden="true" />
+      <main className="tw-relative tw-flex tw-flex-col tw-items-center tw-justify-center tw-min-h-screen tw-py-8 tw-px-4 sm:tw-px-6 tw-bg-white tw-overflow-y-auto">
+        <div className="tw-absolute tw-top-0 tw-left-0 tw-right-0 tw-h-[2px] tw-bg-gradient-to-r tw-from-primary tw-via-purple-400 tw-to-transparent" aria-hidden="true" />
 
-        <div className="tw-w-full tw-max-w-xl tw-rounded-3xl tw-bg-white/90 tw-backdrop-blur-sm tw-border tw-border-purple-100 tw-shadow-[0_24px_80px_rgba(91,22,163,0.08)] tw-p-6 sm:tw-p-8 md:tw-p-10">
+        <div className="tw-w-full tw-max-w-md tw-rounded-2xl tw-bg-white tw-border tw-border-purple-100 tw-shadow-[0_12px_40px_rgba(91,22,163,0.08)] tw-p-6 sm:tw-p-8">
           <Link
             to="/"
-            className="tw-inline-flex tw-items-center tw-gap-2 tw-text-sm tw-font-semibold tw-text-slate-500 hover:tw-text-primary tw-transition-colors"
+            className="tw-inline-flex tw-items-center tw-gap-1.5 tw-text-xs tw-font-semibold tw-text-slate-500 hover:tw-text-primary tw-transition-colors"
           >
             <span aria-hidden="true">&larr;</span>
-            Return to landing page
+            <span className="tw-hidden sm:tw-inline">Return to landing page</span>
+            <span className="sm:tw-hidden">Back</span>
           </Link>
 
-          <div className="tw-w-full tw-mt-8">
+          <div className="tw-w-full tw-mt-4">
             {children}
           </div>
         </div>

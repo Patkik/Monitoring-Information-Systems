@@ -1,14 +1,14 @@
 import React from 'react';
-import DashboardLayout from '../../components/layouts/DashboardLayout';
+import AdminLayout from '../../components/layouts/AdminLayout';
 import AdminFeedbackDashboard from '../../components/admin/AdminFeedbackDashboard';
 
 const FeedbackPage: React.FC = () => {
     return (
-        <DashboardLayout>
-            <div className="tw-p-6">
+        <AdminLayout>
+            <div >
                 <AdminFeedbackDashboard />
             </div>
-        </DashboardLayout>
+        </AdminLayout>
     );
 };
 

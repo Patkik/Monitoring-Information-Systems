@@ -54,35 +54,35 @@ const MentorCapacityOverridesPanel: React.FC = () => {
       <div className="tw-overflow-x-auto">
         <table className="tw-min-w-full tw-text-sm">
           <thead>
-            <tr className="tw-text-left tw-text-gray-500 tw-border-b tw-border-gray-100">
-              <th className="tw-py-2 tw-pr-4">Mentor</th>
-              <th className="tw-py-2 tw-pr-4">Active</th>
-              <th className="tw-py-2 tw-pr-4">Capacity</th>
-              <th className="tw-py-2 tw-pr-4">Remaining</th>
-              <th className="tw-py-2 tw-pr-4">Reason (optional)</th>
-              <th className="tw-py-2" aria-label="Actions" />
+            <tr className="tw-text-left tw-text-xs tw-font-semibold tw-text-gray-500 tw-uppercase tw-tracking-wider tw-border-b tw-border-gray-100">
+              <th className="tw-py-3 tw-px-4">Mentor</th>
+              <th className="tw-py-3 tw-px-4 tw-text-right">Active</th>
+              <th className="tw-py-3 tw-px-4 tw-text-right">Capacity</th>
+              <th className="tw-py-3 tw-px-4 tw-text-right">Remaining</th>
+              <th className="tw-py-3 tw-px-4">Reason (optional)</th>
+              <th className="tw-py-3 tw-px-4" aria-label="Actions" />
             </tr>
           </thead>
           <tbody className="tw-divide-y tw-divide-gray-100">
             {rows.map((mentor) => (
               <tr key={mentor.id}>
-                <td className="tw-py-3 tw-pr-4">
+                <td className="tw-py-3 tw-px-4">
                   <p className="tw-font-medium tw-text-gray-900">{mentor.name}</p>
                   <p className="tw-text-xs tw-text-gray-500">{mentor.email}</p>
                 </td>
-                <td className="tw-py-3 tw-pr-4">{mentor.activeMentees}</td>
-                <td className="tw-py-3 tw-pr-4">
+                <td className="tw-py-3 tw-px-4 tw-text-right">{mentor.activeMentees}</td>
+                <td className="tw-py-3 tw-px-4 tw-text-right">
                   <input
                     type="number"
                     min={1}
-                    className="tw-w-24 tw-border tw-border-gray-300 tw-rounded-md tw-px-2 tw-py-1 focus:tw-ring-2 focus:tw-ring-purple-500"
+                    className="tw-w-20 tw-text-right tw-border tw-border-gray-300 tw-rounded-md tw-px-2 tw-py-1 focus:tw-ring-2 focus:tw-ring-purple-500"
                     value={formState[mentor.id]?.capacity ?? (mentor.capacity !== null ? String(mentor.capacity) : '')}
                     onChange={(event) => updateField(mentor.id, 'capacity', event.target.value)}
                     aria-label={`Set capacity for ${mentor.name}`}
                   />
                 </td>
-                <td className="tw-py-3 tw-pr-4">{mentor.remainingSlots ?? '—'}</td>
-                <td className="tw-py-3 tw-pr-4">
+                <td className="tw-py-3 tw-px-4 tw-text-right">{mentor.remainingSlots ?? '—'}</td>
+                <td className="tw-py-3 tw-px-4">
                   <input
                     type="text"
                     className="tw-w-48 tw-border tw-border-gray-300 tw-rounded-md tw-px-2 tw-py-1 focus:tw-ring-2 focus:tw-ring-purple-500"
@@ -91,7 +91,7 @@ const MentorCapacityOverridesPanel: React.FC = () => {
                     placeholder="Reason (internal)"
                   />
                 </td>
-                <td className="tw-py-3">
+                <td className="tw-py-3 tw-px-4 tw-text-right">
                   <button
                     type="button"
                     className="tw-bg-purple-600 tw-text-white tw-rounded-full tw-px-4 tw-py-1.5 tw-text-sm hover:tw-bg-purple-700 disabled:tw-opacity-50"
