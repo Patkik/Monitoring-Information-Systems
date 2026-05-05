@@ -495,6 +495,7 @@ export default function MentorApplicationForm() {
 
                         {/* ── Captcha & Submit ── */}
                         <Card>
+                            {/* @ts-ignore */}
                             <RecaptchaField
                                 ref={recaptchaRef}
                                 onChange={(token: string | null) => { setRecaptchaToken(token || ''); if (token) setRecaptchaError(''); }}

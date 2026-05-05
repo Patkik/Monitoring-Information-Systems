@@ -162,7 +162,8 @@ const AdminAnnouncementCenter: React.FC = () => {
     };
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value, type, checked } = event.target;
+        const target = event.target as HTMLInputElement;
+        const { name, value, type, checked } = target;
         setFormState((prev) => {
             if (name === 'publishToAnnouncements') {
                 return { ...prev, publishToAnnouncements: checked };
@@ -194,7 +195,8 @@ const AdminAnnouncementCenter: React.FC = () => {
     const handleEditInputChange = (
         event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
-        const { name, value, type, checked } = event.target;
+        const target = event.target as HTMLInputElement;
+        const { name, value, type, checked } = target;
         setEditFormState((prev) => {
             if (!prev) {
                 return prev;

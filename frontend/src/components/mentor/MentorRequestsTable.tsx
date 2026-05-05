@@ -1,20 +1,19 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useMentorshipRequests } from '../../features/mentorship/hooks/useMentorshipRequests';
 import MenteeProfileDrawer from './MenteeProfileDrawer';
+import { Card, StatusBadge, Button, EmptyState, LoadingSpinner } from '../ui';
 
 const fmt = (iso?: string | null) => (iso ? new Date(iso).toLocaleString() : '—');
 const OPTIMISTIC_RECOVERY_TIMEOUT_MS = 10000;
 
-const StatusPill: React.FC<{ status: string }> = ({ status }) => {
-  const base = 'tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-medium';
-  const map: Record<string, string> = {
-    pending: 'tw-bg-yellow-100 tw-text-yellow-800',
-    accepted: 'tw-bg-green-100 tw-text-green-800',
-    declined: 'tw-bg-red-100 tw-text-red-800',
-    withdrawn: 'tw-bg-gray-100 tw-text-gray-700',
-  };
-  const cls = map[status] || 'tw-bg-gray-100 tw-text-gray-800';
-  return <span className={`${base} ${cls}`}>{status}</span>;
+const getStatusBadgeVariant = (status: string): "success" | "warning" | "error" | "info" | "neutral" => {
+  switch (status) {
+    case 'pending': return 'warning';
+    case 'accepted': return 'success';
+    case 'declined': return 'error';
+    case 'withdrawn': return 'neutral';
+    default: return 'neutral';
+  }
 };
 
 const MentorRequestsTable: React.FC = () => {
@@ -74,7 +73,6 @@ const MentorRequestsTable: React.FC = () => {
       Object.entries(prev).forEach(([id, status]) => {
         const incomingStatus = statusById.get(id);
 
-        // Keep local override only while waiting for backend status to move off pending.
         if (!incomingStatus || incomingStatus === status || incomingStatus !== 'pending') {
           clearOptimisticRecoveryTimer(id);
           delete next[id];
@@ -121,7 +119,6 @@ const MentorRequestsTable: React.FC = () => {
   const handleAccept = useCallback(async (id: string) => {
     const sessionSuggestion = window.prompt('Suggest a first session slot (optional):');
 
-    // ask for confirmation before sending
     const confirmed = window.confirm(
       `Confirm accepting this request${sessionSuggestion ? ` and suggesting "${sessionSuggestion}"` : ''}?`
     );
@@ -133,7 +130,6 @@ const MentorRequestsTable: React.FC = () => {
       await acceptRequest(id, sessionSuggestion || undefined);
       setResolvedStatusById((prev) => ({ ...prev, [id]: 'accepted' }));
       scheduleOptimisticRecovery(id);
-      // small success feedback
       window.alert('Request accepted — mentee will be notified.');
     } catch (error) {
       void error;
@@ -169,7 +165,6 @@ const MentorRequestsTable: React.FC = () => {
   }, [declineRequest, scheduleOptimisticRecovery]);
 
   const computeMatchScore = useCallback((r: any) => {
-    // Simple heuristic: base 50, +25 if they provided goals, +25 if notes provided
     let score = 50;
     if (r.goals) score += 25;
     if (r.notes) score += 25;
@@ -178,89 +173,83 @@ const MentorRequestsTable: React.FC = () => {
 
   if (isLoading && !isRefetching) {
     return (
-      <div className="tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-p-6">
-        <div className="tw-animate-pulse tw-space-y-3">
-          <div className="tw-h-5 tw-bg-gray-200 tw-rounded tw-w-1/3" />
-          <div className="tw-h-4 tw-bg-gray-200 tw-rounded tw-w-full" />
-          <div className="tw-h-4 tw-bg-gray-200 tw-rounded tw-w-5/6" />
-          <div className="tw-h-4 tw-bg-gray-200 tw-rounded tw-w-2/3" />
-        </div>
-      </div>
+      <Card className="tw-p-12 tw-flex tw-justify-center tw-items-center">
+        <LoadingSpinner label="Loading requests..." size="lg" />
+      </Card>
     );
   }
 
   return (
-    <div className="tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-p-6">
-      <div className="tw-flex tw-items-center tw-justify-between tw-mb-4">
-        <h2 className="tw-text-lg tw-font-semibold tw-text-gray-900">Mentorship Requests</h2>
-        <div className="tw-text-sm tw-text-gray-500">Total: {meta.total} • Pending: {meta.pending}</div>
+    <Card className="tw-p-0 tw-overflow-hidden tw-flex tw-flex-col tw-border-[var(--border-color)]">
+      <div className="tw-px-6 tw-py-4 tw-border-b tw-border-[var(--border-color)] tw-bg-[var(--surface-secondary)] tw-flex tw-items-center tw-justify-between">
+        <h2 className="tw-text-base tw-font-semibold tw-text-[var(--text-primary)]">Mentorship Requests</h2>
+        <div className="tw-text-sm tw-text-[var(--text-secondary)]">Total: {meta.total} • Pending: {meta.pending}</div>
       </div>
 
       {requests.length === 0 ? (
-        <div className="tw-text-gray-500">No requests yet.</div>
+        <EmptyState title="No requests yet" description="You don't have any pending mentorship requests." />
       ) : (
         <div className="tw-overflow-x-auto">
-          <table className="tw-min-w-full tw-text-left tw-text-sm">
-            <thead>
-              <tr className="tw-border-b tw-border-gray-200 tw-text-gray-600">
-                <th className="tw-py-2">Subject</th>
-                <th className="tw-py-2">Mentee</th>
-                <th className="tw-py-2">Requested</th>
-                <th className="tw-py-2">Preferred Slot</th>
-                <th className="tw-py-2">Status</th>
-                <th className="tw-py-2 tw-text-right">Actions</th>
+          <table className="tw-min-w-full tw-text-left tw-text-sm tw-divide-y tw-divide-[var(--border-color)]">
+            <thead className="tw-bg-[var(--surface-secondary)]">
+              <tr>
+                <th className="tw-px-6 tw-py-3.5 tw-text-left tw-text-xs tw-font-semibold tw-text-[var(--text-tertiary)] tw-uppercase tw-tracking-wider">Subject</th>
+                <th className="tw-px-6 tw-py-3.5 tw-text-left tw-text-xs tw-font-semibold tw-text-[var(--text-tertiary)] tw-uppercase tw-tracking-wider">Mentee</th>
+                <th className="tw-px-6 tw-py-3.5 tw-text-left tw-text-xs tw-font-semibold tw-text-[var(--text-tertiary)] tw-uppercase tw-tracking-wider">Requested</th>
+                <th className="tw-px-6 tw-py-3.5 tw-text-left tw-text-xs tw-font-semibold tw-text-[var(--text-tertiary)] tw-uppercase tw-tracking-wider">Preferred Slot</th>
+                <th className="tw-px-6 tw-py-3.5 tw-text-left tw-text-xs tw-font-semibold tw-text-[var(--text-tertiary)] tw-uppercase tw-tracking-wider">Status</th>
+                <th className="tw-px-6 tw-py-3.5 tw-text-right tw-text-xs tw-font-semibold tw-text-[var(--text-tertiary)] tw-uppercase tw-tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="tw-divide-y tw-divide-[var(--border-color)] tw-bg-[var(--surface-card)]">
               {requests.map((r) => {
                 const effectiveStatus = resolvedStatusById[r.id] || r.status;
                 const isRowLocked = Boolean(lockedActionById[r.id]);
 
                 return (
-                <tr key={r.id} className="tw-border-b tw-border-gray-100 hover:tw-bg-gray-50/50">
-                  <td className="tw-py-2 tw-pr-4 tw-font-medium tw-text-gray-900">{r.subject}</td>
-                  <td className="tw-py-2 tw-pr-4 tw-flex tw-items-center tw-gap-2">
-                    <span>{r.mentee?.name || '—'}</span>
+                <tr key={r.id} className="tw-transition-colors hover:tw-bg-[var(--surface-hover)]">
+                  <td className="tw-px-6 tw-py-4 tw-font-medium tw-text-[var(--text-primary)]">{r.subject}</td>
+                  <td className="tw-px-6 tw-py-4 tw-flex tw-items-center tw-gap-2">
+                    <span className="tw-text-[var(--text-primary)]">{r.mentee?.name || '—'}</span>
                     <button
                       type="button"
                       onClick={() => openProfile(r.mentee?.id ?? null)}
-                      className="tw-text-xs tw-text-blue-600 hover:tw-underline"
+                      className="tw-text-xs tw-text-primary hover:tw-underline tw-font-medium"
                     >
                       View profile
                     </button>
                     <span className="tw-ml-2">
-                      <span
-                        className={`tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-medium ${
-                          computeMatchScore(r) >= 75 ? 'tw-bg-green-100 tw-text-green-800' : 'tw-bg-yellow-100 tw-text-yellow-800'
-                        }`}
-                      >
-                        {computeMatchScore(r)}%
-                      </span>
+                      <StatusBadge 
+                        variant={computeMatchScore(r) >= 75 ? 'success' : 'warning'} 
+                        label={`${computeMatchScore(r)}%`} 
+                      />
                     </span>
                   </td>
-                  <td className="tw-py-2 tw-pr-4">{fmt(r.createdAt)}</td>
-                  <td className="tw-py-2 tw-pr-4">{r.preferredSlot || '—'}</td>
-                  <td className="tw-py-2 tw-pr-4"><StatusPill status={effectiveStatus} /></td>
-                  <td className="tw-py-2 tw-pl-4">
+                  <td className="tw-px-6 tw-py-4 tw-text-[var(--text-secondary)]">{fmt(r.createdAt)}</td>
+                  <td className="tw-px-6 tw-py-4 tw-text-[var(--text-secondary)]">{r.preferredSlot || '—'}</td>
+                  <td className="tw-px-6 tw-py-4"><StatusBadge variant={getStatusBadgeVariant(effectiveStatus)} label={effectiveStatus.charAt(0).toUpperCase() + effectiveStatus.slice(1)} /></td>
+                  <td className="tw-px-6 tw-py-4 tw-text-right">
                     <div className="tw-flex tw-gap-2 tw-justify-end">
                       {effectiveStatus === 'pending' && (
                         <>
-                          <button
-                            type="button"
+                          <Button
+                            size="sm"
+                            variant="success"
+                            loading={isRowLocked}
                             disabled={isRowLocked}
                             onClick={() => handleAccept(r.id)}
-                            className="tw-px-3 tw-py-1 tw-rounded tw-bg-green-600 hover:tw-bg-green-700 tw-text-white tw-text-xs tw-font-medium disabled:tw-opacity-50"
                           >
                             Accept
-                          </button>
-                          <button
-                            type="button"
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="danger"
+                            loading={isRowLocked}
                             disabled={isRowLocked}
                             onClick={() => handleDecline(r.id)}
-                            className="tw-px-3 tw-py-1 tw-rounded tw-bg-red-600 hover:tw-bg-red-700 tw-text-white tw-text-xs tw-font-medium disabled:tw-opacity-50"
                           >
                             Decline
-                          </button>
+                          </Button>
                         </>
                       )}
                     </div>
@@ -273,7 +262,7 @@ const MentorRequestsTable: React.FC = () => {
       )}
 
       <MenteeProfileDrawer open={drawerOpen} onClose={closeProfile} menteeId={selectedMenteeId} />
-    </div>
+    </Card>
   );
 };
 

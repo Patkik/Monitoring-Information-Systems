@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import { getPublicProfile } from '../../shared/services/profileApi';
 
@@ -31,15 +32,15 @@ export default function ProfilePage() {
               <h1 className="tw-text-lg tw-font-semibold tw-text-gray-900">My Profile</h1>
               <p className="tw-text-sm tw-text-gray-500">View and manage your public profile information</p>
             </div>
-            <a 
-              href="/profile/settings" 
+            <Link 
+              to="/profile/settings" 
               className="tw-inline-flex tw-items-center tw-gap-2 tw-px-4 tw-py-2 tw-bg-primary tw-text-white tw-text-sm tw-font-medium tw-rounded-lg hover:tw-bg-primary/90 tw-transition-colors"
             >
               <svg className="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
               </svg>
               Edit Settings
-            </a>
+            </Link>
           </div>
 
           {loading ? (

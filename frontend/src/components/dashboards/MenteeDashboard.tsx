@@ -1,23 +1,23 @@
 import React from 'react';
-import DashboardLayout from '../layouts/DashboardLayout';
+import AdminLayout from '../layouts/AdminLayout';
 import WelcomeBanner from '../mentee/WelcomeBanner';
 import PeopleBehind from '../mentee/PeopleBehind';
 import MatchNotificationBanner from '../mentee/MatchNotificationBanner';
 
 const MenteeDashboard: React.FC = () => {
   return (
-    <DashboardLayout>
-      <div className="tw-max-w-7xl tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8 tw-py-8">
+    <AdminLayout>
+      <div className="tw-space-y-6">
         {/* Welcome Banner */}
         <WelcomeBanner />
 
-  {/* Mentor Match Notification */}
-  <MatchNotificationBanner />
+        {/* Mentor Match Notification */}
+        <MatchNotificationBanner />
 
         {/* People Behind This */}
         <PeopleBehind />
       </div>
-    </DashboardLayout>
+    </AdminLayout>
   );
 };
 

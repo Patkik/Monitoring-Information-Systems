@@ -107,26 +107,26 @@ const OverviewMetrics: React.FC = () => {
 
     return (
       <div className="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 tw-gap-4" aria-live="polite">
-        <div className="tw-rounded-2xl tw-border tw-border-gray-100 tw-bg-gradient-to-br tw-from-purple-600 tw-to-indigo-500 tw-text-white tw-p-5">
-          <p className="tw-text-xs tw-font-semibold tw-uppercase tw-tracking-wide tw-opacity-80">Average rating</p>
-          <div className="tw-flex tw-items-baseline tw-gap-2">
+        <div className="tw-rounded-xl tw-border tw-border-[var(--border-color)] tw-bg-primary tw-text-white tw-p-5">
+          <p className="tw-text-[11px] tw-font-semibold tw-uppercase tw-tracking-wider tw-opacity-80">Average rating</p>
+          <div className="tw-flex tw-items-baseline tw-gap-2 tw-mt-1">
             <span className="tw-text-4xl tw-font-bold">{ratingLabel}</span>
             <span className="tw-text-sm tw-opacity-80">/ 5</span>
           </div>
-          <p className="tw-text-sm tw-mt-1 tw-font-medium">{qualitativeLabel}</p>
+          <p className="tw-text-sm tw-mt-2 tw-font-medium">{qualitativeLabel}</p>
         </div>
-        <div className="tw-rounded-2xl tw-border tw-border-gray-100 tw-bg-gray-50 tw-p-5 tw-flex tw-flex-col tw-justify-between">
+        <div className="tw-rounded-xl tw-border tw-border-[var(--border-color)] tw-bg-[var(--surface-secondary)] tw-p-5 tw-flex tw-flex-col tw-justify-between">
           <div>
-            <p className="tw-text-xs tw-font-semibold tw-text-gray-600 tw-uppercase">Total reviews</p>
-            <p className="tw-text-3xl tw-font-bold tw-text-gray-900">{reviewCount}</p>
-            <p className="tw-text-sm tw-text-gray-600 tw-mt-1">
+            <p className="tw-text-[11px] tw-font-semibold tw-text-[var(--text-tertiary)] tw-uppercase tw-tracking-wider">Total reviews</p>
+            <p className="tw-text-3xl tw-font-bold tw-text-[var(--text-primary)] tw-mt-1">{reviewCount}</p>
+            <p className="tw-text-sm tw-text-[var(--text-secondary)] tw-mt-2">
               {reviewCount === 0 ? 'Awaiting first review' : 'Based on mentee feedback in the last window'}
             </p>
           </div>
           <button
             type="button"
             onClick={() => refetch()}
-            className="tw-self-end tw-mt-4 tw-inline-flex tw-items-center tw-gap-2 tw-text-sm tw-font-medium tw-text-purple-700 hover:tw-text-purple-900"
+            className="tw-self-start tw-mt-4 tw-inline-flex tw-items-center tw-gap-2 tw-text-[13px] tw-font-medium tw-text-primary hover:tw-text-primary/80 tw-transition-colors disabled:tw-opacity-50"
             disabled={isFetching}
           >
             {isFetching ? 'Refreshing…' : 'Refresh summary'}
@@ -137,16 +137,9 @@ const OverviewMetrics: React.FC = () => {
   };
 
   return (
-    <section className="tw-bg-white tw-rounded-2xl tw-shadow tw-border tw-border-gray-100 tw-p-6 tw-space-y-4">
-      <div className="tw-space-y-1">
-        <p className="tw-text-xs tw-font-semibold tw-text-purple-600 tw-uppercase">Feedback</p>
-        <h2 className="tw-text-xl tw-font-bold tw-text-gray-900">Session feedback summary</h2>
-        {displayName ? (
-          <p className="tw-text-sm tw-text-gray-600">Insights for {displayName}</p>
-        ) : null}
-      </div>
+    <div className="tw-bg-[var(--surface-card)] tw-rounded-xl tw-border tw-border-[var(--border-color)] tw-shadow-[var(--shadow-sm)] tw-p-5 tw-space-y-4">
       {renderContent()}
-    </section>
+    </div>
   );
 };
 

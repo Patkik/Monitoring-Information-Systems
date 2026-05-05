@@ -193,7 +193,7 @@ const PairingDetailModal: React.FC<PairingDetailModalProps> = ({
                                             timeStyle: 'short',
                                         }).format(new Date(entry.createdAt))}
                                     </p>
-                                    {entry.metadata?.reason && (
+                                    {!!entry.metadata?.reason && (
                                         <p className="tw-mt-1 tw-text-xs tw-text-gray-600">Reason: {String(entry.metadata.reason)}</p>
                                     )}
                                 </li>

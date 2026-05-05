@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useMentorCapacities, useOverrideCapacity } from '../../features/admin/hooks/useMentorCapacity';
+import { Card, Button, LoadingSpinner, EmptyState } from '../ui';
 
 const MentorCapacityOverridesPanel: React.FC = () => {
   const { data: mentors = [], isLoading, error } = useMentorCapacities();
@@ -37,91 +38,110 @@ const MentorCapacityOverridesPanel: React.FC = () => {
   };
 
   if (isLoading) {
-    return <p className="tw-text-sm tw-text-gray-500">Loading mentor capacities…</p>;
+    return (
+      <Card className="tw-p-12 tw-flex tw-justify-center">
+        <LoadingSpinner label="Loading mentor capacities..." />
+      </Card>
+    );
   }
 
   if (error) {
-    return <p className="tw-text-sm tw-text-red-600">Unable to load mentor capacities. Try again later.</p>;
+    return (
+      <Card className="tw-p-6">
+        <p className="tw-text-sm tw-text-red-600 dark:tw-text-red-400">Unable to load mentor capacities. Try again later.</p>
+      </Card>
+    );
   }
 
   return (
-    <div className="tw-bg-white tw-rounded-2xl tw-border tw-border-gray-100 tw-shadow-sm tw-p-6 tw-space-y-4">
-      <header>
-        <h2 className="tw-text-xl tw-font-semibold tw-text-gray-900">Mentor capacity overrides</h2>
-        <p className="tw-text-sm tw-text-gray-500">Adjust mentor capacity when workloads change. Changes are logged to the audit trail.</p>
-      </header>
+    <Card className="tw-p-0 tw-overflow-hidden">
+      <div className="tw-p-6 tw-border-b tw-border-[var(--border-color)]">
+        <h2 className="tw-text-lg tw-font-semibold tw-text-[var(--text-primary)]">Mentor capacity overrides</h2>
+        <p className="tw-text-sm tw-text-[var(--text-secondary)] tw-mt-1">
+          Adjust mentor capacity when workloads change. Changes are logged to the audit trail.
+        </p>
+      </div>
 
       <div className="tw-overflow-x-auto">
         <table className="tw-min-w-full tw-text-sm">
-          <thead>
-            <tr className="tw-text-left tw-text-xs tw-font-semibold tw-text-gray-500 tw-uppercase tw-tracking-wider tw-border-b tw-border-gray-100">
-              <th className="tw-py-3 tw-px-4">Mentor</th>
+          <thead className="tw-bg-[var(--surface-secondary)]">
+            <tr className="tw-text-left tw-text-xs tw-font-semibold tw-text-[var(--text-tertiary)] tw-uppercase tw-tracking-wider tw-border-b tw-border-[var(--border-color)]">
+              <th className="tw-py-3 tw-px-6">Mentor</th>
               <th className="tw-py-3 tw-px-4 tw-text-right">Active</th>
               <th className="tw-py-3 tw-px-4 tw-text-right">Capacity</th>
               <th className="tw-py-3 tw-px-4 tw-text-right">Remaining</th>
               <th className="tw-py-3 tw-px-4">Reason (optional)</th>
-              <th className="tw-py-3 tw-px-4" aria-label="Actions" />
+              <th className="tw-py-3 tw-px-6" aria-label="Actions" />
             </tr>
           </thead>
-          <tbody className="tw-divide-y tw-divide-gray-100">
-            {rows.map((mentor) => (
-              <tr key={mentor.id}>
-                <td className="tw-py-3 tw-px-4">
-                  <p className="tw-font-medium tw-text-gray-900">{mentor.name}</p>
-                  <p className="tw-text-xs tw-text-gray-500">{mentor.email}</p>
-                </td>
-                <td className="tw-py-3 tw-px-4 tw-text-right">{mentor.activeMentees}</td>
-                <td className="tw-py-3 tw-px-4 tw-text-right">
-                  <input
-                    type="number"
-                    min={1}
-                    className="tw-w-20 tw-text-right tw-border tw-border-gray-300 tw-rounded-md tw-px-2 tw-py-1 focus:tw-ring-2 focus:tw-ring-purple-500"
-                    value={formState[mentor.id]?.capacity ?? (mentor.capacity !== null ? String(mentor.capacity) : '')}
-                    onChange={(event) => updateField(mentor.id, 'capacity', event.target.value)}
-                    aria-label={`Set capacity for ${mentor.name}`}
-                  />
-                </td>
-                <td className="tw-py-3 tw-px-4 tw-text-right">{mentor.remainingSlots ?? '—'}</td>
-                <td className="tw-py-3 tw-px-4">
-                  <input
-                    type="text"
-                    className="tw-w-48 tw-border tw-border-gray-300 tw-rounded-md tw-px-2 tw-py-1 focus:tw-ring-2 focus:tw-ring-purple-500"
-                    value={formState[mentor.id]?.reason ?? ''}
-                    onChange={(event) => updateField(mentor.id, 'reason', event.target.value)}
-                    placeholder="Reason (internal)"
-                  />
-                </td>
-                <td className="tw-py-3 tw-px-4 tw-text-right">
-                  <button
-                    type="button"
-                    className="tw-bg-purple-600 tw-text-white tw-rounded-full tw-px-4 tw-py-1.5 tw-text-sm hover:tw-bg-purple-700 disabled:tw-opacity-50"
-                    onClick={() => handleSubmit(mentor.id, mentor.capacity)}
-                    disabled={overrideMutation.isPending}
-                  >
-                    {overrideMutation.isPending ? 'Saving…' : 'Save'}
-                  </button>
+          <tbody className="tw-divide-y tw-divide-[var(--border-color)] tw-bg-[var(--surface-card)]">
+            {rows.length === 0 ? (
+              <tr>
+                <td colSpan={6}>
+                  <EmptyState title="No mentors found" description="There are currently no mentors in the system." />
                 </td>
               </tr>
-            ))}
+            ) : (
+              rows.map((mentor) => (
+                <tr key={mentor.id} className="hover:tw-bg-[var(--surface-hover)] tw-transition-colors">
+                  <td className="tw-py-3 tw-px-6">
+                    <p className="tw-font-medium tw-text-[var(--text-primary)]">{mentor.name}</p>
+                    <p className="tw-text-xs tw-text-[var(--text-tertiary)] tw-mt-0.5">{mentor.email}</p>
+                  </td>
+                  <td className="tw-py-3 tw-px-4 tw-text-right tw-text-[var(--text-secondary)]">{mentor.activeMentees}</td>
+                  <td className="tw-py-3 tw-px-4 tw-text-right">
+                    <input
+                      type="number"
+                      min={1}
+                      className="tw-w-20 tw-text-right tw-bg-[var(--surface-background)] tw-border tw-border-[var(--border-color)] tw-rounded-md tw-px-2 tw-py-1.5 tw-text-[var(--text-primary)] focus:tw-ring-2 focus:tw-ring-primary/50 focus:tw-border-primary tw-outline-none tw-transition-all"
+                      value={formState[mentor.id]?.capacity ?? (mentor.capacity !== null ? String(mentor.capacity) : '')}
+                      onChange={(event) => updateField(mentor.id, 'capacity', event.target.value)}
+                      aria-label={`Set capacity for ${mentor.name}`}
+                    />
+                  </td>
+                  <td className="tw-py-3 tw-px-4 tw-text-right tw-text-[var(--text-secondary)]">{mentor.remainingSlots ?? '—'}</td>
+                  <td className="tw-py-3 tw-px-4">
+                    <input
+                      type="text"
+                      className="tw-w-full tw-min-w-[150px] tw-bg-[var(--surface-background)] tw-border tw-border-[var(--border-color)] tw-rounded-md tw-px-3 tw-py-1.5 tw-text-[var(--text-primary)] focus:tw-ring-2 focus:tw-ring-primary/50 focus:tw-border-primary tw-outline-none tw-transition-all placeholder:tw-text-[var(--text-muted)]"
+                      value={formState[mentor.id]?.reason ?? ''}
+                      onChange={(event) => updateField(mentor.id, 'reason', event.target.value)}
+                      placeholder="Reason (internal)"
+                    />
+                  </td>
+                  <td className="tw-py-3 tw-px-6 tw-text-right">
+                    <Button
+                      size="sm"
+                      onClick={() => handleSubmit(mentor.id, mentor.capacity)}
+                      loading={overrideMutation.isPending}
+                    >
+                      Save
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
 
       {toast && (
-        <p
-          className={`tw-text-sm ${
-            toast.variant === 'success'
-              ? 'tw-text-green-600'
-              : toast.variant === 'error'
-              ? 'tw-text-red-600'
-              : 'tw-text-gray-600'
-          }`}
-          role="status"
-        >
-          {toast.message}
-        </p>
+        <div className="tw-p-4 tw-border-t tw-border-[var(--border-color)] tw-bg-[var(--surface-secondary)]">
+          <p
+            className={`tw-text-sm tw-font-medium ${
+              toast.variant === 'success'
+                ? 'tw-text-emerald-600 dark:tw-text-emerald-400'
+                : toast.variant === 'error'
+                ? 'tw-text-red-600 dark:tw-text-red-400'
+                : 'tw-text-[var(--text-secondary)]'
+            }`}
+            role="status"
+          >
+            {toast.message}
+          </p>
+        </div>
       )}
-    </div>
+    </Card>
   );
 };
 

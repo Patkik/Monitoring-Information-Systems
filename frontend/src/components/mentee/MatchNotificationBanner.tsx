@@ -1,8 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useNotifications from '../../shared/hooks/useNotifications';
 import { NotificationItem } from '../../shared/services/notificationService';
+import { Card, Button } from '../ui';
 
 const MatchNotificationBanner: React.FC = () => {
+  const navigate = useNavigate();
   const {
     notifications,
     isLoading,
@@ -29,39 +32,42 @@ const MatchNotificationBanner: React.FC = () => {
   }
 
   return (
-    <div className="tw-mb-4 tw-rounded-lg tw-border tw-border-green-200 tw-bg-green-50 tw-p-4" role="status" aria-live="polite">
+    <Card className="tw-mb-4 tw-p-4 tw-border-emerald-200 tw-bg-emerald-50 dark:tw-bg-emerald-950/20 dark:tw-border-emerald-900/50">
       <div className="tw-flex tw-items-start tw-justify-between tw-gap-3">
         <div className="tw-flex tw-items-start tw-gap-3">
-          <span className="tw-text-green-600" aria-hidden>🎉</span>
+          <span className="tw-text-emerald-600 tw-text-xl" aria-hidden>🎉</span>
           <div>
-            <h3 className="tw-text-green-800 tw-font-semibold">{latestMatch.title || 'You have a new mentor match'}</h3>
-            <p className="tw-text-green-700 tw-text-sm tw-mt-1">{latestMatch.message}</p>
+            <h3 className="tw-text-emerald-800 dark:tw-text-emerald-300 tw-font-semibold">{latestMatch.title || 'You have a new mentor match'}</h3>
+            <p className="tw-text-emerald-700 dark:tw-text-emerald-400 tw-text-sm tw-mt-1">{latestMatch.message}</p>
             <div className="tw-mt-3 tw-flex tw-gap-2">
-              <a
-                href="/mentee/my-mentor"
-                className="tw-inline-flex tw-items-center tw-px-3 tw-py-1.5 tw-text-sm tw-font-medium tw-text-white tw-bg-green-600 hover:tw-bg-green-700 tw-rounded"
+              <Button
+                variant="success"
+                size="sm"
+                onClick={() => navigate('/mentee/my-mentor')}
               >
                 View mentor
-              </a>
-              <a
-                href="/mentee/session"
-                className="tw-inline-flex tw-items-center tw-px-3 tw-py-1.5 tw-text-sm tw-font-medium tw-text-green-700 tw-border tw-border-green-300 hover:tw-bg-green-100 tw-rounded"
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/mentee/session')}
+                className="tw-text-emerald-700 hover:tw-bg-emerald-100 hover:tw-text-emerald-800 dark:tw-text-emerald-400 dark:hover:tw-bg-emerald-900/40 dark:hover:tw-text-emerald-300"
               >
                 Schedule session
-              </a>
+              </Button>
             </div>
           </div>
         </div>
         <button
           type="button"
           onClick={onDismiss}
-          className="tw-text-green-700 hover:tw-text-green-900 tw-text-sm"
+          className="tw-text-emerald-700 hover:tw-text-emerald-900 dark:tw-text-emerald-500 dark:hover:tw-text-emerald-300 tw-text-sm tw-transition-colors"
           aria-label="Dismiss match notification"
         >
           Dismiss
         </button>
       </div>
-    </div>
+    </Card>
   );
 };
 

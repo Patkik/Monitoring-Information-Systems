@@ -1,12 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Card } from '../ui';
+import logger from '../../shared/utils/logger';
 
 type StoredUser = {
   firstname?: string;
   lastname?: string;
 };
 
-import logger from '../../shared/utils/logger';
 const readUserFromStorage = (): StoredUser | null => {
   try {
     const raw = localStorage.getItem('user');
@@ -128,7 +129,7 @@ const WelcomeBanner: React.FC = () => {
   };
 
   return (
-    <div className="tw-bg-primary tw-rounded-lg tw-p-8 tw-mb-8 tw-text-white">
+    <Card className="tw-bg-primary tw-text-white tw-border-transparent tw-p-8 tw-mb-8">
       <h1 className="tw-text-3xl tw-font-bold tw-mb-4">
         {greetingName ? `Welcome back, ${greetingName}!` : 'Welcome back!'}
       </h1>
@@ -145,10 +146,13 @@ const WelcomeBanner: React.FC = () => {
               setActiveIndex(0);
           }}
           onKeyDown={handleKeyDown}
-          className="tw-w-full tw-px-4 tw-py-3 tw-pl-12 tw-pr-12 tw-rounded-lg tw-text-gray-900 tw-bg-white focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-purple-300"
+          className="tw-w-full tw-px-4 tw-py-3 tw-pl-12 tw-pr-12 tw-rounded-lg tw-bg-[var(--surface-secondary)] tw-text-[var(--text-primary)] tw-border tw-border-[var(--border-color)] placeholder:tw-text-[var(--text-muted)] focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary/50 tw-transition-all"
           aria-label="Search mentors, sessions, or resources"
           title="Search mentors, sessions, or resources"
         />
+        <svg className="tw-absolute tw-left-4 tw-top-3.5 tw-w-5 tw-h-5 tw-text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
         {query && (
             <button
               type="button"
@@ -159,7 +163,7 @@ const WelcomeBanner: React.FC = () => {
                   setActiveIndex(0);
                   setIsFocused(false);
               }}
-              className="tw-absolute tw-right-3 tw-top-3 tw-text-gray-400 hover:tw-text-gray-600"
+              className="tw-absolute tw-right-4 tw-top-3.5 tw-text-[var(--text-muted)] hover:tw-text-[var(--text-secondary)] tw-transition-colors"
             >
               ✕
             </button>
@@ -169,7 +173,7 @@ const WelcomeBanner: React.FC = () => {
               id="welcome-search-results"
               aria-label="Search suggestions"
               title="Search suggestions"
-              className="tw-absolute tw-left-0 tw-right-0 tw-mt-2 tw-bg-white tw-rounded-xl tw-shadow-lg tw-border tw-border-gray-100 tw-z-10"
+              className="tw-absolute tw-left-0 tw-right-0 tw-mt-2 tw-bg-[var(--surface-card)] tw-rounded-xl tw-shadow-[var(--shadow-md)] tw-border tw-border-[var(--border-color)] tw-z-10 tw-overflow-hidden"
             >
               {filteredShortcuts.map((shortcut, index) => (
                   <button
@@ -182,18 +186,18 @@ const WelcomeBanner: React.FC = () => {
                     onClick={() => handleNavigate(shortcut.path)}
                     className={`tw-w-full tw-text-left tw-px-4 tw-py-3 tw-transition tw-duration-150 ${
                         activeIndex === index
-                            ? 'tw-bg-purple-50 tw-text-purple-800'
-                            : 'hover:tw-bg-gray-50'
+                            ? 'tw-bg-primary/10 tw-text-primary'
+                            : 'hover:tw-bg-[var(--surface-hover)] tw-text-[var(--text-primary)]'
                     }`}
                   >
                     <p className="tw-font-semibold">{shortcut.label}</p>
-                    <p className="tw-text-sm tw-text-gray-600">{shortcut.description}</p>
+                    <p className={`tw-text-sm ${activeIndex === index ? 'tw-text-primary/80' : 'tw-text-[var(--text-secondary)]'}`}>{shortcut.description}</p>
                   </button>
               ))}
             </div>
         )}
       </div>
-    </div>
+    </Card>
   );
 };
 

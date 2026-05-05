@@ -125,7 +125,7 @@ const sanitizeFilters = (filters: AdminReportFilters & { format?: string }) => {
 
     if (Array.isArray(filters.status) && filters.status.length) {
         params.status = filters.status.join(',');
-    } else if (filters.status) {
+    } else if (filters.status && !Array.isArray(filters.status)) {
         params.status = filters.status;
     }
 
