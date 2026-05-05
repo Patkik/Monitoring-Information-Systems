@@ -117,7 +117,6 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       items: [
         { label: 'Sessions', to: '/mentor/sessions', matches: ['/mentor/sessions', '/mentor/chat'] },
         { label: 'My Mentees', to: '/mentor/roster', matches: ['/mentor/roster'] },
-        { label: 'Availability', to: '/mentor/availability', matches: ['/mentor/availability'] }
       ]
     },
     {

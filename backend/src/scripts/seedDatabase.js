@@ -74,8 +74,18 @@ const createUser = async (userData, label) => {
 const seedDatabase = async () => {
     try {
         console.log('🔗 Connecting to MongoDB...');
-        await mongoose.connect(process.env.MONGODB_URI);
-        console.log('✅ Connected to MongoDB');
+        try {
+            await mongoose.connect(process.env.MONGODB_URI);
+            console.log('✅ Connected to MongoDB (primary URI)');
+        } catch (primaryError) {
+            if (process.env.MONGODB_URI_FALLBACK) {
+                console.log('⚠️  Primary connection failed, trying fallback URI...');
+                await mongoose.connect(process.env.MONGODB_URI_FALLBACK);
+                console.log('✅ Connected to MongoDB (fallback URI)');
+            } else {
+                throw primaryError;
+            }
+        }
 
         // Clear all collections
         console.log('\n🗑️  Clearing all existing data...');
@@ -117,7 +127,15 @@ const seedDatabase = async () => {
                     expertise: ['JavaScript', 'React', 'Node.js', 'Database Design'],
                     yearsOfExperience: 10,
                     availability: 'Weekends',
-                    timezone: 'UTC-5'
+                    timezone: 'Asia/Manila'
+                },
+                profile: {
+                    displayName: 'Sarah Johnson',
+                    bio: 'Experienced software engineer with 10+ years of expertise',
+                    expertiseAreas: ['JavaScript', 'React', 'Node.js', 'Database Design'],
+                    skills: ['JavaScript', 'React', 'Node.js', 'Database Design'],
+                    
+                    timezone: 'Asia/Manila'
                 },
                 profileImage: null,
                 verified: true
@@ -135,7 +153,15 @@ const seedDatabase = async () => {
                     expertise: ['TypeScript', 'System Design', 'Leadership', 'Testing'],
                     yearsOfExperience: 12,
                     availability: 'Mornings',
-                    timezone: 'UTC+1'
+                    timezone: 'Asia/Manila'
+                },
+                profile: {
+                    displayName: 'Michael Chen',
+                    bio: 'Engineering manager focused on architecture and delivery',
+                    expertiseAreas: ['TypeScript', 'System Design', 'Leadership', 'Testing'],
+                    skills: ['TypeScript', 'System Design', 'Leadership', 'Testing'],
+                    
+                    timezone: 'Asia/Manila'
                 },
                 profileImage: null,
                 verified: true
@@ -153,7 +179,15 @@ const seedDatabase = async () => {
                     expertise: ['Product Strategy', 'React', 'Node.js', 'Mentoring'],
                     yearsOfExperience: 8,
                     availability: 'Evenings',
-                    timezone: 'UTC+5:30'
+                    timezone: 'Asia/Manila'
+                },
+                profile: {
+                    displayName: 'Priya Patel',
+                    bio: 'Product-minded full-stack mentor helping teams ship faster',
+                    expertiseAreas: ['Product Strategy', 'React', 'Node.js', 'Mentoring'],
+                    skills: ['Product Strategy', 'React', 'Node.js', 'Mentoring'],
+                    
+                    timezone: 'Asia/Manila'
                 },
                 profileImage: null,
                 verified: true
@@ -171,7 +205,15 @@ const seedDatabase = async () => {
                     expertise: ['AWS', 'APIs', 'Databases', 'Backend Architecture'],
                     yearsOfExperience: 9,
                     availability: 'Flexible',
-                    timezone: 'UTC-6'
+                    timezone: 'Asia/Manila'
+                },
+                profile: {
+                    displayName: 'Daniel Garcia',
+                    bio: 'Cloud and backend mentor with a focus on practical delivery',
+                    expertiseAreas: ['AWS', 'APIs', 'Databases', 'Backend Architecture'],
+                    skills: ['AWS', 'APIs', 'Databases', 'Backend Architecture'],
+                    
+                    timezone: 'Asia/Manila'
                 },
                 profileImage: null,
                 verified: true
@@ -189,7 +231,15 @@ const seedDatabase = async () => {
                     expertise: ['Career Growth', 'Interview Prep', 'Communication', 'JavaScript'],
                     yearsOfExperience: 7,
                     availability: 'Weekdays',
-                    timezone: 'UTC+0'
+                    timezone: 'Asia/Manila'
+                },
+                profile: {
+                    displayName: 'Alicia Morgan',
+                    bio: 'Mentor for career growth, communication, and technical interviews',
+                    expertiseAreas: ['Career Growth', 'Interview Prep', 'Communication', 'JavaScript'],
+                    skills: ['Career Growth', 'Interview Prep', 'Communication', 'JavaScript'],
+                    
+                    timezone: 'Asia/Manila'
                 },
                 profileImage: null,
                 verified: true
@@ -207,7 +257,13 @@ const seedDatabase = async () => {
                     learningGoals: ['Learn React', 'Master Node.js', 'Build full-stack projects'],
                     currentSkills: ['HTML', 'CSS', 'JavaScript Basics'],
                     availability: 'Flexible',
-                    timezone: 'UTC-5'
+                    timezone: 'Asia/Manila'
+                },
+                profile: {
+                    displayName: 'Alex Rodriguez',
+                    skills: ['HTML', 'CSS', 'JavaScript Basics'],
+                    
+                    timezone: 'Asia/Manila'
                 },
                 profileImage: null,
                 verified: true
@@ -225,7 +281,13 @@ const seedDatabase = async () => {
                     learningGoals: ['Understand product strategy', 'Learn analytics', 'Build leadership skills'],
                     currentSkills: ['Data Analysis', 'Business Acumen'],
                     availability: 'Evenings',
-                    timezone: 'UTC-0'
+                    timezone: 'Asia/Manila'
+                },
+                profile: {
+                    displayName: 'Emma Williams',
+                    skills: ['Data Analysis', 'Business Acumen'],
+                    
+                    timezone: 'Asia/Manila'
                 },
                 profileImage: null,
                 verified: true
@@ -243,7 +305,13 @@ const seedDatabase = async () => {
                     learningGoals: ['Improve TypeScript', 'Learn testing', 'Ship a portfolio project'],
                     currentSkills: ['HTML', 'CSS', 'JavaScript'],
                     availability: 'Weekends',
-                    timezone: 'UTC-4'
+                    timezone: 'Asia/Manila'
+                },
+                profile: {
+                    displayName: 'Noah Brown',
+                    skills: ['HTML', 'CSS', 'JavaScript'],
+                    
+                    timezone: 'Asia/Manila'
                 },
                 profileImage: null,
                 verified: true
@@ -261,7 +329,13 @@ const seedDatabase = async () => {
                     learningGoals: ['Learn React', 'Strengthen problem solving', 'Prepare for internships'],
                     currentSkills: ['Python', 'Git', 'Problem Solving'],
                     availability: 'Mornings',
-                    timezone: 'UTC+8'
+                    timezone: 'Asia/Manila'
+                },
+                profile: {
+                    displayName: 'Sophia Lee',
+                    skills: ['Python', 'Git', 'Problem Solving'],
+                    
+                    timezone: 'Asia/Manila'
                 },
                 profileImage: null,
                 verified: true
@@ -279,7 +353,13 @@ const seedDatabase = async () => {
                     learningGoals: ['Learn Node.js', 'Design APIs', 'Understand databases'],
                     currentSkills: ['JavaScript', 'SQL Basics'],
                     availability: 'Evenings',
-                    timezone: 'UTC-6'
+                    timezone: 'Asia/Manila'
+                },
+                profile: {
+                    displayName: 'Ethan Davis',
+                    skills: ['JavaScript', 'SQL Basics'],
+                    
+                    timezone: 'Asia/Manila'
                 },
                 profileImage: null,
                 verified: true
@@ -297,15 +377,50 @@ const seedDatabase = async () => {
                     learningGoals: ['Understand agile teams', 'Learn product thinking', 'Improve technical confidence'],
                     currentSkills: ['Figma', 'User Research', 'Communication'],
                     availability: 'Flexible',
-                    timezone: 'UTC+2'
+                    timezone: 'Asia/Manila'
+                },
+                profile: {
+                    displayName: 'Mia Wilson',
+                    skills: ['Figma', 'User Research', 'Communication'],
+                    
+                    timezone: 'Asia/Manila'
                 },
                 profileImage: null,
                 verified: true
             }
         ];
 
+        const createdUsers = [];
         for (const userData of demoUsers) {
-            await createUser(userData, userData.label);
+            createdUsers.push(await createUser(userData, userData.label));
+        }
+
+        console.log('\n🤝 Creating Mentorship Connections...');
+        const mentor1 = createdUsers.find(u => u.email === 'mentor1@mentoring-system.com');
+        const mentee1 = createdUsers.find(u => u.email === 'mentee1@mentoring-system.com');
+        const mentee2 = createdUsers.find(u => u.email === 'mentee2@mentoring-system.com');
+
+        if (mentor1 && mentee1) {
+            await new MentorshipRequest({
+                mentor: mentor1._id,
+                mentee: mentee1._id,
+                status: 'accepted',
+                subject: 'Mentorship on Web Dev',
+                message: 'I would love to learn React from you!',
+                goals: 'React', background: 'Beginner', expectations: 'Learn'
+            }).save();
+            console.log('   ✓ Mentee 1 matches with Mentor 1');
+        }
+        if (mentor1 && mentee2) {
+            await new MentorshipRequest({
+                mentor: mentor1._id,
+                mentee: mentee2._id,
+                status: 'accepted',
+                subject: 'System Architecture',
+                message: 'I want to get better at system design.',
+                goals: 'System Design', background: 'Intermediate', expectations: 'Learn'
+            }).save();
+            console.log('   ✓ Mentee 2 matches with Mentor 1');
         }
 
         console.log('\n✅ Database seeding completed successfully!');
