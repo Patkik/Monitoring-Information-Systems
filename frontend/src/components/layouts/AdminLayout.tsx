@@ -39,6 +39,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Notification and Dropdown states
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const notifRef = useRef<HTMLDivElement | null>(null);
 
@@ -226,8 +227,14 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return 'Dashboard';
   }, [location.pathname]);
 
+  const [desktopSidebarCollapsed, setDesktopSidebarCollapsed] = useState(false);
+
   return (
-    <div className="tw-h-screen tw-w-screen tw-overflow-hidden tw-bg-[#F4F5F7] tw-grid md:tw-grid-cols-[260px_1fr] tw-grid-rows-[64px_1fr] lg:tw-grid-cols-[280px_1fr]">
+    <div className={`tw-h-screen tw-w-screen tw-overflow-hidden tw-bg-[#F4F5F7] tw-grid tw-grid-rows-[64px_1fr] tw-transition-[grid-template-columns] tw-duration-300 ${
+      desktopSidebarCollapsed 
+        ? 'md:tw-grid-cols-[0px_1fr] lg:tw-grid-cols-[0px_1fr]' 
+        : 'md:tw-grid-cols-[260px_1fr] lg:tw-grid-cols-[280px_1fr]'
+    }`}>
       
       {/* Sidebar Overlay (Mobile) */}
       {sidebarOpen && (
@@ -239,7 +246,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
       {/* Sidebar */}
       <aside 
-        className={`tw-fixed md:tw-static tw-top-0 tw-bottom-0 tw-left-0 tw-z-50 tw-w-[260px] lg:tw-w-[280px] tw-bg-white tw-shadow-[1px_0_0_0_rgba(0,0,0,0.05)] tw-transition-transform tw-duration-300 tw-ease-in-out md:tw-translate-x-0 tw-row-span-2 tw-flex tw-flex-col ${sidebarOpen ? 'tw-translate-x-0' : 'tw--translate-x-full'}`}
+        className={`tw-fixed md:tw-static tw-top-0 tw-bottom-0 tw-left-0 tw-z-50 tw-w-[260px] lg:tw-w-[280px] tw-bg-white tw-shadow-[1px_0_0_0_rgba(0,0,0,0.05)] tw-transition-transform tw-duration-300 tw-ease-in-out tw-row-span-2 tw-flex tw-flex-col ${sidebarOpen ? 'tw-translate-x-0' : 'tw--translate-x-full'} ${desktopSidebarCollapsed ? 'md:tw--translate-x-full md:tw-opacity-0 md:tw-pointer-events-none' : 'md:tw-translate-x-0 md:tw-opacity-100'}`}
       >
         <div className="tw-h-16 tw-flex tw-items-center tw-px-6 tw-flex-shrink-0">
           <Link to={homePath} className="tw-text-xl tw-font-bold tw-text-primary">
@@ -285,12 +292,18 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <div className="tw-flex tw-items-center tw-gap-4">
           <button
             type="button"
-            className="md:tw-hidden tw-p-2 tw-rounded-md tw-text-gray-500 hover:tw-bg-gray-100"
-            onClick={() => setSidebarOpen(true)}
-            aria-label="Open admin navigation"
-            title="Open admin navigation"
+            className="tw-p-2 tw-rounded-md tw-text-gray-500 hover:tw-bg-gray-100"
+            onClick={() => {
+              if (window.innerWidth >= 768) {
+                setDesktopSidebarCollapsed(!desktopSidebarCollapsed);
+              } else {
+                setSidebarOpen(true);
+              }
+            }}
+            aria-label="Toggle navigation"
+            title="Toggle navigation"
           >
-            <span className="tw-sr-only">Open admin navigation</span>
+            <span className="tw-sr-only">Toggle navigation</span>
             <svg className="tw-w-5 tw-h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
@@ -362,8 +375,8 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             >
               <span className="tw-sr-only">Open profile menu</span>
               <div className="tw-h-8 tw-w-8 tw-rounded-full tw-bg-primary tw-text-white tw-flex tw-items-center tw-justify-center tw-text-sm tw-font-semibold tw-overflow-hidden">
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="Avatar" className="tw-w-full tw-h-full tw-object-cover" />
+                {avatarUrl && !imageError ? (
+                  <img src={avatarUrl} alt="Avatar" className="tw-w-full tw-h-full tw-object-cover" onError={() => setImageError(true)} />
                 ) : initials}
               </div>
             </button>

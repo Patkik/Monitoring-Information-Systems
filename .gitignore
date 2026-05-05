@@ -64,6 +64,7 @@ jspm_packages/
 
 # dotenv environment variables file
 .env
+.env.docker
 
 # API keys and sensitive information
 **/API keys.txt

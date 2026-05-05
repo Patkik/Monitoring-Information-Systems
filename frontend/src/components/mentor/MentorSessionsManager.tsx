@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useCompleteMentorSession, useMentorSessions } from '../../shared/hooks/useMentorSessions';
 import { useCancelSession } from '../../shared/hooks/useSessionLifecycle';
 import type { ApiWarning, MentorSession } from '../../shared/services/sessionsService';
@@ -46,6 +46,8 @@ const MentorSessionsManager: React.FC = () => {
     const completeSession = useCompleteMentorSession();
     const cancelSession = useCancelSession();
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const dateFilter = searchParams.get('date');
 
     // Sync selectedSession when the react-query cache for sessions is updated
     useEffect(() => {
@@ -94,6 +96,12 @@ const MentorSessionsManager: React.FC = () => {
                 const isCancelled = session.status === 'cancelled';
                 if (statusFilter === 'upcoming' && (isCompleted || isCancelled)) return false;
                 if (statusFilter === 'completed' && !isCompleted) return false;
+                
+                if (dateFilter) {
+                    const sessionDate = new Date(session.date).toLocaleDateString('en-CA');
+                    if (sessionDate !== dateFilter) return false;
+                }
+
                 if (!lower) return true;
                 const participantNames = getParticipantList(session)
                     .map((participant) => participant.name)
@@ -316,6 +324,23 @@ const MentorSessionsManager: React.FC = () => {
                             Close
                         </button>
                     </div>
+                </div>
+            )}
+
+            {dateFilter && (
+                <div className="tw-mb-4 tw-rounded-lg tw-border tw-bg-purple-50 tw-border-primary/20 tw-p-3 tw-flex tw-items-center tw-justify-between">
+                    <span className="tw-text-sm tw-font-semibold tw-text-primary">
+                        Showing sessions for: {new Date(dateFilter + 'T12:00:00').toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                    </span>
+                    <button
+                        onClick={() => {
+                            searchParams.delete('date');
+                            setSearchParams(searchParams);
+                        }}
+                        className="tw-text-xs tw-font-bold tw-text-primary hover:tw-text-purple-800 hover:tw-underline tw-uppercase tw-tracking-wide"
+                    >
+                        Clear Date Filter
+                    </button>
                 </div>
             )}
 

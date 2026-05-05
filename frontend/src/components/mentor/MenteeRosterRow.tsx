@@ -37,6 +37,7 @@ interface MenteeRosterRowProps {
 }
 
 const MenteeRosterRow: React.FC<MenteeRosterRowProps> = ({ mentee, onViewProgress }) => {
+    const [imageError, setImageError] = React.useState(false);
     const progress = mentee.progress ?? 0;
     const progressWidthClass = getProgressWidthClass(progress);
 
@@ -46,8 +47,12 @@ const MenteeRosterRow: React.FC<MenteeRosterRowProps> = ({ mentee, onViewProgres
             <tr className="tw-hidden md:tw-table-row hover:tw-bg-gray-50 tw-transition-colors">
                 <td className="tw-px-6 tw-py-4 tw-whitespace-nowrap">
                     <div className="tw-flex tw-items-center tw-gap-3">
-                        {mentee.avatar && (
-                            <img src={mentee.avatar} alt={mentee.name} className="tw-w-8 tw-h-8 tw-rounded-full tw-object-cover" />
+                        {mentee.avatar && !imageError ? (
+                            <img src={mentee.avatar} alt={mentee.name} className="tw-w-8 tw-h-8 tw-rounded-full tw-object-cover" onError={() => setImageError(true)} />
+                        ) : (
+                            <div className="tw-w-8 tw-h-8 tw-rounded-full tw-bg-primary/10 tw-flex tw-items-center tw-justify-center tw-text-primary tw-font-semibold tw-flex-shrink-0">
+                                {mentee.name.charAt(0).toUpperCase()}
+                            </div>
                         )}
                         <div>
                             <p className="tw-font-medium tw-text-gray-900">{mentee.name}</p>
@@ -83,8 +88,12 @@ const MenteeRosterRow: React.FC<MenteeRosterRowProps> = ({ mentee, onViewProgres
             <div className="md:tw-hidden tw-space-y-3">
                 <div className="tw-flex tw-items-start tw-justify-between tw-gap-4">
                     <div className="tw-flex tw-items-center tw-gap-3 tw-flex-1 tw-min-w-0">
-                        {mentee.avatar && (
-                            <img src={mentee.avatar} alt={mentee.name} className="tw-w-10 tw-h-10 tw-rounded-full tw-object-cover tw-flex-shrink-0" />
+                        {mentee.avatar && !imageError ? (
+                            <img src={mentee.avatar} alt={mentee.name} className="tw-w-10 tw-h-10 tw-rounded-full tw-object-cover tw-flex-shrink-0" onError={() => setImageError(true)} />
+                        ) : (
+                            <div className="tw-w-10 tw-h-10 tw-rounded-full tw-bg-primary/10 tw-flex tw-items-center tw-justify-center tw-text-primary tw-font-semibold tw-flex-shrink-0">
+                                {mentee.name.charAt(0).toUpperCase()}
+                            </div>
                         )}
                         <div className="tw-min-w-0">
                             <p className="tw-font-semibold tw-text-gray-900 tw-truncate">{mentee.name}</p>

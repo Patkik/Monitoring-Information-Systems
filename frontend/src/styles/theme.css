@@ -1,133 +1,123 @@
 /* ============================================================================
-   MERN Refactor Design System - CSS Variables & Semantic Color Scale
+   CMIS Mentoring Platform — Design System
    ============================================================================
    
-   This file establishes the complete color system, typography scale (golden ratio),
-   and layout proportions for the entire application. All components should use these
-   CSS variables instead of hardcoded colors.
-   
-   Color Model: HSL (Hue, Saturation, Lightness)
-   Primary Hue: 265° (Purple/Violet)
-   Golden Ratio: 1.618
+   Color Model: HSL-based with dark mode support
+   Primary Hue: 265° (Purple/Violet)  
+   Typography: Inter (Google Fonts)
    ========================================================================== */
 
 /* ============================================================================
    LIGHT MODE (Default)
    ========================================================================== */
 :root {
-  /* Primary Color Scale - HSL(265, 85%, L%) */
-  --color-primary-50: hsl(265, 85%, 96%);    /* Extremely subtle backgrounds */
-  --color-primary-100: hsl(265, 85%, 90%);   /* Hover states, soft tints */
-  --color-primary-300: hsl(265, 85%, 75%);   /* Secondary accents, disabled */
-  --color-primary-500: hsl(265, 85%, 45%);   /* PRIMARY BRAND COLOR - Core */
-  --color-primary-600: hsl(265, 85%, 37%);   /* Intermediate dark accent */
-  --color-primary-700: hsl(265, 85%, 30%);   /* Button hover, active states */
-  --color-primary-900: hsl(265, 85%, 15%);   /* Deep backgrounds, dark accents */
+  /* Primary Color Scale */
+  --color-primary-50: #f5f0ff;
+  --color-primary-100: #ede5ff;
+  --color-primary-200: #dccbff;
+  --color-primary-300: #c4a1ff;
+  --color-primary-400: #a66dff;
+  --color-primary-500: #5B16A3;
+  --color-primary-600: #4a1185;
+  --color-primary-700: #3d0e6e;
+  --color-primary-900: #1a0630;
 
-  /* Cool Neutral Grays - Tinted with primary hue for cohesion */
-  --color-neutral-0: #ffffff;                /* Pure white for primary backgrounds */
-  --color-neutral-50: #f9f7fb;               /* Subtle tint (cool gray) */
-  --color-neutral-100: #f3f0f7;              /* Light backgrounds */
-  --color-neutral-200: #e8e3f0;              /* Card backgrounds, borders */
-  --color-neutral-300: #d4cbe0;              /* Subtle dividers */
-  --color-neutral-400: #b9b4c4;              /* Secondary text, placeholders */
-  --color-neutral-600: #4a4559;              /* Secondary text, labels */
-  --color-neutral-800: #2a2631;              /* Strong borders, dark surfaces */
-  --color-neutral-900: #1a1820;              /* Primary text, headings */
+  /* Neutral Scale — Subtle purple tint for cohesion */
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f4f4f5;
+  --color-neutral-150: #ececee;
+  --color-neutral-200: #e4e4e7;
+  --color-neutral-300: #d4d4d8;
+  --color-neutral-400: #a1a1aa;
+  --color-neutral-500: #71717a;
+  --color-neutral-600: #52525b;
+  --color-neutral-700: #3f3f46;
+  --color-neutral-800: #27272a;
+  --color-neutral-900: #18181b;
 
-  /* Semantic Color Aliases (Function-based naming) */
-  --surface-background: var(--color-neutral-0);
-  --surface-secondary: var(--color-neutral-50);
-  --surface-tertiary: var(--color-neutral-100);
-  --text-primary: var(--color-neutral-900);
-  --text-secondary: var(--color-neutral-600);
-  --text-tertiary: var(--color-neutral-400);
-  --text-muted: #999999;
-  --text-disabled: #cccccc;
-  --border-color: var(--color-neutral-200);
-  --border-subtle: var(--color-neutral-100);
-  --divider-color: var(--color-neutral-300);
+  /* Semantic Surface Aliases */
+  --surface-background: #fafafa;
+  --surface-secondary: #ffffff;
+  --surface-tertiary: #f4f4f5;
+  --surface-card: #ffffff;
+  --surface-sidebar: #ffffff;
+  --surface-overlay: rgba(0, 0, 0, 0.5);
+  --surface-hover: #f4f4f5;
+  --surface-active: #ede5ff;
+
+  /* Text Colors */
+  --text-primary: #18181b;
+  --text-secondary: #52525b;
+  --text-tertiary: #71717a;
+  --text-muted: #a1a1aa;
+  --text-disabled: #d4d4d8;
+  --text-inverse: #ffffff;
+  --text-accent: #5B16A3;
+
+  /* Border Colors */
+  --border-color: #e4e4e7;
+  --border-subtle: #f4f4f5;
+  --border-strong: #d4d4d8;
+  --border-focus: #5B16A3;
+  --divider-color: #e4e4e7;
 
   /* Interactive States */
-  --color-success: #10b981;                  /* Green for positive states */
-  --color-warning: #f59e0b;                  /* Amber for cautions */
-  --color-error: #ef4444;                    /* Red for destructive/errors */
-  --color-info: #3b82f6;                     /* Blue for informational */
+  --color-success: #10b981;
+  --color-success-light: #ecfdf5;
+  --color-warning: #f59e0b;
+  --color-warning-light: #fffbeb;
+  --color-error: #ef4444;
+  --color-error-light: #fef2f2;
+  --color-info: #3b82f6;
+  --color-info-light: #eff6ff;
 
-  /* Shadows - Elevation System */
-  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  /* Shadows */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-dropdown: 0 8px 30px rgba(0, 0, 0, 0.12);
 
-  /* Golden Ratio Layout System */
-  --golden-ratio: 1.618;
-  --grid-unit: 1rem;
-  
-  /* Macro Layout Proportions (Desktop: 1920px viewport) */
-  --sidebar-fraction: 1fr;                   /* 734px @ 1920px */
-  --main-content-fraction: 1.618fr;          /* 1186px @ 1920px */
+  /* Typography */
+  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-xs: 0.75rem;    /* 12px */
+  --font-sm: 0.8125rem;  /* 13px */
+  --font-base: 0.875rem; /* 14px — denser UI base */
+  --font-md: 0.9375rem;  /* 15px */
+  --font-lg: 1rem;       /* 16px */
+  --font-xl: 1.125rem;   /* 18px */
+  --font-2xl: 1.25rem;   /* 20px */
+  --font-3xl: 1.5rem;    /* 24px */
+  --font-4xl: 1.875rem;  /* 30px */
 
-  /* Typography Scale (Base: 16px) */
-  --font-base: 1rem;                         /* 16px */
-  --font-sm: 0.875rem;                       /* 14px */
-  --font-xs: 0.75rem;                        /* 12px */
-  --font-h3: calc(var(--font-base) * 1.618); /* 25.9px ≈ 26px */
-  --font-h2: calc(var(--font-base) * 2.618); /* 41.9px ≈ 42px */
-  --font-h1: calc(var(--font-base) * 4.236); /* 67.8px ≈ 68px */
-  --font-display: calc(var(--font-base) * 6.854); /* 109.7px ≈ 110px */
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
 
-  /* Typography Weights */
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-
-  /* Spacing System */
-  --space-px: 1px;
-  --space-1: 0.25rem;                        /* 4px */
-  --space-2: 0.5rem;                         /* 8px */
-  --space-3: 0.75rem;                        /* 12px */
-  --space-4: 1rem;                           /* 16px */
-  --space-5: 1.25rem;                        /* 20px */
-  --space-6: 1.5rem;                         /* 24px */
-  --space-8: 2rem;                           /* 32px */
-  --space-10: 2.5rem;                        /* 40px */
-  --space-12: 3rem;                          /* 48px */
-
-  /* Spacing compatibility aliases (consumed by grid/layout styles) */
-  --spacing-0: 0;
-  --spacing-1: var(--space-1);
-  --spacing-2: var(--space-2);
-  --spacing-3: var(--space-3);
-  --spacing-4: var(--space-4);
-  --spacing-5: var(--space-5);
-  --spacing-6: var(--space-6);
-  --spacing-8: var(--space-8);
-  --spacing-10: var(--space-10);
-  --spacing-12: var(--space-12);
-  --spacing-16: 4rem;
-  --spacing-24: 6rem;
-  --spacing-32: 8rem;
-  --spacing-56: 14rem;
-  --spacing-64: 16rem;
-  --spacing-72: 18rem;
-
-  /* Border Radius */
-  --radius-sm: 0.375rem;                     /* 6px */
-  --radius-md: 0.5rem;                       /* 8px */
-  --radius-lg: 0.75rem;                      /* 12px */
-  --radius-xl: 1rem;                         /* 16px */
+  /* Radii */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
   --radius-full: 9999px;
 
   /* Transitions */
-  --transition-fast: 150ms ease-out;
-  --transition-base: 300ms ease-out;
-  --transition-slow: 500ms ease-out;
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  /* Z-Index Scale */
+  /* Z-Index */
   --z-dropdown: 1000;
   --z-sticky: 1020;
   --z-fixed: 1030;
@@ -135,37 +125,71 @@
   --z-modal: 1050;
   --z-tooltip: 1070;
   --z-notification: 1090;
+
+  /* Sidebar */
+  --sidebar-width: 260px;
+  --sidebar-width-collapsed: 72px;
+  --header-height: 56px;
 }
 
 /* ============================================================================
-   RESPONSIVE TYPOGRAPHY
+   DARK MODE
    ========================================================================== */
+html.dark {
+  --color-primary-50: #1a0630;
+  --color-primary-100: #2d0a52;
+  --color-primary-200: #3d0e6e;
+  --color-primary-300: #6b2fba;
+  --color-primary-400: #8b3dff;
+  --color-primary-500: #a66dff;
 
-@media (max-width: 1024px) {
-  :root {
-    --font-display: calc(var(--font-base) * 5.236); /* 83.8px */
-    --font-h1: calc(var(--font-base) * 3.236);      /* 51.8px */
-  }
-}
+  --color-neutral-0: #09090b;
+  --color-neutral-50: #18181b;
+  --color-neutral-100: #1f1f23;
+  --color-neutral-150: #27272a;
+  --color-neutral-200: #2e2e33;
+  --color-neutral-300: #3f3f46;
+  --color-neutral-400: #52525b;
+  --color-neutral-500: #71717a;
+  --color-neutral-600: #a1a1aa;
+  --color-neutral-700: #d4d4d8;
+  --color-neutral-800: #e4e4e7;
+  --color-neutral-900: #fafafa;
 
-@media (max-width: 768px) {
-  :root {
-    --font-display: calc(var(--font-base) * 3.236); /* 51.8px */
-    --font-h1: calc(var(--font-base) * 2.618);       /* 41.9px */
-    --font-h2: calc(var(--font-base) * 1.618);       /* 25.9px */
-  }
-}
+  --surface-background: #09090b;
+  --surface-secondary: #18181b;
+  --surface-tertiary: #1f1f23;
+  --surface-card: #18181b;
+  --surface-sidebar: #0f0f12;
+  --surface-overlay: rgba(0, 0, 0, 0.7);
+  --surface-hover: #27272a;
+  --surface-active: #2d0a52;
 
-/* ============================================================================
-   RESPONSIVE LAYOUT PROPORTIONS
-   ========================================================================== */
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a;
+  --text-muted: #52525b;
+  --text-disabled: #3f3f46;
+  --text-inverse: #18181b;
+  --text-accent: #a66dff;
 
-@media (max-width: 768px) {
-  :root {
-    /* On mobile, use full width */
-    --sidebar-fraction: 100%;
-    --main-content-fraction: 100%;
-  }
+  --border-color: #27272a;
+  --border-subtle: #1f1f23;
+  --border-strong: #3f3f46;
+  --border-focus: #8b3dff;
+  --divider-color: #27272a;
+
+  --color-success-light: #052e16;
+  --color-warning-light: #422006;
+  --color-error-light: #450a0a;
+  --color-info-light: #172554;
+
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+  --shadow-dropdown: 0 8px 30px rgba(0, 0, 0, 0.4);
 }
 
 /* ============================================================================
@@ -177,39 +201,45 @@ html {
   transition: background-color 200ms ease, color 200ms ease;
 }
 
+html.dark {
+  color-scheme: dark;
+}
+
+* {
+  border-color: var(--border-color);
+}
+
 body {
+  font-family: var(--font-family);
   background-color: var(--surface-background);
   color: var(--text-primary);
   font-size: var(--font-base);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em;
 }
 
-/* Semantic typography */
-h1 {
-  font-size: var(--font-h1);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-}
+/* ============================================================================
+   TYPOGRAPHY
+   ========================================================================== */
 
-h2 {
-  font-size: var(--font-h2);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: -0.01em;
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
   line-height: 1.3;
 }
 
-h3 {
-  font-size: var(--font-h3);
-  font-weight: var(--font-weight-semibold);
-  line-height: 1.4;
-}
+h1 { font-size: var(--font-3xl); font-weight: 700; }
+h2 { font-size: var(--font-2xl); font-weight: 600; }
+h3 { font-size: var(--font-xl); font-weight: 600; }
+h4 { font-size: var(--font-lg); font-weight: 600; }
 
 p {
   font-size: var(--font-base);
   color: var(--text-secondary);
+  line-height: 1.65;
 }
 
 small {
@@ -218,42 +248,65 @@ small {
 }
 
 /* ============================================================================
-   UTILITY CLASSES (Supplementary)
+   SCROLLBAR STYLING
    ========================================================================== */
 
-.text-primary {
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-300);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neutral-400);
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-400);
+}
+
+/* ============================================================================
+   SELECTION
+   ========================================================================== */
+
+::selection {
+  background-color: var(--color-primary-200);
   color: var(--text-primary);
 }
 
-.text-secondary {
-  color: var(--text-secondary);
-}
-
-.bg-surface {
-  background-color: var(--surface-background);
-}
-
-.bg-surface-secondary {
-  background-color: var(--surface-secondary);
-}
-
-.border-default {
-  border-color: var(--border-color);
-}
-
-.shadow-elevation-sm {
-  box-shadow: var(--shadow-sm);
-}
-
-.shadow-elevation-md {
-  box-shadow: var(--shadow-md);
-}
-
-.shadow-elevation-lg {
-  box-shadow: var(--shadow-lg);
-}
-
-::selection {
+html.dark ::selection {
   background-color: var(--color-primary-300);
-  color: var(--color-neutral-900);
+  color: #ffffff;
 }
+
+/* ============================================================================
+   FOCUS RINGS
+   ========================================================================== */
+
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ========================================================================== */
+
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-accent { color: var(--text-accent); }
+.bg-surface { background-color: var(--surface-background); }
+.bg-surface-secondary { background-color: var(--surface-secondary); }
+.bg-surface-card { background-color: var(--surface-card); }
+.border-default { border-color: var(--border-color); }
+.shadow-card { box-shadow: var(--shadow-sm); }
+.shadow-card-hover { box-shadow: var(--shadow-md); }

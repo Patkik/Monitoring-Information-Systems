@@ -1,8 +1,10 @@
 import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../layouts/DashboardLayout';
 import OverviewMetrics from '../mentor/OverviewMetrics';
 import MentorRequestsTable from '../mentor/MentorRequestsTable';
 import MentorDashboardSuggestions from '../../features/matchmaking/components/MentorDashboardSuggestions';
+import { useMentorSessions } from '../../shared/hooks/useMentorSessions';
 
 // ── Simple Calendar Component ──────────────────────────────────────────────
 
@@ -11,7 +13,10 @@ const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'];
 
 const MiniCalendar: React.FC = () => {
+  const navigate = useNavigate();
+  const { data: sessions = [] } = useMentorSessions();
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const today = useMemo(() => new Date(), []);
 
   const year = currentDate.getFullYear();
@@ -23,12 +28,21 @@ const MiniCalendar: React.FC = () => {
 
   const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
   const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
-  const goToday = () => setCurrentDate(new Date());
+  const goToday = () => {
+    setCurrentDate(new Date());
+    setSelectedDate(new Date());
+  };
 
   const isToday = (day: number) =>
     today.getDate() === day &&
     today.getMonth() === month &&
     today.getFullYear() === year;
+
+  const isSelected = (day: number) =>
+    selectedDate &&
+    selectedDate.getDate() === day &&
+    selectedDate.getMonth() === month &&
+    selectedDate.getFullYear() === year;
 
   // Build calendar grid (6 weeks × 7 days)
   const cells: { day: number; currentMonth: boolean }[] = [];
@@ -75,20 +89,40 @@ const MiniCalendar: React.FC = () => {
             {d}
           </div>
         ))}
-        {cells.map((cell, i) => (
-          <div
-            key={i}
-            className={`tw-h-9 tw-flex tw-items-center tw-justify-center tw-text-sm tw-rounded-lg tw-transition-colors ${
-              !cell.currentMonth
-                ? 'tw-text-gray-300'
-                : isToday(cell.day)
-                ? 'tw-bg-primary tw-text-white tw-font-bold tw-shadow-sm'
-                : 'tw-text-gray-700 hover:tw-bg-purple-50 tw-cursor-pointer'
-            }`}
-          >
-            {cell.day}
-          </div>
-        ))}
+        {cells.map((cell, i) => {
+          const cellDate = new Date(year, month, cell.day);
+          const dateStr = cellDate.toLocaleDateString('en-CA'); // YYYY-MM-DD local
+          const hasSession = sessions.some(s => {
+            const sessionDate = new Date(s.date).toLocaleDateString('en-CA');
+            return sessionDate === dateStr;
+          });
+
+          return (
+            <div
+              key={i}
+              onClick={() => {
+                if (cell.currentMonth) {
+                  setSelectedDate(new Date(year, month, cell.day));
+                  navigate(`/mentor/sessions?date=${dateStr}`);
+                }
+              }}
+              className={`tw-relative tw-h-9 tw-flex tw-items-center tw-justify-center tw-text-sm tw-rounded-lg tw-transition-colors ${
+                !cell.currentMonth
+                  ? 'tw-text-gray-300'
+                  : isSelected(cell.day)
+                  ? 'tw-bg-primary tw-text-white tw-font-bold tw-shadow-sm tw-cursor-pointer'
+                  : isToday(cell.day)
+                  ? 'tw-text-primary tw-font-bold tw-shadow-sm hover:tw-bg-purple-50 tw-cursor-pointer'
+                  : 'tw-text-gray-700 hover:tw-bg-purple-50 tw-cursor-pointer'
+              }`}
+            >
+              {cell.day}
+              {hasSession && cell.currentMonth && (
+                <div className={`tw-absolute tw-bottom-1 tw-w-1 tw-h-1 tw-rounded-full ${isSelected(cell.day) ? 'tw-bg-white' : 'tw-bg-primary'}`} />
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import App from './App';
 import { queryClient } from './shared/config/queryClient';
 import { setFeatureFlag } from './shared/utils/featureFlags';
 import { ToastProvider } from './hooks/useToast';
+import { ThemeProvider } from './shared/contexts/ThemeContext';
 import './styles.css';
 
 const rootElement = document.getElementById('root');
@@ -19,15 +20,15 @@ setFeatureFlag('SESSION_FEEDBACK', import.meta.env.VITE_FEATURE_SESSION_FEEDBACK
 
 ReactDOM.createRoot(rootElement as HTMLElement).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-          <App />
-        </BrowserRouter>
-      </ToastProvider>
-      {import.meta.env.DEV ? <ReactQueryDevtools initialIsOpen={false} /> : null}
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ToastProvider>
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <App />
+          </BrowserRouter>
+        </ToastProvider>
+        {import.meta.env.DEV ? <ReactQueryDevtools initialIsOpen={false} /> : null}
+      </QueryClientProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );
-
-

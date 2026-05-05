@@ -72,6 +72,7 @@ const MenteeProgressModal: React.FC<MenteeProgressModalProps> = ({
     menteeName = 'Mentee',
     menteeAvatar,
 }) => {
+    const [imageError, setImageError] = React.useState(false);
     const { data: progressData, isLoading, error } = useMenteeProgress(menteeId);
 
     if (!open) return null;
@@ -104,14 +105,14 @@ const MenteeProgressModal: React.FC<MenteeProgressModalProps> = ({
                 {/* Header */}
                 <div className="tw-flex tw-items-center tw-justify-between tw-p-6 tw-border-b tw-border-gray-200 tw-flex-shrink-0">
                     <div className="tw-flex tw-items-center tw-gap-4 tw-flex-1 tw-min-w-0">
-                        {menteeAvatar && (
+                        {menteeAvatar && !imageError ? (
                             <img
                                 src={menteeAvatar}
                                 alt={menteeName}
                                 className="tw-w-12 tw-h-12 tw-rounded-full tw-object-cover tw-flex-shrink-0"
+                                onError={() => setImageError(true)}
                             />
-                        )}
-                        {!menteeAvatar && (
+                        ) : (
                             <div className="tw-w-12 tw-h-12 tw-rounded-full tw-bg-primary/10 tw-flex tw-items-center tw-justify-center tw-text-primary tw-font-semibold tw-flex-shrink-0">
                                 {menteeName.charAt(0).toUpperCase()}
                             </div>

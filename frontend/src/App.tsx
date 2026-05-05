@@ -76,7 +76,7 @@ const MentorApplicationRoute = () => <ProtectedRoute requiredRole="mentor" child
 const MentorPendingRoute = () => <ProtectedRoute requiredRole="mentor" children={<MentorPendingPage />} />;
 const AdminPendingRoute = () => <ProtectedRoute requiredRole="admin" children={<AdminPendingPage />} />;
 const ProfileRoute = () => <ProtectedRoute requiredRole={undefined} children={<ProfilePage />} />;
-const ProfileSettingsRoute = () => <ProtectedRoute requiredRole={["mentee", "mentor"]} children={<ProfileSettings />} />;
+const ProfileSettingsRoute = () => <ProtectedRoute requiredRole={undefined} children={<ProfileSettings />} />;
 const SetPasswordRoute = () => <ProtectedRoute requiredRole={undefined} children={<SetPasswordPage />} />;
 const MentorChatRoute = () => <ProtectedRoute requiredRole="mentor" children={<ChatPage />} />;
 const MenteeChatRoute = () => <ProtectedRoute requiredRole="mentee" children={<ChatPage />} />;

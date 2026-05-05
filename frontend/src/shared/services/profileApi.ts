@@ -6,7 +6,7 @@ import axios from 'axios';
 // @ts-ignore - declared for Vite build-time replacement; undefined during Jest tests
 declare const importMetaEnv: any;
 const rawBase = ((globalThis as any)?.process?.env?.VITE_API_URL) ||
-  (typeof importMetaEnv !== 'undefined' && importMetaEnv.VITE_API_URL) ||
+  import.meta.env.VITE_API_URL ||
   'http://localhost:4000/api';
 const NORMALIZED_BASE = rawBase.replace(/\/+$/, '');
 

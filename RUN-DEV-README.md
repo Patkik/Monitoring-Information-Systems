@@ -120,3 +120,23 @@ cd backend && npm run dev
 # Terminal 2
 cd frontend && npm run dev
 ```
+
+## Docker Compose (Full Stack + MongoDB)
+
+1. Create Docker env file:
+```bash
+cp env.docker.example .env.docker
+```
+2. Start the stack:
+```bash
+npm run docker:up
+```
+3. Stop the stack:
+```bash
+npm run docker:down
+```
+
+Default endpoints:
+- Frontend: `http://localhost`
+- Backend API: `http://localhost:4000`
+- Health: `http://localhost/health` and `http://localhost:4000/health`

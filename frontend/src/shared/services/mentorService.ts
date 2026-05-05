@@ -53,8 +53,8 @@ export const fetchMentorRoster = async (): Promise<MentorRosterEntry[]> => {
 export const fetchMenteeProgress = async (menteeId: string): Promise<MenteeProgressData> => {
     try {
         // Try the mentee-specific endpoint first
-        const { data } = await apiClient.get<MenteeProgressData>(`/mentees/${menteeId}/progress`);
-        return data;
+        const { data } = await apiClient.get<{ success: boolean; data: MenteeProgressData }>(`/mentees/${menteeId}/progress`);
+        return data.data;
     } catch (error: any) {
         // If 403 Forbidden, re-throw to show authorization error
         if (error?.response?.status === 403) {
