@@ -317,6 +317,9 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <header className="tw-h-14 tw-bg-[var(--surface-card)] tw-border-b tw-border-[var(--border-color)] tw-flex tw-items-center tw-justify-between tw-px-4 lg:tw-px-6 tw-flex-shrink-0 tw-z-30">
           <div className="tw-flex tw-items-center tw-gap-3">
             <button
+              type="button"
+              title="Toggle Sidebar"
+              aria-label="Toggle Sidebar"
               onClick={() => {
                 if (window.innerWidth >= 768) {
                   setDesktopSidebarCollapsed(!desktopSidebarCollapsed);
