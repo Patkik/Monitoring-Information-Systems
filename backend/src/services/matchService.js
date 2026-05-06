@@ -48,8 +48,17 @@ const computeOverlapRatio = (mentorList, menteeList) => {
 };
 
 const calculateExpertiseScore = (mentor, mentee) => {
+  const appData = mentee?.applicationData || {};
   const mentorExpertise = normalizeArray(mentor?.profile?.expertiseAreas || mentor?.applicationData?.expertiseAreas);
-  const menteeNeeds = normalizeArray(mentee?.profile?.skills || mentee?.profile?.interests || mentee?.applicationData?.mentoringGoals);
+  const menteeNeeds = normalizeArray(
+    mentee?.profile?.skills || 
+    mentee?.profile?.interests || 
+    appData.mentoringGoals || 
+    appData.learningGoals || 
+    appData.specificSkills || 
+    appData.programmingLanguage || 
+    appData.mentoringTopics
+  );
   const overlapRatio = computeOverlapRatio(mentorExpertise, menteeNeeds);
   return Math.round(overlapRatio * 100);
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Outlet } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import LandingPage from './pages/landingPages/LandingPage';
 import AboutPage from './pages/landingPages/AboutPage';
@@ -89,29 +89,63 @@ const MentorAchievementsRoute = () => <ProtectedRoute requiredRole="mentor" chil
 const MentorMatchesRoute = () => <ProtectedRoute requiredRole="mentor" children={<MentorMatchSuggestionsPage />} />;
 const MenteeMatchesRoute = () => <ProtectedRoute requiredRole="mentee" children={<MenteeMatchSuggestionsPage />} />;
 
+const LightModeEnforcer = ({ children }: { children: React.ReactNode }) => {
+    React.useLayoutEffect(() => {
+        const root = document.documentElement;
+        
+        // Remove dark class immediately
+        root.classList.remove('dark');
+        
+        // Use MutationObserver to aggressively prevent the 'dark' class from being added
+        const observer = new MutationObserver((mutations) => {
+            for (const mutation of mutations) {
+                if (mutation.attributeName === 'class' && root.classList.contains('dark')) {
+                    root.classList.remove('dark');
+                }
+            }
+        });
+        observer.observe(root, { attributes: true });
+
+        return () => {
+            observer.disconnect();
+            // Try to restore the theme based on local storage or system preference
+            const stored = localStorage.getItem('cmis-theme');
+            if (stored === 'dark') {
+                root.classList.add('dark');
+            } else if (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                root.classList.add('dark');
+            }
+        };
+    }, []);
+
+    return <>{children}</>;
+};
+
 const App = () => {
     const location = useLocation();
 
     return (
         <AnimatePresence mode="sync" initial={false}>
             <Routes location={location} key={location.pathname}>
-                {/* Public Pages */}
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/how-it-works" element={<HowItWorksPage />} />
-                <Route path="/features" element={<FeaturesPage />} />
-                <Route path="/contact" element={<ContactPage />} />
+                <Route element={<LightModeEnforcer><Outlet /></LightModeEnforcer>}>
+                    {/* Public Pages */}
+                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/how-it-works" element={<HowItWorksPage />} />
+                    <Route path="/features" element={<FeaturesPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
 
-                {/* Auth Pages */}
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route path="/verify-email" element={<VerifyEmailPage />} />
-                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-                <Route path="/role-selection" element={<RoleSelectionPage />} />
-                <Route path="/oauth/callback" element={<OAuthCallbackPage />} />
-                <Route path="/integrations/google-calendar/callback" element={<GoogleCalendarCallbackPage />} />
-                <Route path="/set-password" element={<SetPasswordRoute />} />
+                    {/* Auth Pages */}
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/verify-email" element={<VerifyEmailPage />} />
+                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                    <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+                    <Route path="/role-selection" element={<RoleSelectionPage />} />
+                    <Route path="/oauth/callback" element={<OAuthCallbackPage />} />
+                    <Route path="/integrations/google-calendar/callback" element={<GoogleCalendarCallbackPage />} />
+                    <Route path="/set-password" element={<SetPasswordRoute />} />
+                </Route>
 
                 {/* Dashboard Routes */}
                 <Route path="/admin/dashboard" element={<AdminRoute />} />

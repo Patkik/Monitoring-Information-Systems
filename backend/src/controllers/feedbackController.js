@@ -22,10 +22,10 @@ exports.getMentorFeedbackSummary = async (req, res) => {
       lastReviewAt: mentor.feedbackStats?.lastReviewAt || null,
     };
 
-    const recent = await SessionFeedback.find({ mentor: mentorId, flagged: { $ne: true } })
+    const recent = await SessionFeedback.find({ mentorId: mentorId, flagged: { $ne: true } })
       .sort({ submittedAt: -1 })
       .limit(10)
-      .select('rating comment submittedAt anonymizedCode')
+      .select('rating text submittedAt anonymizedCode')
       .lean();
 
     return ok(res, {
@@ -33,7 +33,7 @@ exports.getMentorFeedbackSummary = async (req, res) => {
       recent: recent.map((item) => ({
         code: item.anonymizedCode,
         rating: item.rating,
-        comment: item.comment || null,
+        comment: item.text || null,
         submittedAt: item.submittedAt,
       })),
     });

@@ -24,18 +24,28 @@ const canActOnMentorResource = (reqUser, mentorId) => {
 const serializeMenteePreview = (matchDoc) => {
   const mentee = matchDoc.applicantId;
   const profile = mentee?.profile || {};
+  const appData = mentee?.applicationData || {};
   const education = profile.education || {};
+  
+  const extractTags = (source) => {
+    if (Array.isArray(source)) return source;
+    if (typeof source === 'string') return source.split(',').map(s => s.trim()).filter(Boolean);
+    return [];
+  };
+
   return {
     id: mentee?._id?.toString(),
     name: [mentee?.firstname, mentee?.lastname].filter(Boolean).join(' ').trim() || profile.displayName || mentee?.email,
     email: mentee?.email,
     photoUrl: profile.photoUrl || null,
-    bio: profile.bio || null,
-    expertiseAreas: profile.expertiseAreas || [],
-    skills: profile.skills || [],
-    interests: profile.interests || [],
+    bio: profile.bio || appData.bio || null,
+    expertiseAreas: profile.expertiseAreas?.length ? profile.expertiseAreas : extractTags(appData.expertiseAreas || appData.mentoringTopics),
+    skills: profile.skills?.length ? profile.skills : extractTags(appData.learningGoals || appData.mentoringGoals || appData.specificSkills || appData.programmingLanguage),
+    interests: profile.interests?.length ? profile.interests : extractTags(appData.interests),
     availabilitySlots: profile.availabilitySlots || [],
-    education,
+    education: {
+      program: education.program || appData.program || null,
+    },
   };
 };
 
