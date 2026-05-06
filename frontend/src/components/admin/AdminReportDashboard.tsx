@@ -91,7 +91,7 @@ const AdminReportDashboard: React.FC = () => {
     const defaults: FormState = { status: 'all', attendance: 'all' };
     const [formState, setFormState] = useState<FormState>(defaults);
     const [activeFilters, setActiveFilters] = useState<FormState>(defaults);
-    const [exporting, setExporting] = useState<'csv' | 'pdf' | null>(null);
+    const [exporting, setExporting] = useState<'csv' | 'xlsx' | 'pdf' | null>(null);
     const { showToast } = useToast();
 
     const normalizedFilters = useMemo<AdminReportFilters>(() => {
@@ -144,7 +144,7 @@ const AdminReportDashboard: React.FC = () => {
         setActiveFilters(defaults);
     };
 
-    const handleExport = async (format: 'csv' | 'pdf') => {
+    const handleExport = async (format: 'csv' | 'xlsx' | 'pdf') => {
         try {
             setExporting(format);
             const blob = await downloadAdminReport(normalizedFilters, format);
@@ -497,6 +497,14 @@ const AdminReportDashboard: React.FC = () => {
                             className="tw-rounded-lg tw-border tw-border-gray-300 tw-bg-white tw-px-3 tw-py-1.5 tw-text-sm tw-font-medium tw-text-gray-700 hover:tw-bg-gray-50 disabled:tw-opacity-60"
                         >
                             {exporting === 'csv' ? 'Preparing CSV…' : 'Export CSV'}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => handleExport('xlsx')}
+                            disabled={exporting !== null}
+                            className="tw-rounded-lg tw-border tw-border-gray-300 tw-bg-white tw-px-3 tw-py-1.5 tw-text-sm tw-font-medium tw-text-gray-700 hover:tw-bg-gray-50 disabled:tw-opacity-60"
+                        >
+                            {exporting === 'xlsx' ? 'Preparing XLSX…' : 'Export XLSX'}
                         </button>
                         <button
                             type="button"

@@ -310,3 +310,385 @@ html.dark ::selection {
 .border-default { border-color: var(--border-color); }
 .shadow-card { box-shadow: var(--shadow-sm); }
 .shadow-card-hover { box-shadow: var(--shadow-md); }
+
+/* ============================================================================
+   DARK MODE — GLOBAL HARDCODED-CLASS INTERCEPT
+   
+   Problem: ~200 components use hardcoded Tailwind classes like `tw-bg-white`,
+   `tw-text-gray-900`, etc. that don't respond to the `html.dark` CSS variables.
+   
+   Solution: Override those classes globally when `html.dark` is active using
+   higher-specificity selectors. This avoids editing every component file and
+   ensures ALL roles (admin, mentor, mentee) are fixed simultaneously.
+   
+   Surface hierarchy (dark):
+   - Page background:  #09090b  (near black)
+   - Sidebar:          #0f0f12  (darkest)
+   - Cards/panels:     #1a1a1f  (main card surface)
+   - Elevated cards:   #222228  (modals, dropdowns)
+   - Secondary panels: #1f1f26  (table rows, sub-sections)
+   - Hover states:     #2a2a32  (interactive hover)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   BACKGROUND OVERRIDES
+   -------------------------------------------------------------------------- */
+
+/* Pure white → main card surface */
+html.dark .tw-bg-white {
+  background-color: #1a1a1f !important;
+}
+
+/* Off-white / very light grays → slightly elevated from page */
+html.dark .tw-bg-gray-50,
+html.dark .tw-bg-zinc-50,
+html.dark .tw-bg-slate-50,
+html.dark .tw-bg-neutral-50 {
+  background-color: #1f1f26 !important;
+}
+
+/* Light gray → secondary surface */
+html.dark .tw-bg-gray-100,
+html.dark .tw-bg-zinc-100,
+html.dark .tw-bg-slate-100,
+html.dark .tw-bg-neutral-100 {
+  background-color: #26262e !important;
+}
+
+/* Mid light gray → hover / subtle dividers */
+html.dark .tw-bg-gray-200,
+html.dark .tw-bg-zinc-200,
+html.dark .tw-bg-slate-200,
+html.dark .tw-bg-neutral-200 {
+  background-color: #2e2e38 !important;
+}
+
+/* Moderate gray → borders, disabled states */
+html.dark .tw-bg-gray-300,
+html.dark .tw-bg-zinc-300,
+html.dark .tw-bg-slate-300,
+html.dark .tw-bg-neutral-300 {
+  background-color: #38383f !important;
+}
+
+/* Indigo/purple tinted light surfaces (used in some admin panels) */
+html.dark .tw-bg-indigo-50 {
+  background-color: #1e1830 !important;
+}
+html.dark .tw-bg-indigo-100 {
+  background-color: #261e40 !important;
+}
+html.dark .tw-bg-purple-50 {
+  background-color: #1e1830 !important;
+}
+html.dark .tw-bg-purple-100 {
+  background-color: #261e40 !important;
+}
+
+/* Colored state backgrounds — make them dark-aware */
+html.dark .tw-bg-green-50 {
+  background-color: #0d2a1a !important;
+}
+html.dark .tw-bg-green-100 {
+  background-color: #0f3320 !important;
+}
+html.dark .tw-bg-red-50 {
+  background-color: #2a0d0d !important;
+}
+html.dark .tw-bg-red-100 {
+  background-color: #330f0f !important;
+}
+html.dark .tw-bg-yellow-50,
+html.dark .tw-bg-amber-50 {
+  background-color: #2a200a !important;
+}
+html.dark .tw-bg-yellow-100,
+html.dark .tw-bg-amber-100 {
+  background-color: #33280d !important;
+}
+html.dark .tw-bg-blue-50 {
+  background-color: #0d1a2a !important;
+}
+html.dark .tw-bg-blue-100 {
+  background-color: #0f2033 !important;
+}
+
+/* --------------------------------------------------------------------------
+   TEXT COLOR OVERRIDES — ensure legibility on dark surfaces
+   -------------------------------------------------------------------------- */
+
+/* Darkest text colors — used for headings, important content */
+html.dark .tw-text-gray-900,
+html.dark .tw-text-zinc-900,
+html.dark .tw-text-slate-900,
+html.dark .tw-text-neutral-900,
+html.dark .tw-text-black {
+  color: #f0f0f4 !important;
+}
+
+/* Dark body text → light secondary */
+html.dark .tw-text-gray-800,
+html.dark .tw-text-zinc-800,
+html.dark .tw-text-slate-800,
+html.dark .tw-text-neutral-800 {
+  color: #e0e0e8 !important;
+}
+
+/* Medium-dark text → readable muted light */
+html.dark .tw-text-gray-700,
+html.dark .tw-text-zinc-700,
+html.dark .tw-text-slate-700,
+html.dark .tw-text-neutral-700 {
+  color: #c8c8d4 !important;
+}
+
+/* Medium text */
+html.dark .tw-text-gray-600,
+html.dark .tw-text-zinc-600,
+html.dark .tw-text-slate-600,
+html.dark .tw-text-neutral-600 {
+  color: #a8a8b8 !important;
+}
+
+/* Muted text → stays muted but visible */
+html.dark .tw-text-gray-500,
+html.dark .tw-text-zinc-500,
+html.dark .tw-text-slate-500,
+html.dark .tw-text-neutral-500 {
+  color: #8888a0 !important;
+}
+
+/* Very muted — keep subtle */
+html.dark .tw-text-gray-400,
+html.dark .tw-text-zinc-400,
+html.dark .tw-text-slate-400,
+html.dark .tw-text-neutral-400 {
+  color: #68687e !important;
+}
+
+/* Indigo text (used for links, accents in admin panels) */
+html.dark .tw-text-indigo-600,
+html.dark .tw-text-indigo-700 {
+  color: #a78bfa !important;
+}
+html.dark .tw-text-indigo-500 {
+  color: #818cf8 !important;
+}
+html.dark .tw-text-purple-600,
+html.dark .tw-text-purple-700 {
+  color: #c084fc !important;
+}
+
+/* State text colors */
+html.dark .tw-text-green-600,
+html.dark .tw-text-green-700 {
+  color: #4ade80 !important;
+}
+html.dark .tw-text-green-800 {
+  color: #86efac !important;
+}
+html.dark .tw-text-red-600,
+html.dark .tw-text-red-700 {
+  color: #f87171 !important;
+}
+html.dark .tw-text-red-800 {
+  color: #fca5a5 !important;
+}
+html.dark .tw-text-yellow-600,
+html.dark .tw-text-yellow-700,
+html.dark .tw-text-amber-600,
+html.dark .tw-text-amber-700 {
+  color: #fbbf24 !important;
+}
+html.dark .tw-text-blue-600,
+html.dark .tw-text-blue-700 {
+  color: #60a5fa !important;
+}
+
+/* --------------------------------------------------------------------------
+   BORDER COLOR OVERRIDES
+   -------------------------------------------------------------------------- */
+
+html.dark .tw-border-gray-100,
+html.dark .tw-border-zinc-100,
+html.dark .tw-border-neutral-100 {
+  border-color: #2a2a32 !important;
+}
+
+html.dark .tw-border-gray-200,
+html.dark .tw-border-zinc-200,
+html.dark .tw-border-neutral-200 {
+  border-color: #32323c !important;
+}
+
+html.dark .tw-border-gray-300,
+html.dark .tw-border-zinc-300,
+html.dark .tw-border-neutral-300 {
+  border-color: #3e3e4a !important;
+}
+
+html.dark .tw-border-indigo-200 {
+  border-color: #3730a3 !important;
+}
+
+html.dark .tw-border-green-200 {
+  border-color: #166534 !important;
+}
+
+html.dark .tw-border-red-200,
+html.dark .tw-border-red-100 {
+  border-color: #7f1d1d !important;
+}
+
+html.dark .tw-border-yellow-200,
+html.dark .tw-border-amber-200 {
+  border-color: #78350f !important;
+}
+
+/* --------------------------------------------------------------------------
+   INPUT / FORM ELEMENT OVERRIDES
+   -------------------------------------------------------------------------- */
+
+html.dark input:not([class*="tw-bg-"]),
+html.dark textarea:not([class*="tw-bg-"]),
+html.dark select:not([class*="tw-bg-"]) {
+  background-color: #22222a;
+  border-color: #38383f;
+  color: #f0f0f4;
+}
+
+/* Inputs that have explicit white/light bg classes */
+html.dark input.tw-bg-white,
+html.dark textarea.tw-bg-white,
+html.dark select.tw-bg-white {
+  background-color: #22222a !important;
+  color: #f0f0f4 !important;
+}
+
+html.dark input[class*="tw-bg-gray"],
+html.dark textarea[class*="tw-bg-gray"],
+html.dark select[class*="tw-bg-gray"] {
+  background-color: #22222a !important;
+  color: #f0f0f4 !important;
+}
+
+/* Placeholder text */
+html.dark ::placeholder {
+  color: #58586a;
+}
+
+/* --------------------------------------------------------------------------
+   TABLE OVERRIDES
+   -------------------------------------------------------------------------- */
+
+html.dark .tw-bg-gray-50 thead,
+html.dark thead.tw-bg-gray-50,
+html.dark th.tw-bg-gray-50 {
+  background-color: #22222a !important;
+}
+
+html.dark .tw-divide-gray-100 > * + * {
+  border-color: #2a2a32 !important;
+}
+
+html.dark .tw-divide-gray-200 > * + * {
+  border-color: #32323c !important;
+}
+
+/* Hover rows */
+html.dark .hover\:tw-bg-gray-50:hover,
+html.dark tr.hover\:tw-bg-gray-50:hover {
+  background-color: #24242d !important;
+}
+
+/* --------------------------------------------------------------------------
+   BADGE / PILL OVERRIDES — colored status indicators
+   -------------------------------------------------------------------------- */
+
+html.dark .tw-bg-gray-100.tw-text-gray-800 {
+  background-color: #2e2e38 !important;
+  color: #d0d0dc !important;
+}
+
+html.dark .tw-bg-green-100.tw-text-green-800 {
+  background-color: #0d2a1a !important;
+  color: #4ade80 !important;
+}
+
+html.dark .tw-bg-red-100.tw-text-red-800 {
+  background-color: #2a0d0d !important;
+  color: #f87171 !important;
+}
+
+html.dark .tw-bg-yellow-100.tw-text-yellow-800,
+html.dark .tw-bg-amber-100.tw-text-amber-800 {
+  background-color: #2a200a !important;
+  color: #fbbf24 !important;
+}
+
+html.dark .tw-bg-blue-100.tw-text-blue-800 {
+  background-color: #0d1a2a !important;
+  color: #60a5fa !important;
+}
+
+html.dark .tw-bg-indigo-100.tw-text-indigo-800 {
+  background-color: #1e1830 !important;
+  color: #a78bfa !important;
+}
+
+html.dark .tw-bg-purple-100.tw-text-purple-800 {
+  background-color: #1e1830 !important;
+  color: #c084fc !important;
+}
+
+/* --------------------------------------------------------------------------
+   SHADOW OVERRIDES — light shadows are invisible on dark
+   -------------------------------------------------------------------------- */
+
+html.dark .tw-shadow-sm {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4) !important;
+}
+
+html.dark .tw-shadow-md {
+  box-shadow: 0 4px 8px -1px rgba(0, 0, 0, 0.5) !important;
+}
+
+html.dark .tw-shadow-lg {
+  box-shadow: 0 10px 20px -3px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* --------------------------------------------------------------------------
+   SCROLLBAR in dark mode
+   -------------------------------------------------------------------------- */
+
+html.dark ::-webkit-scrollbar-track {
+  background: #18181f;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #3e3e4a;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #52526a;
+}
+
+/* --------------------------------------------------------------------------
+   TRANSITION — smooth color changes when toggling theme
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
+}
+
+/* Exclude transition for animated elements to avoid jank */
+.tw-animate-spin,
+.tw-animate-pulse,
+[class*="tw-animate-"] {
+  transition: none !important;
+}
+

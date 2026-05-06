@@ -144,7 +144,7 @@ export const fetchAdminReportOverview = async (filters: AdminReportFilters = {})
     return data.report;
 };
 
-export const downloadAdminReport = async (filters: AdminReportFilters = {}, format: 'csv' | 'pdf') => {
+export const downloadAdminReport = async (filters: AdminReportFilters = {}, format: 'csv' | 'xlsx' | 'pdf') => {
     const params = sanitizeFilters({ ...filters, format });
     // Explicitly attach token to ensure it's not missed for blob requests
     const token = localStorage.getItem('token');

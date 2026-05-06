@@ -1,7 +1,7 @@
 import React from 'react';
 import AdminLayout from '../layouts/AdminLayout';
 import { PageHeader } from '../ui';
-import MentorCapacityOverridesPanel from '../admin/MentorCapacityOverridesPanel';
+import AdminReportDashboard from '../admin/AdminReportDashboard';
 
 const AdminDashboard: React.FC = () => {
   return (
@@ -12,8 +12,8 @@ const AdminDashboard: React.FC = () => {
           description="Review mentor and mentee applications and oversee platform management tasks."
         />
 
-        <section id="capacity" className="tw-scroll-mt-24">
-          <MentorCapacityOverridesPanel />
+        <section id="reports" className="tw-scroll-mt-24">
+          <AdminReportDashboard />
         </section>
       </div>
     </AdminLayout>

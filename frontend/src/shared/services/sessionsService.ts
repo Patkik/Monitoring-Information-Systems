@@ -18,6 +18,17 @@ export interface SessionParticipant {
     avatar?: string | null;
 }
 
+export interface CalendarEvent {
+    provider: 'google';
+    externalId?: string | null;
+    calendarId?: string | null;
+    htmlLink?: string | null;
+    hangoutLink?: string | null;
+    status?: string | null;
+    updatedAt?: string | null;
+    lastSyncedAt?: string | null;
+}
+
 export interface SessionRecord {
     id: string;
     subject: string;
@@ -39,7 +50,9 @@ export interface SessionRecord {
     feedbackDue?: boolean;
     feedbackSubmitted?: boolean;
     feedbackWindowClosesAt?: string | null;
+    calendarEvent?: CalendarEvent | null;
 }
+
 
 export type MenteeSession = SessionRecord;
 export type MentorSession = SessionRecord;

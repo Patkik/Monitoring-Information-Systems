@@ -104,7 +104,8 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     {
       label: 'System',
       items: [
-        { label: 'Dashboard', to: '/admin/dashboard', matches: ['/admin/dashboard'], icon: <Icons.Home /> }
+        { label: 'Dashboard', to: '/admin/dashboard', matches: ['/admin/dashboard'], icon: <Icons.Home /> },
+        { label: 'Capacity', to: '/admin/capacity', matches: ['/admin/capacity'], icon: <Icons.Users /> }
       ]
     },
     {

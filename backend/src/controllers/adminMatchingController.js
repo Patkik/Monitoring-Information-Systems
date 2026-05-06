@@ -63,34 +63,46 @@ const buildSearchClause = async (search) => {
         return null;
     }
 
-    const regex = new RegExp(search, 'i');
+    const regex = new RegExp(search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'), 'i');
+    
+    // Also build a name components regex if searching for full names
+    const parts = search.split(/\s+/).filter(Boolean);
+    const regexParts = parts.map(p => new RegExp(p.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'), 'i'));
+
+    const orClauses = [
+        { email: regex },
+        { 'profile.displayName': regex },
+        { firstname: regex },
+        { lastname: regex }
+    ];
+
+    if (parts.length > 1) {
+        orClauses.push({
+            $and: [
+                { firstname: regexParts[0] },
+                { lastname: regexParts[1] }
+            ]
+        });
+    }
+
     const users = await User.find({
-        role: { $in: ['mentor', 'mentee'] },
-        $or: [
-            { firstname: regex },
-            { lastname: regex },
-            { email: regex },
-            { 'profile.displayName': regex },
-        ],
+        $or: orClauses
     })
-        .select('_id role')
+        .select('_id')
         .lean();
 
-    const mentorIds = users.filter((record) => record.role === 'mentor').map((record) => record._id);
-    const menteeIds = users.filter((record) => record.role === 'mentee').map((record) => record._id);
+    const userIds = users.map((record) => record._id);
 
-    if (!mentorIds.length && !menteeIds.length) {
+    if (!userIds.length) {
         return { $or: [{ _id: null }] }; // intentionally empty result set
     }
 
-    const clauses = [];
-    if (mentorIds.length) {
-        clauses.push({ mentorId: { $in: mentorIds } });
-    }
-    if (menteeIds.length) {
-        clauses.push({ menteeId: { $in: menteeIds } });
-    }
-    return clauses.length ? { $or: clauses } : null;
+    return {
+        $or: [
+            { mentorId: { $in: userIds } },
+            { menteeId: { $in: userIds } }
+        ]
+    };
 };
 
 exports.listPairings = async (req, res) => {

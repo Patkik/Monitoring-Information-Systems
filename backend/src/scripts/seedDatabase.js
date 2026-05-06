@@ -409,6 +409,12 @@ const seedDatabase = async () => {
                 message: 'I would love to learn React from you!',
                 goals: 'React', background: 'Beginner', expectations: 'Learn'
             }).save();
+            await new Mentorship({
+                mentorId: mentor1._id,
+                menteeId: mentee1._id,
+                status: 'active',
+                metadata: { goals: 'React' }
+            }).save();
             console.log('   ✓ Mentee 1 matches with Mentor 1');
         }
         if (mentor1 && mentee2) {
@@ -419,6 +425,12 @@ const seedDatabase = async () => {
                 subject: 'System Architecture',
                 message: 'I want to get better at system design.',
                 goals: 'System Design', background: 'Intermediate', expectations: 'Learn'
+            }).save();
+            await new Mentorship({
+                mentorId: mentor1._id,
+                menteeId: mentee2._id,
+                status: 'active',
+                metadata: { goals: 'System Design' }
             }).save();
             console.log('   ✓ Mentee 2 matches with Mentor 1');
         }

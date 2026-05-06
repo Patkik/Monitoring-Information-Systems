@@ -93,6 +93,36 @@ const MentorSessionDetails: React.FC<MentorSessionDetailsProps> = ({
                             <div className="tw-text-xs tw-text-gray-500">• {selectedSession.durationMinutes || 60} min</div>
                         </div>
 
+                        {/* Google Calendar links */}
+                        {selectedSession.calendarEvent?.htmlLink && (
+                            <div className="tw-mt-3 tw-flex tw-flex-col tw-gap-1.5">
+                                <a
+                                    href={selectedSession.calendarEvent.htmlLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="tw-inline-flex tw-items-center tw-gap-1.5 tw-text-xs tw-font-medium tw-text-blue-600 hover:tw-text-blue-800 hover:tw-underline"
+                                >
+                                    <svg className="tw-w-3.5 tw-h-3.5 tw-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19 4h-1V2h-2v2H8V2H6v2H5C3.9 4 3 4.9 3 6v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/>
+                                    </svg>
+                                    View in Google Calendar
+                                </a>
+                                {selectedSession.calendarEvent.hangoutLink && (
+                                    <a
+                                        href={selectedSession.calendarEvent.hangoutLink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="tw-inline-flex tw-items-center tw-gap-1.5 tw-text-xs tw-font-medium tw-text-green-600 hover:tw-text-green-800 hover:tw-underline"
+                                    >
+                                        <svg className="tw-w-3.5 tw-h-3.5 tw-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                                        </svg>
+                                        Join Google Meet
+                                    </a>
+                                )}
+                            </div>
+                        )}
+
                         <div className="tw-mt-4">
                             <div className="tw-text-xs tw-text-gray-500 tw-mb-2">Attendance</div>
                             {(() => {

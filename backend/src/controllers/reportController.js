@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const PDFDocument = require('pdfkit');
+const xlsx = require('xlsx');
 const Session = require('../models/Session');
 const Feedback = require('../models/Feedback');
 const MentorFeedback = require('../models/MentorFeedback');
@@ -565,6 +566,44 @@ const buildCsv = (rows) => {
   return [header.join(','), ...lines].join('\n');
 };
 
+const buildXlsx = (rows) => {
+  const header = [
+    'Date',
+    'Subject',
+    'Mentor',
+    'Mentor Email',
+    'Mentee',
+    'Mentee Email',
+    'Status',
+    'Attended',
+    'Duration (min)',
+    'Tasks Completed',
+    'Mentee Rating',
+    'Mentor Rating',
+  ];
+
+  const data = rows.map((row) => [
+    row.date ? new Date(row.date).toISOString() : '',
+    row.subject,
+    row.mentor?.name ?? '',
+    row.mentor?.email ?? '',
+    row.mentee?.name ?? '',
+    row.mentee?.email ?? '',
+    row.status,
+    row.attended ? 'Yes' : 'No',
+    row.durationMinutes,
+    row.tasksCompleted,
+    row.menteeRating ?? '',
+    row.mentorRating ?? '',
+  ]);
+
+  const ws = xlsx.utils.aoa_to_sheet([header, ...data]);
+  const wb = xlsx.utils.book_new();
+  xlsx.utils.book_append_sheet(wb, ws, 'Admin Report');
+  
+  return xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' });
+};
+
 const formatRangeLabel = (filters) => {
   if (filters.from && filters.to) {
     return `${new Date(filters.from).toLocaleDateString()} – ${new Date(filters.to).toLocaleDateString()}`;
@@ -689,8 +728,8 @@ exports.exportAdminReport = async (req, res) => {
   }
 
   const format = (req.query?.format || 'csv').toString().toLowerCase();
-  if (!['csv', 'pdf'].includes(format)) {
-    return fail(res, 400, 'INVALID_FORMAT', 'Supported formats: csv, pdf.');
+  if (!['csv', 'xlsx', 'pdf'].includes(format)) {
+    return fail(res, 400, 'INVALID_FORMAT', 'Supported formats: csv, xlsx, pdf.');
   }
 
   try {
@@ -703,6 +742,14 @@ exports.exportAdminReport = async (req, res) => {
       res.setHeader('Content-Type', 'text/csv');
       res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
       return res.status(200).send(csv);
+    }
+    
+    if (format === 'xlsx') {
+      const buffer = buildXlsx(sessions);
+      const filename = `admin_report_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      return res.status(200).send(buffer);
     }
 
     const overview = await fetchOverviewData(filters, dateRange);

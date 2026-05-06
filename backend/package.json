@@ -45,7 +45,8 @@
     "passport-google-oauth20": "^2.0.0",
     "pdfkit": "^0.17.2",
     "pusher": "^5.1.2",
-    "qrcode": "^1.5.4"
+    "qrcode": "^1.5.4",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "mongodb-memory-server": "^10.3.0",
