@@ -1,39 +1,47 @@
 const nodemailer = require('nodemailer');
 
-const canSendEmail = Boolean(
-  (process.env.GMAIL_USER && process.env.GMAIL_PASS) ||
-  (process.env.SMTP_USER && process.env.SMTP_PASSWORD)
-);
+let transporterInstance = null;
+let isTransporterBuilt = false;
 
 const buildTransporter = () => {
+  if (isTransporterBuilt) return transporterInstance;
+  
+  const canSendEmail = Boolean(
+    (process.env.GMAIL_USER && process.env.GMAIL_PASS) ||
+    (process.env.SMTP_USER && process.env.SMTP_PASSWORD)
+  );
+
   if (!canSendEmail) {
     console.warn('Email credentials are not configured. Outbound emails are disabled.');
+    isTransporterBuilt = true;
     return null;
   }
 
   // Support both Gmail (GMAIL_USER/GMAIL_PASS) and SMTP (SMTP_*) configurations
   if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
-    return nodemailer.createTransport({
+    transporterInstance = nodemailer.createTransport({
       service: 'Gmail',
       auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_PASS },
     });
+  } else {
+    // SMTP configuration
+    transporterInstance = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'smtp.gmail.com',
+      port: parseInt(process.env.SMTP_PORT) || 587,
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASSWORD,
+      },
+    });
   }
 
-  // SMTP configuration
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.SMTP_PORT) || 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASSWORD,
-    },
-  });
+  isTransporterBuilt = true;
+  return transporterInstance;
 };
 
-const transporter = buildTransporter();
-
 const sendMail = async (options) => {
+  const transporter = buildTransporter();
   if (!transporter) {
     console.warn('Email service not configured. Cannot send email.');
     return false;
