@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const logger = require('./utils/logger');
 const passport = require('./config/passport');
+const { getClientOrigins, getServerBaseUrl } = require('./config/urls');
 const helmet = require('helmet');
 const { startSessionReminderWorker } = require('./services/sessionReminderWorker');
 const { startFeedbackRetentionWorker } = require('./services/feedbackRetentionWorker');
@@ -15,8 +16,28 @@ const compression = require('compression');
 const app = express();
 
 // Build CORS allowlist from env; supports comma-separated values
-const rawOrigins = process.env.CLIENT_URLS || process.env.CLIENT_URL || 'http://localhost:5173';
-const allowedOrigins = rawOrigins.split(',').map((s) => s.trim()).filter(Boolean);
+const allowedOrigins = getClientOrigins();
+const connectSrc = (() => {
+  const values = new Set(["'self'"]);
+  const origins = [...allowedOrigins];
+  const serverBaseUrl = getServerBaseUrl();
+  if (serverBaseUrl) {
+    origins.push(serverBaseUrl);
+  }
+  origins
+    .filter((origin) => /^https?:\/\//i.test(origin))
+    .forEach((origin) => {
+      const normalized = origin.replace(/\/+$/, '');
+      values.add(normalized);
+      if (normalized.startsWith('https://')) {
+        values.add(normalized.replace(/^https:\/\//i, 'wss://'));
+      }
+      if (normalized.startsWith('http://')) {
+        values.add(normalized.replace(/^http:\/\//i, 'ws://'));
+      }
+    });
+  return Array.from(values);
+})();
 const corsOptions = {
   origin: (origin, callback) => {
     // Allow non-browser requests (no origin) and any in the allowlist
@@ -41,7 +62,7 @@ app.use(
         fontSrc: ["'self'", 'https://fonts.gstatic.com'],
         scriptSrc: ["'self'"],
         imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: ["'self'", "http://localhost:4000", "ws://localhost:4000"], // for dev tools/hot reload
+        connectSrc,
       },
     },
   })
@@ -99,27 +120,12 @@ const start = async () => {
     process.exit(1);
   }
 
-  const configuredDnsServers = String(process.env.MONGODB_DNS_SERVERS || '')
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean);
-
-  if (configuredDnsServers.length > 0) {
-    try {
-      dns.setServers(configuredDnsServers);
-      logger.info('Configured custom DNS servers for MongoDB resolution', { dnsServers: configuredDnsServers });
-    } catch (dnsErr) {
-      logger.warn('Failed to apply MONGODB_DNS_SERVERS; continuing with system DNS', {
-        message: dnsErr && dnsErr.message ? dnsErr.message : String(dnsErr),
-      });
-    }
-  }
-
   const connOptions = {
     // rely on modern mongoose defaults
     serverSelectionTimeoutMS: 10000,
     retryWrites: true,
     appName: process.env.APP_NAME || 'MentoringSystem',
+    family: 4, // Force IPv4 to prevent ENOTFOUND on unresolved IPv6 lookups
   };
 
   const getConnOptionsForUri = (mongoUri) => {

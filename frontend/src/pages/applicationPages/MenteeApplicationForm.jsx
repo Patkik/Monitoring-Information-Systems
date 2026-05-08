@@ -3,9 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import logger from '../../shared/utils/logger';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import RecaptchaField from '../../components/common/RecaptchaField.jsx';
-
-const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:4000/api').replace(/\/+$/, '');
-const buildApiUrl = (path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
+import { buildApiUrl } from '../../shared/config/apiClient';
 
 // ── Validation helpers ──────────────────────────────────────────────────────
 const LETTERS_ONLY = /^[A-Za-zÀ-ÿ\s'-]+$/;

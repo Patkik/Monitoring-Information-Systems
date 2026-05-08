@@ -1,24 +1,17 @@
 const googleCalendarService = require('../services/googleCalendarService');
 const { ok, fail } = require('../utils/responses');
 const logger = require('../utils/logger');
+const { getPrimaryClientUrl } = require('../config/urls');
 
 const getClientBaseUrl = () => {
-  if (process.env.CLIENT_URL) {
-    return process.env.CLIENT_URL;
-  }
-
-  if (process.env.CLIENT_URLS) {
-    const [first] = process.env.CLIENT_URLS.split(',').map((entry) => entry.trim()).filter(Boolean);
-    if (first) {
-      return first;
-    }
-  }
-
-  return 'http://localhost:5173';
+  return getPrimaryClientUrl();
 };
 
 const buildCallbackRedirect = (status, message) => {
   const base = getClientBaseUrl();
+  if (!base) {
+    throw new Error('CLIENT_URL_NOT_CONFIGURED');
+  }
   const search = new URLSearchParams({ status, message: message || '' });
   return `${base.replace(/\/$/, '')}/integrations/google-calendar/callback?${search.toString()}`;
 };
@@ -70,6 +63,10 @@ exports.disconnect = async (req, res) => {
 
 exports.handleCallback = async (req, res) => {
   const { error, error_description: errorDescription, code, state } = req.query || {};
+
+  if (!getClientBaseUrl()) {
+    return fail(res, 500, 'CLIENT_URL_NOT_CONFIGURED', 'Client URL configuration is missing.');
+  }
 
   if (!googleCalendarService.isConfigured()) {
     return res.redirect(buildCallbackRedirect('error', 'Google Calendar integration is disabled.'));

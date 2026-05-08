@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { API_BASE_URL, buildApiUrl } from '../../../shared/config/apiClient';
 
-const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:4000/api').replace(/\/+$/, '');
+const API_BASE = API_BASE_URL;
 
 export const api = axios.create({ baseURL: API_BASE, withCredentials: true });
 
@@ -13,7 +14,7 @@ export const resetPassword = (token, data) => api.post(`/auth/reset-password/${t
 export const sendVerificationCode = (data) => api.post('/auth/send-verification-code', data).then(r => r.data);
 export const verifyEmail = (data) => api.post('/auth/verify-email', data).then(r => r.data);
 
-const buildOAuthUrl = (path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
+const buildOAuthUrl = (path) => buildApiUrl(path);
 
 export const googleOAuthUrl = () => buildOAuthUrl('/auth/google');
 export const facebookOAuthUrl = () => buildOAuthUrl('/auth/facebook');

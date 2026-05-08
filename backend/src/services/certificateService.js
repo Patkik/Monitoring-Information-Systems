@@ -10,9 +10,10 @@ const { generateCertificatePDF } = require('../utils/certificatePdf');
 const { generateQrDataUri } = require('../utils/qr');
 const { sendNotification } = require('../utils/notificationService');
 const { recordCertificateAchievements } = require('./achievementService');
+const { getPrimaryClientUrl } = require('../config/urls');
 
 const serialPrefix = process.env.CERTIFICATE_SERIAL_PREFIX || 'MNT';
-const baseVerifyUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+const baseVerifyUrl = getPrimaryClientUrl();
 
 const generateSerialNumber = async () => {
     let attempts = 0;
@@ -108,7 +109,12 @@ const validateEligibility = (type, metrics) => {
     return { eligible: true };
 };
 
-const buildVerificationUrl = (code) => `${baseVerifyUrl}/verify/certificate/${code}`;
+const buildVerificationUrl = (code) => {
+    if (!baseVerifyUrl) {
+        throw new Error('CLIENT_URL_NOT_CONFIGURED');
+    }
+    return `${baseVerifyUrl}/verify/certificate/${code}`;
+};
 
 const uploadCertificate = async ({ buffer, serialNumber }) => {
     const asset = await uploadBuffer(buffer, {

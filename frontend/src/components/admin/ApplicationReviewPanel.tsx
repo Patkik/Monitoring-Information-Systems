@@ -2,9 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import logger from '../../shared/utils/logger';
 import { Card, Button, StatusBadge, LoadingSpinner, EmptyState } from '../ui';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000/api').replace(/\/+$/, '');
-const buildApiUrl = (path: string) => `${API_BASE_URL}${path.startsWith('/') ? path : `/${path}`}`;
+import { buildApiUrl } from '../../shared/config/apiClient';
 
 const classifyStatus = (status: string | undefined) => (status === 'not_submitted' ? 'pending' : status || 'default');
 

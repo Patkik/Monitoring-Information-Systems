@@ -7,8 +7,10 @@ declare const importMetaEnv: any;
 export const API_BASE_URL = (
   import.meta.env.VITE_API_URL ||
   (typeof (globalThis as any).process !== 'undefined' && (globalThis as any).process.env?.VITE_API_URL) ||
-  'http://localhost:4000/api'
+  '/api'
 ).replace(/\/+$|\/+?(?=\?)/g, '');
+
+export const buildApiUrl = (path: string) => `${API_BASE_URL}${path.startsWith('/') ? path : `/${path}`}`;
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,

@@ -11,6 +11,18 @@ export default defineConfig({
     // Expose Vite's env for modules that can't directly reference import.meta.env in Jest tests
     importMetaEnv: 'import.meta.env',
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+      },
+      '/health': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+      },
+    },
+  },
   build: {
     rollupOptions: {
       onwarn(warning, warn) {

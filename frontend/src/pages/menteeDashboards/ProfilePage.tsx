@@ -1,9 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import AdminLayout from '../../components/layouts/AdminLayout';
-
-const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:4000/api').replace(/\/+$/, '');
-const buildApiUrl = (path: string) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
+import { buildApiUrl } from '../../shared/config/apiClient';
 
 type StoredUser = {
   firstname?: string;

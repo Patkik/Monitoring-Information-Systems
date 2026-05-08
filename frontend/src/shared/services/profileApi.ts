@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { API_BASE_URL } from '../config/apiClient';
 
 // Simplified environment resolution that won't reference import.meta in Jest tests.
 // In browser (Vite), import.meta.env will be inlined at build time; during Jest tests we rely on process.env.
@@ -7,7 +8,7 @@ import axios from 'axios';
 declare const importMetaEnv: any;
 const rawBase = ((globalThis as any)?.process?.env?.VITE_API_URL) ||
   import.meta.env.VITE_API_URL ||
-  'http://localhost:4000/api';
+  API_BASE_URL;
 const NORMALIZED_BASE = rawBase.replace(/\/+$/, '');
 
 const client = axios.create({ baseURL: NORMALIZED_BASE });

@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import logger from '../shared/utils/logger';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-
-const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:4000/api').replace(/\/+$/, '');
-const buildApiUrl = (path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
+import { buildApiUrl } from '../shared/config/apiClient';
 
 export default function OAuthCallbackPage() {
   const [searchParams] = useSearchParams();

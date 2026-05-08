@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const User = require('../models/User');
 const { sendPasswordResetEmail, sendVerificationCodeEmail } = require('../utils/emailService');
 const { verifyRecaptchaToken } = require('../utils/recaptcha');
+const { getPrimaryClientUrl } = require('../config/urls');
 
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOCK_TIME_MS = 15 * 60 * 1000; // 15 minutes
@@ -243,7 +244,10 @@ exports.resetPassword = async (req, res) => {
 };
 
 exports.googleAuthCallback = (req, res) => {
-  const redirectBase = process.env.CLIENT_URL || 'http://localhost:5173';
+  const redirectBase = getPrimaryClientUrl();
+  if (!redirectBase) {
+    return res.status(500).json({ error: 'CLIENT_URL_NOT_CONFIGURED' });
+  }
   if (req.user?.accountStatus && req.user.accountStatus !== 'active') {
     return res.redirect(`${redirectBase}/login?error=ACCOUNT_DEACTIVATED`);
   }
@@ -253,7 +257,10 @@ exports.googleAuthCallback = (req, res) => {
 
 // Facebook OAuth handlers
 exports.facebookAuthCallback = (req, res) => {
-  const redirectBase = process.env.CLIENT_URL || 'http://localhost:5173';
+  const redirectBase = getPrimaryClientUrl();
+  if (!redirectBase) {
+    return res.status(500).json({ error: 'CLIENT_URL_NOT_CONFIGURED' });
+  }
   if (req.user?.accountStatus && req.user.accountStatus !== 'active') {
     return res.redirect(`${redirectBase}/login?error=ACCOUNT_DEACTIVATED`);
   }

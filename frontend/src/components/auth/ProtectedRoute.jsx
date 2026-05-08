@@ -3,9 +3,7 @@ import logger from '../../shared/utils/logger';
 import { Navigate, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { dispatchAccountDeactivated } from '../../shared/constants/accountStatus';
-
-const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:4000/api').replace(/\/+$/, '');
-const buildApiUrl = (path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
+import { buildApiUrl } from '../../shared/config/apiClient';
 
 const normalizeRoles = (role) => {
   if (!role) return [];

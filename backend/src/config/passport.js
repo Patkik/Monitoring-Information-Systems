@@ -2,10 +2,11 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 const User = require('../models/User');
+const { getServerBaseUrl } = require('./urls');
 
-const serverUrl = process.env.SERVER_URL || `http://localhost:${process.env.PORT || 4000}`;
+const serverUrl = getServerBaseUrl();
 
-if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && serverUrl) {
   passport.use(
     new GoogleStrategy(
       {
@@ -65,10 +66,10 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   );
 } else {
   // eslint-disable-next-line no-console
-  console.warn('Google OAuth disabled: missing GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET');
+  console.warn('Google OAuth disabled: missing GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET or SERVER_URL/API_BASE_URL');
 }
 
-if (process.env.FACEBOOK_APP_ID && (process.env.FACEBOOK_APP_SECRET || process.env.FACEBOOK_CLIENT_SECRET)) {
+if (process.env.FACEBOOK_APP_ID && (process.env.FACEBOOK_APP_SECRET || process.env.FACEBOOK_CLIENT_SECRET) && serverUrl) {
   const facebookClientSecret = process.env.FACEBOOK_APP_SECRET || process.env.FACEBOOK_CLIENT_SECRET;
   passport.use(
     new FacebookStrategy(
@@ -128,7 +129,7 @@ if (process.env.FACEBOOK_APP_ID && (process.env.FACEBOOK_APP_SECRET || process.e
   );
 } else {
   // eslint-disable-next-line no-console
-  console.warn('Facebook OAuth disabled: missing FACEBOOK_APP_ID/FACEBOOK_APP_SECRET');
+  console.warn('Facebook OAuth disabled: missing FACEBOOK_APP_ID/FACEBOOK_APP_SECRET or SERVER_URL/API_BASE_URL');
 }
 
 passport.serializeUser((user, done) => {

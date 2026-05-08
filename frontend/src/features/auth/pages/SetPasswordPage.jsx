@@ -3,9 +3,7 @@ import AuthLayout from './AuthLayout.jsx';
 import FormInput from '../components/FormInput.jsx';
 import ErrorAlert from '../components/ErrorAlert.jsx';
 import SubmitButton from '../components/SubmitButton.jsx';
-
-const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:4000/api').replace(/\/+$/, '');
-const buildApiUrl = (path) => `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
+import { buildApiUrl } from '../../../shared/config/apiClient';
 
 export default function SetPasswordPage() {
 	const [formData, setFormData] = useState({ password: '', confirmPassword: '' });

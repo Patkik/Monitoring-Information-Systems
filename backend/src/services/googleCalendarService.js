@@ -4,19 +4,20 @@ const { google } = require('googleapis');
 const User = require('../models/User');
 const logger = require('../utils/logger');
 const { encryptSecret, decryptSecret, isTokenSecretConfigured } = require('../utils/tokenVault');
+const { getServerBaseUrl } = require('../config/urls');
 
-const serverUrl = process.env.SERVER_URL || `http://localhost:${process.env.PORT || 4000}`;
+const serverUrl = getServerBaseUrl();
 const CLIENT_ID = process.env.GOOGLE_CALENDAR_CLIENT_ID || process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CALENDAR_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET;
 const STATE_SECRET = process.env.GOOGLE_CALENDAR_STATE_SECRET || process.env.JWT_SECRET;
 const REDIRECT_URI =
-  process.env.GOOGLE_CALENDAR_REDIRECT_URI || `${serverUrl}/api/integrations/google-calendar/callback`;
+  process.env.GOOGLE_CALENDAR_REDIRECT_URI || (serverUrl ? `${serverUrl}/api/integrations/google-calendar/callback` : null);
 const SCOPES = (process.env.GOOGLE_CALENDAR_SCOPES || 'https://www.googleapis.com/auth/calendar.events')
   .split(',')
   .map((scope) => scope.trim())
   .filter(Boolean);
 
-const isConfigured = () => Boolean(CLIENT_ID && CLIENT_SECRET && STATE_SECRET && isTokenSecretConfigured());
+const isConfigured = () => Boolean(CLIENT_ID && CLIENT_SECRET && STATE_SECRET && REDIRECT_URI && isTokenSecretConfigured());
 
 const buildConfigError = (message = 'Google Calendar integration is not configured yet.') => {
   const error = new Error(message);

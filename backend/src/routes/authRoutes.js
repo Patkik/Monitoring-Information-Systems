@@ -2,6 +2,7 @@ const express = require('express');
 const passport = require('passport');
 const controller = require('../controllers/authController');
 const auth = require('../middleware/auth');
+const { getPrimaryClientUrl, getServerBaseUrl } = require('../config/urls');
 
 const router = express.Router();
 const isGoogleConfigured = !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
@@ -35,6 +36,8 @@ router.get('/auth/facebook', (req, res, next) => {
 
 // Debug endpoint to check OAuth configuration
 router.get('/auth/debug', (req, res) => {
+  const serverBaseUrl = getServerBaseUrl();
+  const clientBaseUrl = getPrimaryClientUrl();
   res.json({
     googleConfigured: isGoogleConfigured,
     facebookConfigured: isFacebookConfigured,
@@ -42,10 +45,10 @@ router.get('/auth/debug', (req, res) => {
     clientSecret: process.env.GOOGLE_CLIENT_SECRET ? 'Set' : 'Missing',
     facebookAppId: facebookAppId ? 'Set' : 'Missing',
     facebookAppSecret: facebookAppSecret ? 'Set' : 'Missing',
-    serverUrl: process.env.SERVER_URL,
-    clientUrl: process.env.CLIENT_URL,
-    googleCallbackUrl: `${process.env.SERVER_URL || 'http://localhost:4000'}/api/auth/google/callback`,
-    facebookCallbackUrl: `${process.env.SERVER_URL || 'http://localhost:4000'}/api/auth/facebook/callback`
+    serverUrl: serverBaseUrl,
+    clientUrl: clientBaseUrl,
+    googleCallbackUrl: serverBaseUrl ? `${serverBaseUrl}/api/auth/google/callback` : null,
+    facebookCallbackUrl: serverBaseUrl ? `${serverBaseUrl}/api/auth/facebook/callback` : null,
   });
 });
 
@@ -59,6 +62,10 @@ router.get('/auth/google/callback', (req, res, next) => {
   });
   
   return passport.authenticate('google', { session: false }, (err, user, info) => {
+    const clientBaseUrl = getPrimaryClientUrl();
+    if (!clientBaseUrl) {
+      return res.status(500).json({ error: 'CLIENT_URL_NOT_CONFIGURED' });
+    }
     console.log('OAuth callback - Error:', err?.message || 'None');
     console.log('OAuth callback - User:', user ? 'User found' : 'No user');
     console.log('OAuth callback - Info:', info);
@@ -72,15 +79,15 @@ router.get('/auth/google/callback', (req, res, next) => {
       
       // Handle specific OAuth errors
       if (err.code === 'invalid_grant') {
-        return res.redirect((process.env.CLIENT_URL || 'http://localhost:5173') + '/login?error=OAUTH_CODE_EXPIRED');
+        return res.redirect(`${clientBaseUrl}/login?error=OAUTH_CODE_EXPIRED`);
       }
       
-      return res.redirect((process.env.CLIENT_URL || 'http://localhost:5173') + '/login?error=OAUTH_ERROR');
+      return res.redirect(`${clientBaseUrl}/login?error=OAUTH_ERROR`);
     }
     
     if (!user) {
       console.log('OAuth: No user returned from Google');
-      return res.redirect((process.env.CLIENT_URL || 'http://localhost:5173') + '/login?error=INVALID_CREDENTIALS');
+      return res.redirect(`${clientBaseUrl}/login?error=INVALID_CREDENTIALS`);
     }
     
     req.user = user;
@@ -92,17 +99,21 @@ router.get('/auth/facebook/callback', (req, res, next) => {
   if (!isFacebookConfigured) return res.status(503).send('Facebook OAuth not configured');
 
   return passport.authenticate('facebook', { session: false }, (err, user, info) => {
+    const clientBaseUrl = getPrimaryClientUrl();
+    if (!clientBaseUrl) {
+      return res.status(500).json({ error: 'CLIENT_URL_NOT_CONFIGURED' });
+    }
     if (err) {
       console.error('Facebook OAuth Error:', err);
-      return res.redirect((process.env.CLIENT_URL || 'http://localhost:5173') + '/login?error=OAUTH_ERROR');
+      return res.redirect(`${clientBaseUrl}/login?error=OAUTH_ERROR`);
     }
 
     if (info?.message === 'FACEBOOK_NO_EMAIL') {
-      return res.redirect((process.env.CLIENT_URL || 'http://localhost:5173') + '/login?error=OAUTH_EMAIL_REQUIRED');
+      return res.redirect(`${clientBaseUrl}/login?error=OAUTH_EMAIL_REQUIRED`);
     }
 
     if (!user) {
-      return res.redirect((process.env.CLIENT_URL || 'http://localhost:5173') + '/login?error=INVALID_CREDENTIALS');
+      return res.redirect(`${clientBaseUrl}/login?error=INVALID_CREDENTIALS`);
     }
 
     req.user = user;
