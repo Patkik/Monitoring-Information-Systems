@@ -496,6 +496,5 @@ export default function MentorApplicationForm() {
                     </form>
                 </div>
             </div>
-        </div>
     );
 }
