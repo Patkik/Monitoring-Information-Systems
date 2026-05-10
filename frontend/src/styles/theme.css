@@ -198,7 +198,7 @@ html.dark {
 
 html {
   color-scheme: light;
-  transition: background-color 200ms ease, color 200ms ease;
+  transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
 }
 
 html.dark {
@@ -674,21 +674,23 @@ html.dark ::-webkit-scrollbar-thumb:hover {
 }
 
 /* --------------------------------------------------------------------------
-   TRANSITION — smooth color changes when toggling theme
+   THEME TRANSITIONING STATE
+   Force smooth color transitions when toggling themes
    -------------------------------------------------------------------------- */
 
-*,
-*::before,
-*::after {
-  transition-property: background-color, border-color, color, box-shadow;
-  transition-duration: 150ms;
-  transition-timing-function: ease;
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow !important;
+  transition-duration: 300ms !important;
+  transition-timing-function: ease-in-out !important;
 }
 
 /* Exclude transition for animated elements to avoid jank */
-.tw-animate-spin,
-.tw-animate-pulse,
-[class*="tw-animate-"] {
+.theme-transitioning .tw-animate-spin,
+.theme-transitioning .tw-animate-pulse,
+.theme-transitioning [class*="tw-animate-"] {
   transition: none !important;
 }
 

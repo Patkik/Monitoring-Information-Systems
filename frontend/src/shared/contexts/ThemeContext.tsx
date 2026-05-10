@@ -27,12 +27,25 @@ function getInitialTheme(): Theme {
   return 'light';
 }
 
-function applyTheme(theme: Theme) {
+function applyTheme(theme: Theme, isInitial = false) {
   const root = document.documentElement;
+  
+  if (!isInitial) {
+    // Add transitioning class for smooth forced transitions
+    root.classList.add('theme-transitioning');
+  }
+  
   if (theme === 'dark') {
-    root.classList.add('dark');
+    root.classList.add('dark', 'tw-dark');
   } else {
-    root.classList.remove('dark');
+    root.classList.remove('dark', 'tw-dark');
+  }
+  
+  if (!isInitial) {
+    // Remove transitioning class after duration
+    setTimeout(() => {
+      root.classList.remove('theme-transitioning');
+    }, 350); // Slightly longer than 300ms to ensure completion
   }
 }
 
@@ -53,7 +66,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Apply theme on mount (handles SSR/hydration edge case)
   useEffect(() => {
-    applyTheme(theme);
+    applyTheme(theme, true);
   }, []);
 
   // Listen for system preference changes

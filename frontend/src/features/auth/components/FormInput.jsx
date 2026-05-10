@@ -23,7 +23,7 @@ const FormInput = React.forwardRef(({
       {label && (
         <label 
           htmlFor={id} 
-          className="tw-block tw-mb-1 tw-text-[9px] tw-font-semibold tw-tracking-[0.12em] tw-uppercase tw-text-slate-500"
+          className="tw-block tw-mb-1 tw-text-[9px] tw-font-semibold tw-tracking-[0.12em] tw-uppercase tw-text-slate-500 dark:tw-text-slate-400"
         >
           {label}
         </label>
@@ -31,10 +31,10 @@ const FormInput = React.forwardRef(({
       <input
         ref={ref}
         id={id}
-        className={`tw-w-full tw-h-9 ${Icon ? 'tw-pl-9' : 'tw-pl-3'} tw-pr-3 tw-rounded-lg tw-border tw-bg-[#fbfcfd] focus:tw-bg-white focus:tw-outline-none tw-transition tw-text-sm ${
+        className={`tw-w-full tw-h-9 ${Icon ? 'tw-pl-9' : 'tw-pl-3'} tw-pr-3 tw-rounded-lg tw-border tw-bg-[#fbfcfd] dark:tw-bg-[#151226] focus:tw-bg-white dark:focus:tw-bg-[#1e1a34] focus:tw-outline-none tw-transition tw-text-sm tw-text-gray-900 dark:tw-text-white placeholder:tw-text-gray-400 dark:placeholder:tw-text-slate-500 ${
           error 
-            ? 'tw-border-red-300 focus:tw-border-red-500 focus:tw-ring-3 focus:tw-ring-red-100' 
-            : 'tw-border-gray-200 focus:tw-border-primary focus:tw-ring-3 focus:tw-ring-primary/15'
+            ? 'tw-border-red-400 dark:tw-border-red-500/50 focus:tw-border-red-500 focus:tw-ring-3 focus:tw-ring-red-100 dark:focus:tw-ring-red-500/20' 
+            : 'tw-border-gray-300 dark:tw-border-white/10 focus:tw-border-primary dark:focus:tw-border-purple-400 focus:tw-ring-3 focus:tw-ring-primary/15 dark:focus:tw-ring-purple-400/20'
         }`}
         placeholder={placeholder}
         name={name}

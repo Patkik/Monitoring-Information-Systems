@@ -110,11 +110,11 @@ export default function RegisterPage() {
 
 				{/* Role Selection */}
 				<div>
-					<label className="tw-block tw-mb-2 tw-text-[9px] tw-font-semibold tw-tracking-[0.12em] tw-uppercase tw-text-slate-500">Select Role</label>
+					<label className="tw-block tw-mb-2 tw-text-[9px] tw-font-semibold tw-tracking-[0.12em] tw-uppercase tw-text-slate-500 dark:tw-text-slate-400">Select Role</label>
 					<div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-2">
 						{ROLE_OPTIONS.map(option => (
 							<label key={option.id} className={`tw-relative tw-flex tw-items-start tw-p-3 tw-border tw-rounded-lg tw-cursor-pointer tw-transition ${
-								role === option.id ? 'tw-border-primary tw-bg-primary/5' : 'tw-border-gray-200 tw-bg-gray-50'
+								role === option.id ? 'tw-border-primary tw-bg-primary/5 dark:tw-bg-primary/20' : 'tw-border-gray-200 dark:tw-border-white/10 tw-bg-gray-50 dark:tw-bg-white/5 hover:tw-bg-gray-100 dark:hover:tw-bg-white/10'
 							}`}>
 								<input
 									type="radio"
@@ -125,8 +125,8 @@ export default function RegisterPage() {
 									className="tw-sr-only"
 								/>
 								<div className="tw-ml-2">
-									<p className="tw-font-medium tw-text-sm">{option.label}</p>
-									<p className="tw-text-xs tw-text-slate-600">{option.description}</p>
+									<p className="tw-font-medium tw-text-sm tw-text-gray-900 dark:tw-text-white">{option.label}</p>
+									<p className="tw-text-xs tw-text-slate-600 dark:tw-text-slate-400">{option.description}</p>
 								</div>
 							</label>
 						))}
@@ -183,9 +183,6 @@ export default function RegisterPage() {
 					required
 				/>
 
-				{/* reCAPTCHA Field */}
-				<RecaptchaField ref={recaptcha.ref} onChange={recaptcha.handleRecaptchaChange} />
-
 				{/* Terms & Conditions Checkbox */}
 				<label className="tw-flex tw-items-start tw-cursor-pointer tw-gap-2">
 					<input
@@ -197,22 +194,27 @@ export default function RegisterPage() {
 						className="tw-mt-1 tw-rounded"
 						aria-label="I agree to the terms and conditions"
 					/>
-					<span className="tw-text-xs tw-text-slate-600">
-						I agree to the <Link to="/terms" className="tw-text-primary tw-underline hover:tw-text-primary/80">terms and conditions</Link>
+					<span className="tw-text-xs tw-text-slate-600 dark:tw-text-slate-400">
+						I agree to the <Link to="/terms" className="tw-text-primary dark:tw-text-purple-400 tw-underline hover:tw-text-primary/80 dark:hover:tw-text-purple-300">terms and conditions</Link>
 					</span>
 				</label>
+
+				{/* reCAPTCHA Field */}
+				<RecaptchaField ref={recaptcha.ref} onChange={recaptcha.handleRecaptchaChange} />
 
 				{/* Submit Button */}
 				<SubmitButton loading={form.loading} loadingText="Creating account...">
 					Create account
 				</SubmitButton>
 
-				{/* Social Login */}
-				<div className="tw-relative tw-my-3 tw-before:tw-absolute tw-before:tw-inset-0 tw-before:tw-border-t tw-before:tw-border-gray-200 tw-flex tw-items-center">
-					<span className="tw-relative tw-bg-white tw-px-2 tw-text-xs tw-text-slate-600">Or</span>
+				{/* Social Login Divider */}
+				<div className="tw-flex tw-items-center tw-gap-2 tw-my-3">
+					<div className="tw-flex-1 tw-h-px tw-bg-gray-200 dark:tw-bg-white/10" />
+					<span className="tw-text-[9px] tw-font-semibold tw-tracking-[0.12em] tw-uppercase tw-text-slate-400">or continue with</span>
+					<div className="tw-flex-1 tw-h-px tw-bg-gray-200 dark:tw-bg-white/10" />
 				</div>
 
-				<a href={googleOAuthUrl()} className="tw-w-full tw-h-9 tw-border tw-border-gray-200 tw-rounded-lg tw-bg-white hover:tw-bg-gray-50 tw-transition tw-text-sm tw-font-medium tw-flex tw-items-center tw-justify-center tw-gap-2">
+				<a href={googleOAuthUrl()} className="tw-w-full tw-h-9 tw-border tw-border-gray-200 dark:tw-border-white/10 tw-rounded-lg tw-bg-white dark:tw-bg-[#151226] hover:tw-bg-gray-50 dark:hover:tw-bg-white/5 tw-text-gray-900 dark:tw-text-white tw-transition tw-text-sm tw-font-medium tw-flex tw-items-center tw-justify-center tw-gap-2">
 					<svg className="tw-w-4 tw-h-4" viewBox="0 0 24 24" fill="currentColor">
 						<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
 						<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -222,16 +224,16 @@ export default function RegisterPage() {
 					Google
 				</a>
 
-				<a href={facebookOAuthUrl()} className="tw-w-full tw-h-9 tw-border tw-border-gray-200 tw-rounded-lg tw-bg-white hover:tw-bg-gray-50 tw-transition tw-text-sm tw-font-medium tw-flex tw-items-center tw-justify-center tw-gap-2">
-					<svg className="tw-w-4 tw-h-4" viewBox="0 0 24 24" fill="#1877F2">
-						<path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+				<a href={facebookOAuthUrl()} className="tw-w-full tw-h-9 tw-border tw-border-gray-200 dark:tw-border-white/10 tw-rounded-lg tw-bg-[#1877f2] hover:tw-bg-[#1566ce] tw-text-white tw-transition tw-text-sm tw-font-medium tw-flex tw-items-center tw-justify-center tw-gap-2">
+					<svg className="tw-w-4 tw-h-4" viewBox="0 0 24 24" fill="currentColor">
+						<path d="M22 12.07C22 6.49 17.52 2 11.93 2 6.35 2 1.86 6.49 1.86 12.07c0 4.93 3.6 9.03 8.31 9.93v-7.03H7.9v-2.9h2.27V9.41c0-2.25 1.34-3.5 3.4-3.5.99 0 2.02.18 2.02.18v2.24h-1.14c-1.12 0-1.47.69-1.47 1.4v1.68h2.5l-.4 2.9h-2.1V22c4.71-.9 8.31-5 8.31-9.93Z"/>
 					</svg>
 					Facebook
 				</a>
 
 				{/* Sign In Link */}
-				<p className="tw-text-center tw-text-xs tw-text-slate-600">
-					Already have an account? <Link to="/login" className="tw-text-primary tw-underline hover:tw-text-primary/80">Sign in</Link>
+				<p className="tw-text-center tw-text-xs tw-text-slate-600 dark:tw-text-slate-400">
+					Already have an account? <Link to="/login" className="tw-text-primary dark:tw-text-purple-400 tw-underline hover:tw-text-primary/80 dark:hover:tw-text-purple-300">Sign in</Link>
 				</p>
 			</form>
 		</AuthLayout>

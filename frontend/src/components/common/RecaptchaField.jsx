@@ -10,6 +10,9 @@ const DEV_TEST_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
 const resolvedSiteKey =
     import.meta.env.VITE_RECAPTCHA_SITE_KEY || (MODE !== 'production' ? DEV_TEST_SITE_KEY : '');
 
+// Lazy-import the real widget only when not disabled (avoids loading Google scripts)
+const ReCAPTCHA = React.lazy(() => import('react-google-recaptcha'));
+
 const RecaptchaField = forwardRef(({ onChange, onExpired, className = '' }, ref) => {
   // Disabled mode: expose a no-op reset handle and auto-fire a bypass token
   useEffect(() => {
@@ -41,9 +44,6 @@ const RecaptchaField = forwardRef(({ onChange, onExpired, className = '' }, ref)
       </div>
     );
   }
-
-  // Lazy-import the real widget only when not disabled (avoids loading Google scripts)
-  const ReCAPTCHA = React.lazy(() => import('react-google-recaptcha'));
 
   return (
     <div className={`tw-flex tw-flex-col tw-items-center ${className}`}>

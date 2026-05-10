@@ -47,13 +47,13 @@ const ProgressDashboard: React.FC<{ menteeId?: string | null }> = ({ menteeId })
       </div>
       <section aria-label="Mentor feedback snapshot">
         <h3 className="tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">Mentor Feedback Snapshot</h3>
-        <div className="tw-grid sm:tw-grid-cols-2 lg:tw-grid-cols-4 tw-gap-4">
-          <Stat label="Average Rating" value={`${ratingDisplay}/5`} />
-          <Stat label="Feedback Count" value={ratingCount} />
-          <Stat label="Milestones Reached" value={milestonesReached} />
-          <Stat label="Snapshot Updated" value={lastUpdatedLabel} />
+        <div className="tw-grid tw-grid-cols-2 tw-gap-3">
+          <Stat label="Avg Rating" value={`${ratingDisplay}/5`} />
+          <Stat label="Feedback" value={ratingCount} />
+          <Stat label="Milestones" value={milestonesReached} />
+          <Stat label="Updated" value={lastUpdatedLabel} />
         </div>
-        <div className="tw-mt-2 tw-text-xs tw-text-gray-500">Last milestone update: {milestoneUpdatedLabel}</div>
+        <div className="tw-mt-2 tw-text-xs tw-text-gray-500">Last milestone: {milestoneUpdatedLabel}</div>
       </section>
 
       <section aria-label="Monthly rating trend">
@@ -67,11 +67,11 @@ const ProgressDashboard: React.FC<{ menteeId?: string | null }> = ({ menteeId })
               const clamped = Math.max(0, Math.min(5, trend.avg));
               const filledSegments = Math.round((clamped / 5) * 10);
               return (
-                <div key={trend.month} className="tw-flex tw-items-center tw-gap-3">
-                  <div className="tw-w-20 tw-text-xs tw-font-medium tw-text-gray-600">
+                <div key={trend.month} className="tw-flex tw-items-center tw-gap-2">
+                  <div className="tw-w-16 tw-shrink-0 tw-text-xs tw-font-medium tw-text-gray-600 tw-truncate">
                     {formatMonthLabel(trend.month)}
                   </div>
-                  <div className="tw-flex-1 tw-flex tw-items-center tw-gap-2">
+                  <div className="tw-flex-1 tw-flex tw-items-center tw-gap-2 tw-min-w-0">
                     <div className="tw-h-2 tw-w-full tw-rounded-full tw-bg-gray-100 tw-overflow-hidden">
                       <div className="tw-flex tw-h-full tw-w-full tw-gap-[2px]">
                         {Array.from({ length: 10 }).map((_, index) => (
@@ -82,11 +82,9 @@ const ProgressDashboard: React.FC<{ menteeId?: string | null }> = ({ menteeId })
                         ))}
                       </div>
                     </div>
-                    <div className="tw-flex tw-flex-col tw-items-end tw-min-w-[4.5rem] tw-text-[11px] tw-text-gray-600">
-                      <span className="tw-font-semibold tw-text-gray-900">
-                        {trend.avg.toFixed(2)}/5
-                      </span>
-                      <span className="tw-text-[10px] tw-text-gray-500">{trend.count} fb</span>
+                    <div className="tw-shrink-0 tw-text-right tw-text-[11px] tw-text-gray-600">
+                      <span className="tw-font-semibold tw-text-gray-900">{trend.avg.toFixed(1)}</span>
+                      <span className="tw-block tw-text-[10px] tw-text-gray-400">{trend.count}×</span>
                     </div>
                   </div>
                 </div>
@@ -102,9 +100,9 @@ const ProgressDashboard: React.FC<{ menteeId?: string | null }> = ({ menteeId })
 };
 
 const Stat: React.FC<{ label: string; value: React.ReactNode }> = ({ label, value }) => (
-  <div className="tw-bg-gradient-to-br tw-from-white tw-to-gray-50 tw-rounded-xl tw-p-4 tw-border tw-border-gray-100 tw-flex tw-flex-col tw-gap-1">
-    <div className="tw-text-[11px] tw-font-medium tw-text-gray-500 tw-uppercase">{label}</div>
-    <div className="tw-text-xl tw-font-semibold tw-text-gray-900">{value}</div>
+  <div className="tw-bg-gray-50 tw-rounded-lg tw-p-3 tw-border tw-border-gray-100 tw-flex tw-flex-col tw-gap-0.5">
+    <div className="tw-text-[10px] tw-font-semibold tw-uppercase tw-tracking-wide tw-text-gray-400">{label}</div>
+    <div className="tw-text-base tw-font-bold tw-text-gray-900 tw-truncate">{value}</div>
   </div>
 );
 

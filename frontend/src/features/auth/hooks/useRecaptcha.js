@@ -13,8 +13,10 @@ export const useRecaptcha = () => {
     setToken('');
   };
 
-  const getToken = () => token;
-  const isValid = () => !!token;
+  const isDevMode = import.meta.env.DEV || (import.meta.env.VITE_ENVIRONMENT || '').includes('development');
+
+  const getToken = () => (isDevMode ? 'dev-bypass' : token);
+  const isValid = () => isDevMode || !!token;
 
   return {
     token,

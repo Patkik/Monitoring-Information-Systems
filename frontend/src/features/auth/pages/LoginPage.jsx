@@ -101,7 +101,7 @@ export default function LoginPage() {
 		>
 			<header className="tw-mb-3">
 				<p className="tw-text-[9px] tw-font-semibold tw-uppercase tw-tracking-[0.15em] tw-text-primary">Sign in</p>
-				<h2 className="login-redesign__form-title tw-mt-1 tw-leading-[1.1] tw-text-[#1d2931] tw-text-base">
+				<h2 className="login-redesign__form-title tw-mt-1 tw-leading-[1.1] tw-text-[#1d2931] dark:tw-text-white tw-text-base">
 					Your journey
 					<br />
 					keeps moving.
@@ -141,7 +141,7 @@ export default function LoginPage() {
 
 				{/* Forgot Password Link */}
 				<div className="tw-flex tw-items-center tw-justify-end tw-text-[10px]">
-					<Link to="/forgot-password" className="tw-text-primary hover:tw-text-primary-dark tw-font-semibold tw-transition-colors">
+					<Link to="/forgot-password" className="tw-text-primary dark:tw-text-purple-400 hover:tw-text-primary-dark dark:hover:tw-text-purple-300 tw-font-semibold tw-transition-colors">
 						Forgot password?
 					</Link>
 				</div>
@@ -156,13 +156,13 @@ export default function LoginPage() {
 
 				{/* Social Login Divider */}
 				<div className="tw-flex tw-items-center tw-gap-2 tw-my-3">
-					<div className="tw-flex-1 tw-h-px tw-bg-gray-200" />
+					<div className="tw-flex-1 tw-h-px tw-bg-gray-200 dark:tw-bg-white/10" />
 					<span className="tw-text-[9px] tw-font-semibold tw-tracking-[0.12em] tw-uppercase tw-text-slate-400">or continue with</span>
-					<div className="tw-flex-1 tw-h-px tw-bg-gray-200" />
+					<div className="tw-flex-1 tw-h-px tw-bg-gray-200 dark:tw-bg-white/10" />
 				</div>
 
 				{/* Google Login */}
-				<a href={googleOAuthUrl()} className="tw-w-full tw-h-9 tw-border tw-border-gray-200 hover:tw-border-gray-300 tw-rounded-lg tw-bg-white hover:tw-bg-gray-50 tw-text-sm tw-font-semibold tw-transition tw-flex tw-items-center tw-justify-center tw-gap-2">
+				<a href={googleOAuthUrl()} className="tw-w-full tw-h-9 tw-border tw-border-gray-200 dark:tw-border-white/10 tw-rounded-lg tw-bg-white dark:tw-bg-[#151226] hover:tw-bg-gray-50 dark:hover:tw-bg-white/5 tw-text-gray-900 dark:tw-text-white tw-text-sm tw-font-semibold tw-transition tw-flex tw-items-center tw-justify-center tw-gap-2">
 					<svg className="tw-w-4 tw-h-4" viewBox="0 0 24 24" fill="currentColor">
 						<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
 						<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -173,7 +173,7 @@ export default function LoginPage() {
 				</a>
 
 				{/* Facebook Login */}
-				<a href={facebookOAuthUrl()} className="tw-w-full tw-h-9 tw-rounded-lg tw-bg-[#1877f2] hover:tw-bg-[#1566ce] tw-text-white tw-text-sm tw-font-semibold tw-transition tw-flex tw-items-center tw-justify-center tw-gap-2">
+				<a href={facebookOAuthUrl()} className="tw-w-full tw-h-9 tw-border tw-border-gray-200 dark:tw-border-white/10 tw-rounded-lg tw-bg-[#1877f2] hover:tw-bg-[#1566ce] tw-text-white tw-text-sm tw-font-semibold tw-transition tw-flex tw-items-center tw-justify-center tw-gap-2">
 					<svg className="tw-w-4 tw-h-4" viewBox="0 0 24 24" fill="currentColor">
 						<path d="M22 12.07C22 6.49 17.52 2 11.93 2 6.35 2 1.86 6.49 1.86 12.07c0 4.93 3.6 9.03 8.31 9.93v-7.03H7.9v-2.9h2.27V9.41c0-2.25 1.34-3.5 3.4-3.5.99 0 2.02.18 2.02.18v2.24h-1.14c-1.12 0-1.47.69-1.47 1.4v1.68h2.5l-.4 2.9h-2.1V22c4.71-.9 8.31-5 8.31-9.93Z" />
 					</svg>
@@ -181,9 +181,9 @@ export default function LoginPage() {
 				</a>
 
 				{/* Sign Up Link */}
-				<p className="tw-text-xs tw-text-center tw-text-slate-500 tw-pt-1">
+				<p className="tw-text-xs tw-text-center tw-text-slate-500 dark:tw-text-slate-400 tw-pt-1">
 					Do not have an account?{' '}
-					<Link to="/register" className="tw-text-primary hover:tw-text-primary-dark tw-font-semibold">
+					<Link to="/register" className="tw-text-primary dark:tw-text-purple-400 hover:tw-text-primary-dark dark:hover:tw-text-purple-300 tw-font-semibold">
 						Create one
 					</Link>
 				</p>

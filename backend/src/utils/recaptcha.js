@@ -10,8 +10,8 @@ const buildResponse = (overrides = {}) => ({
 const verifyRecaptchaToken = async (token, remoteIp) => {
   // ── Bypass mode ────────────────────────────────────────────────────────────
   // Set RECAPTCHA_DISABLED=true in your environment to skip all verification.
-  // Useful for local dev / Docker environments without a valid site key.
-  if (process.env.RECAPTCHA_DISABLED === 'true') {
+  // We also automatically bypass it if we're clearly running in local development.
+  if (process.env.RECAPTCHA_DISABLED === 'true' || (process.env.CLIENT_URL || '').includes('localhost')) {
     return { ok: true };
   }
 

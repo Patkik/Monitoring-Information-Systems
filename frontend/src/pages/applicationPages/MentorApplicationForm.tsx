@@ -1,8 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import logger from '../../shared/utils/logger';
 import { useNavigate } from 'react-router-dom';
-import DashboardLayout from '../../components/layouts/DashboardLayout';
-import RecaptchaField from '../../components/common/RecaptchaField.jsx';
 import { buildApiUrl } from '../../shared/config/apiClient';
 
 const expertiseOptions = [
@@ -61,8 +59,8 @@ const FieldLabel: React.FC<{ htmlFor?: string; children: React.ReactNode; option
     </label>
 );
 
-const textInputCls = "tw-w-full tw-h-12 tw-px-4 tw-rounded-xl tw-border tw-border-gray-200 tw-bg-[#fbfcfd] focus:tw-bg-white focus:tw-border-primary focus:tw-ring-4 focus:tw-ring-primary/15 tw-outline-none tw-transition-all tw-text-sm tw-text-gray-900 tw-placeholder-gray-400";
-const errorInputCls = "tw-w-full tw-h-12 tw-px-4 tw-rounded-xl tw-border tw-border-red-300 tw-bg-[#fbfcfd] focus:tw-bg-white focus:tw-border-red-500 focus:tw-ring-4 focus:tw-ring-red-500/15 tw-outline-none tw-transition-all tw-text-sm tw-text-gray-900 tw-placeholder-gray-400";
+const textInputCls = "tw-w-full tw-h-12 tw-px-4 tw-rounded-xl tw-border tw-border-gray-300 dark:tw-border-white/10 tw-bg-[#fbfcfd] dark:tw-bg-[#151226] focus:tw-bg-white dark:focus:tw-bg-[#1e1a34] focus:tw-border-primary dark:focus:tw-border-purple-400 focus:tw-ring-4 focus:tw-ring-primary/15 tw-outline-none tw-transition-all tw-text-sm tw-text-gray-900 dark:tw-text-white tw-placeholder-gray-400 dark:placeholder:tw-text-slate-500";
+const errorInputCls = "tw-w-full tw-h-12 tw-px-4 tw-rounded-xl tw-border tw-border-red-400 dark:tw-border-red-500/50 tw-bg-[#fbfcfd] dark:tw-bg-[#151226] focus:tw-bg-white dark:focus:tw-bg-[#1e1a34] focus:tw-border-red-500 focus:tw-ring-4 focus:tw-ring-red-500/15 tw-outline-none tw-transition-all tw-text-sm tw-text-gray-900 dark:tw-text-white tw-placeholder-gray-400 dark:placeholder:tw-text-slate-500";
 
 const ChipButton: React.FC<{ selected: boolean; onClick: () => void; children: React.ReactNode }> = ({ selected, onClick, children }) => (
     <button
@@ -79,7 +77,7 @@ const ChipButton: React.FC<{ selected: boolean; onClick: () => void; children: R
 );
 
 const Card: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
-    <div className={`tw-bg-white tw-rounded-2xl tw-border tw-border-gray-100 tw-shadow-sm hover:tw-shadow-md tw-transition-shadow tw-duration-300 tw-p-6 md:tw-p-8 ${className}`}>
+    <div className={`tw-bg-white dark:tw-bg-[#151226] tw-rounded-2xl tw-border tw-border-gray-200 dark:tw-border-white/10 tw-shadow-sm hover:tw-shadow-md tw-transition-shadow tw-duration-300 tw-p-6 md:tw-p-8 ${className}`}>
         {children}
     </div>
 );
@@ -103,9 +101,6 @@ export default function MentorApplicationForm() {
     const [fieldErrors, setFieldErrors] = useState<Record<string, string | null>>({});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [recaptchaToken, setRecaptchaToken] = useState('');
-    const [recaptchaError, setRecaptchaError] = useState('');
-    const recaptchaRef = useRef<any>(null);
 
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem('user') || '{}');
@@ -162,8 +157,6 @@ export default function MentorApplicationForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
-        setRecaptchaError('');
-        if (!recaptchaToken) { setRecaptchaError('Please complete the verification step.'); return; }
 
         // Validate names
         const firstnameErr = validateName(form.firstname);
@@ -192,7 +185,6 @@ export default function MentorApplicationForm() {
                     educationYearLevel: trimmedYear,
                     educationMajor: form.educationMajor.trim(),
                     availabilityHoursPerWeek: form.availabilityHoursPerWeek ? Number(form.availabilityHoursPerWeek) : undefined,
-                    recaptchaToken,
                 }),
             });
 
@@ -211,35 +203,32 @@ export default function MentorApplicationForm() {
             setError('Failed to submit application. Please try again.');
         } finally {
             setLoading(false);
-            recaptchaRef.current?.reset();
-            setRecaptchaToken('');
         }
     };
 
     return (
-        <DashboardLayout>
-            <div className="tw-min-h-screen tw-bg-gray-50 tw-py-10">
-                <div className="tw-max-w-4xl tw-mx-auto tw-px-4">
+        <div className="tw-min-h-screen tw-bg-gray-50 dark:tw-bg-[#0b0a10] tw-py-10">
+            <div className="tw-max-w-4xl tw-mx-auto tw-px-4">
 
                     {/* ── Page Header ── */}
                     <div className="tw-mb-8 tw-pl-4 tw-border-l-4 tw-border-primary">
                         <p className="tw-text-xs tw-font-bold tw-tracking-widest tw-text-primary tw-uppercase tw-mb-1">Apply</p>
-                        <h1 className="tw-text-3xl tw-font-bold tw-text-gray-900 tw-tracking-tight">Mentor Application Form</h1>
-                        <p className="tw-text-sm tw-text-gray-500 tw-mt-1">
+                        <h1 className="tw-text-3xl tw-font-bold tw-text-gray-900 dark:tw-text-white tw-tracking-tight">Mentor Application Form</h1>
+                        <p className="tw-text-sm tw-text-gray-500 dark:tw-text-slate-400 tw-mt-1">
                             Share your expertise to help mentees accelerate their growth.
                         </p>
                     </div>
 
                     {/* Role hint */}
-                    <div className="tw-mb-6 tw-bg-primary/5 tw-border tw-border-primary/20 tw-rounded-2xl tw-p-5 tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-center tw-justify-between tw-gap-4">
+                    <div className="tw-mb-6 tw-bg-primary/5 dark:tw-bg-primary/20 tw-border tw-border-primary/20 tw-rounded-2xl tw-p-5 tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-center tw-justify-between tw-gap-4">
                         <div>
-                            <p className="tw-text-sm tw-font-semibold tw-text-gray-900">Not the right path?</p>
-                            <p className="tw-text-sm tw-text-gray-600 tw-mt-0.5">If you meant to register as a Mentee instead, you can change your role.</p>
+                            <p className="tw-text-sm tw-font-semibold tw-text-gray-900 dark:tw-text-white">Not the right path?</p>
+                            <p className="tw-text-sm tw-text-gray-600 dark:tw-text-slate-400 tw-mt-0.5">If you meant to register as a Mentee instead, you can change your role.</p>
                         </div>
                         <button
                             type="button"
                             onClick={() => navigate('/role-selection')}
-                            className="tw-flex-shrink-0 tw-inline-flex tw-items-center tw-justify-center tw-rounded-xl tw-bg-white tw-text-primary tw-border tw-border-gray-200 tw-shadow-[0_2px_0_rgba(0,0,0,0.06)] hover:tw-border-primary hover:tw-bg-gray-50 active:tw-shadow-none active:tw-translate-y-[2px] tw-px-4 tw-py-2 tw-text-sm tw-font-bold tw-transition-all"
+                            className="tw-flex-shrink-0 tw-inline-flex tw-items-center tw-justify-center tw-rounded-xl tw-bg-white dark:tw-bg-[#151226] tw-text-primary dark:tw-text-purple-400 tw-border tw-border-gray-200 dark:tw-border-white/10 tw-shadow-[0_2px_0_rgba(0,0,0,0.06)] hover:tw-border-primary hover:tw-bg-gray-50 dark:hover:tw-bg-white/5 active:tw-shadow-none active:tw-translate-y-[2px] tw-px-4 tw-py-2 tw-text-sm tw-font-bold tw-transition-all"
                         >
                             Change Role
                         </button>
@@ -340,8 +329,8 @@ export default function MentorApplicationForm() {
                                             key={role}
                                             className={`tw-rounded-xl tw-border tw-p-4 tw-text-left tw-transition-all tw-cursor-pointer ${
                                                 selected
-                                                    ? 'tw-border-primary tw-bg-primary/5 tw-ring-1 tw-ring-primary/20'
-                                                    : 'tw-border-gray-200 tw-bg-white hover:tw-border-gray-300'
+                                                    ? 'tw-border-primary tw-bg-primary/5 dark:tw-bg-primary/20 tw-ring-1 tw-ring-primary/20'
+                                                    : 'tw-border-gray-200 dark:tw-border-white/10 tw-bg-white dark:tw-bg-[#151226] hover:tw-border-gray-300 dark:hover:tw-border-gray-500'
                                             }`}
                                         >
                                             <input
@@ -352,10 +341,10 @@ export default function MentorApplicationForm() {
                                                 onChange={() => setForm((p) => ({ ...p, educationRole: role }))}
                                                 className="tw-sr-only"
                                             />
-                                            <span className={`tw-block tw-font-bold tw-text-sm tw-mb-0.5 ${selected ? 'tw-text-primary' : 'tw-text-gray-800'}`}>
+                                            <span className={`tw-block tw-font-bold tw-text-sm tw-mb-0.5 ${selected ? 'tw-text-primary dark:tw-text-purple-400' : 'tw-text-gray-800 dark:tw-text-white'}`}>
                                                 {role === 'student' ? 'Student mentor' : 'Instructor / Faculty'}
                                             </span>
-                                            <span className="tw-text-xs tw-text-gray-500">
+                                            <span className="tw-text-xs tw-text-gray-500 dark:tw-text-slate-400">
                                                 {role === 'student'
                                                     ? 'Currently enrolled student offering peer mentorship.'
                                                     : 'Faculty member, instructor, or teaching assistant mentoring students.'}
@@ -491,18 +480,9 @@ export default function MentorApplicationForm() {
                             </div>
                         </Card>
 
-                        {/* ── Captcha & Submit ── */}
+                        {/* ── Submit ── */}
                         <Card>
-                            {/* @ts-ignore */}
-                            <RecaptchaField
-                                ref={recaptchaRef}
-                                onChange={(token: string | null) => { setRecaptchaToken(token || ''); if (token) setRecaptchaError(''); }}
-                                onExpired={() => { setRecaptchaToken(''); setRecaptchaError('Verification expired, please try again.'); }}
-                            />
-                            {recaptchaError && (
-                                <p className="tw-mt-2 tw-text-xs tw-font-medium tw-text-red-600">{recaptchaError}</p>
-                            )}
-                            <div className="tw-flex tw-justify-end tw-pt-6 tw-border-t tw-border-gray-100 tw-mt-6">
+                            <div className="tw-flex tw-justify-end tw-pt-2">
                                 <button
                                     type="submit"
                                     disabled={loading}
@@ -516,6 +496,6 @@ export default function MentorApplicationForm() {
                     </form>
                 </div>
             </div>
-        </DashboardLayout>
+        </div>
     );
 }

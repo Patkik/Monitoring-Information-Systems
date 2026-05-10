@@ -1,8 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logger from '../../shared/utils/logger';
-import DashboardLayout from '../../components/layouts/DashboardLayout';
-import RecaptchaField from '../../components/common/RecaptchaField.jsx';
 import { buildApiUrl } from '../../shared/config/apiClient';
 
 // ── Validation helpers ──────────────────────────────────────────────────────
@@ -33,10 +31,10 @@ const FieldLabel = ({ htmlFor, children, optional }) => (
     </label>
 );
 
-const textInputCls = "tw-w-full tw-h-12 tw-px-4 tw-rounded-xl tw-border tw-border-gray-200 tw-bg-[#fbfcfd] focus:tw-bg-white focus:tw-border-primary focus:tw-ring-4 focus:tw-ring-primary/15 tw-outline-none tw-transition-all tw-text-sm tw-text-gray-900 tw-placeholder-gray-400";
-const errorInputCls = "tw-w-full tw-h-12 tw-px-4 tw-rounded-xl tw-border tw-border-red-300 tw-bg-[#fbfcfd] focus:tw-bg-white focus:tw-border-red-500 focus:tw-ring-4 focus:tw-ring-red-500/15 tw-outline-none tw-transition-all tw-text-sm tw-text-gray-900 tw-placeholder-gray-400";
-const textareaCls = "tw-w-full tw-p-4 tw-rounded-xl tw-border tw-border-gray-200 tw-bg-[#fbfcfd] focus:tw-bg-white focus:tw-border-primary focus:tw-ring-4 focus:tw-ring-primary/15 tw-outline-none tw-transition-all tw-text-sm tw-text-gray-900 tw-placeholder-gray-400 tw-resize-none";
-const fileInputLabelCls = "tw-flex tw-items-center tw-justify-center tw-w-full tw-h-12 tw-px-4 tw-border-2 tw-border-dashed tw-border-gray-200 hover:tw-border-primary/50 tw-bg-[#fbfcfd] hover:tw-bg-primary/5 tw-rounded-xl tw-cursor-pointer tw-transition-all tw-text-sm tw-text-gray-600 tw-font-medium group";
+const textInputCls = "tw-w-full tw-h-12 tw-px-4 tw-rounded-xl tw-border tw-border-gray-300 dark:tw-border-white/10 tw-bg-[#fbfcfd] dark:tw-bg-[#151226] focus:tw-bg-white dark:focus:tw-bg-[#1e1a34] focus:tw-border-primary dark:focus:tw-border-purple-400 focus:tw-ring-4 focus:tw-ring-primary/15 tw-outline-none tw-transition-all tw-text-sm tw-text-gray-900 dark:tw-text-white tw-placeholder-gray-400 dark:placeholder:tw-text-slate-500";
+const errorInputCls = "tw-w-full tw-h-12 tw-px-4 tw-rounded-xl tw-border tw-border-red-400 dark:tw-border-red-500/50 tw-bg-[#fbfcfd] dark:tw-bg-[#151226] focus:tw-bg-white dark:focus:tw-bg-[#1e1a34] focus:tw-border-red-500 focus:tw-ring-4 focus:tw-ring-red-500/15 tw-outline-none tw-transition-all tw-text-sm tw-text-gray-900 dark:tw-text-white tw-placeholder-gray-400 dark:placeholder:tw-text-slate-500";
+const textareaCls = "tw-w-full tw-p-4 tw-rounded-xl tw-border tw-border-gray-300 dark:tw-border-white/10 tw-bg-[#fbfcfd] dark:tw-bg-[#151226] focus:tw-bg-white dark:focus:tw-bg-[#1e1a34] focus:tw-border-primary dark:focus:tw-border-purple-400 focus:tw-ring-4 focus:tw-ring-primary/15 tw-outline-none tw-transition-all tw-text-sm tw-text-gray-900 dark:tw-text-white tw-placeholder-gray-400 dark:placeholder:tw-text-slate-500 tw-resize-none";
+const fileInputLabelCls = "tw-flex tw-items-center tw-justify-center tw-w-full tw-h-12 tw-px-4 tw-border-2 tw-border-dashed tw-border-gray-300 dark:tw-border-white/10 hover:tw-border-primary/50 tw-bg-[#fbfcfd] dark:tw-bg-[#151226] hover:tw-bg-primary/5 tw-rounded-xl tw-cursor-pointer tw-transition-all tw-text-sm tw-text-gray-600 dark:tw-text-slate-300 tw-font-medium group";
 
 const ChipButton = ({ selected, onClick, children }) => (
     <button
@@ -53,7 +51,7 @@ const ChipButton = ({ selected, onClick, children }) => (
 );
 
 const Card = ({ children, className = '' }) => (
-    <div className={`tw-bg-white tw-rounded-2xl tw-border tw-border-gray-100 tw-shadow-sm hover:tw-shadow-md tw-transition-shadow tw-duration-300 tw-p-6 md:tw-p-8 ${className}`}>
+    <div className={`tw-bg-white dark:tw-bg-[#151226] tw-rounded-2xl tw-border tw-border-gray-200 dark:tw-border-white/10 tw-shadow-sm hover:tw-shadow-md tw-transition-shadow tw-duration-300 tw-p-6 md:tw-p-8 ${className}`}>
         {children}
     </div>
 );
@@ -76,9 +74,6 @@ export default function MenteeApplicationForm() {
   const [corFile, setCorFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [recaptchaToken, setRecaptchaToken] = useState('');
-  const [recaptchaError, setRecaptchaError] = useState('');
-  const recaptchaRef = useRef(null);
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('user') || '{}');
@@ -128,11 +123,6 @@ export default function MenteeApplicationForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setRecaptchaError('');
-    if (!recaptchaToken) {
-      setRecaptchaError('Please complete the verification step.');
-      return;
-    }
     const firstnameErr = validateName(form.firstname);
     const lastnameErr = validateName(form.lastname);
     if (firstnameErr || lastnameErr) {
@@ -148,7 +138,6 @@ export default function MenteeApplicationForm() {
         if (form[key]) formData.append(key, form[key]);
       });
       if (corFile) formData.append('corFile', corFile);
-      formData.append('recaptchaToken', recaptchaToken);
 
       const response = await fetch(buildApiUrl('/mentee/application/submit'), {
         method: 'POST',
@@ -178,10 +167,6 @@ export default function MenteeApplicationForm() {
       setError('Failed to submit application. Please try again.');
     } finally {
       setLoading(false);
-      if (recaptchaRef.current) {
-        recaptchaRef.current.reset();
-      }
-      setRecaptchaToken('');
     }
   };
 
@@ -202,29 +187,28 @@ export default function MenteeApplicationForm() {
   const yearLevels = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
 
   return (
-    <DashboardLayout>
-      <div className="tw-min-h-screen tw-bg-gray-50 tw-py-10">
-        <div className="tw-max-w-4xl tw-mx-auto tw-px-4">
+    <div className="tw-min-h-screen tw-bg-gray-50 dark:tw-bg-[#0b0a10] tw-py-10">
+      <div className="tw-max-w-4xl tw-mx-auto tw-px-4">
           
           {/* Header */}
           <div className="tw-mb-8 tw-pl-4 tw-border-l-4 tw-border-primary">
             <p className="tw-text-xs tw-font-bold tw-tracking-widest tw-text-primary tw-uppercase tw-mb-1">Apply</p>
-            <h1 className="tw-text-3xl tw-font-bold tw-text-gray-900 tw-tracking-tight">Mentee Application Form</h1>
-            <p className="tw-text-sm tw-text-gray-500 tw-mt-1">
+            <h1 className="tw-text-3xl tw-font-bold tw-text-gray-900 dark:tw-text-white tw-tracking-tight">Mentee Application Form</h1>
+            <p className="tw-text-sm tw-text-gray-500 dark:tw-text-slate-400 tw-mt-1">
               Complete your application to join the mentoring program and accelerate your growth.
             </p>
           </div>
 
           {/* Role hint */}
-          <div className="tw-mb-6 tw-bg-primary/5 tw-border tw-border-primary/20 tw-rounded-2xl tw-p-5 tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-center tw-justify-between tw-gap-4">
+          <div className="tw-mb-6 tw-bg-primary/5 dark:tw-bg-primary/20 tw-border tw-border-primary/20 tw-rounded-2xl tw-p-5 tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-center tw-justify-between tw-gap-4">
             <div>
-              <p className="tw-text-sm tw-font-semibold tw-text-gray-900">Not the right path?</p>
-              <p className="tw-text-sm tw-text-gray-600 tw-mt-0.5">If you meant to register as a Mentor instead, you can change your role.</p>
+              <p className="tw-text-sm tw-font-semibold tw-text-gray-900 dark:tw-text-white">Not the right path?</p>
+              <p className="tw-text-sm tw-text-gray-600 dark:tw-text-slate-400 tw-mt-0.5">If you meant to register as a Mentor instead, you can change your role.</p>
             </div>
             <button
               type="button"
               onClick={() => navigate('/role-selection')}
-              className="tw-flex-shrink-0 tw-inline-flex tw-items-center tw-justify-center tw-rounded-xl tw-bg-white tw-text-primary tw-border tw-border-gray-200 tw-shadow-[0_2px_0_rgba(0,0,0,0.06)] hover:tw-border-primary hover:tw-bg-gray-50 active:tw-shadow-none active:tw-translate-y-[2px] tw-px-4 tw-py-2 tw-text-sm tw-font-bold tw-transition-all"
+              className="tw-flex-shrink-0 tw-inline-flex tw-items-center tw-justify-center tw-rounded-xl tw-bg-white dark:tw-bg-[#151226] tw-text-primary dark:tw-text-purple-400 tw-border tw-border-gray-200 dark:tw-border-white/10 tw-shadow-[0_2px_0_rgba(0,0,0,0.06)] hover:tw-border-primary hover:tw-bg-gray-50 dark:hover:tw-bg-white/5 active:tw-shadow-none active:tw-translate-y-[2px] tw-px-4 tw-py-2 tw-text-sm tw-font-bold tw-transition-all"
             >
               Change Role
             </button>
@@ -378,15 +362,9 @@ export default function MenteeApplicationForm() {
               </div>
             </Card>
 
-            {/* Captcha & Submit */}
+            {/* Submit */}
             <Card>
-              <RecaptchaField
-                ref={recaptchaRef}
-                onChange={(token) => { setRecaptchaToken(token || ''); if (token) setRecaptchaError(''); }}
-                onExpired={() => { setRecaptchaToken(''); setRecaptchaError('Verification expired, please try again.'); }}
-              />
-              {recaptchaError && <p className="tw-mt-2 tw-text-xs tw-font-medium tw-text-red-600">{recaptchaError}</p>}
-              <div className="tw-flex tw-justify-end tw-pt-6 tw-mt-6 tw-border-t tw-border-gray-100">
+              <div className="tw-flex tw-justify-end tw-pt-2">
                 <button
                   type="submit" disabled={loading}
                   className="tw-px-8 tw-py-3.5 tw-bg-primary hover:tw-bg-primary/90 tw-text-white tw-font-bold tw-rounded-xl tw-transition-all tw-text-sm tw-tracking-wide tw-uppercase disabled:tw-opacity-50 disabled:tw-cursor-not-allowed tw-shadow-[inset_0_-3px_0_rgba(0,0,0,0.2),_0_4px_14px_rgba(var(--color-primary),0.3)] active:tw-shadow-none active:tw-translate-y-[3px]"
@@ -398,8 +376,7 @@ export default function MenteeApplicationForm() {
 
           </form>
         </div>
-      </div>
-    </DashboardLayout>
+    </div>
   );
 }
 

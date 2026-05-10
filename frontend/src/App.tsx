@@ -89,37 +89,7 @@ const MentorAchievementsRoute = () => <ProtectedRoute requiredRole="mentor" chil
 const MentorMatchesRoute = () => <ProtectedRoute requiredRole="mentor" children={<MentorMatchSuggestionsPage />} />;
 const MenteeMatchesRoute = () => <ProtectedRoute requiredRole="mentee" children={<MenteeMatchSuggestionsPage />} />;
 
-const LightModeEnforcer = ({ children }: { children: React.ReactNode }) => {
-    React.useLayoutEffect(() => {
-        const root = document.documentElement;
-        
-        // Remove dark class immediately
-        root.classList.remove('dark');
-        
-        // Use MutationObserver to aggressively prevent the 'dark' class from being added
-        const observer = new MutationObserver((mutations) => {
-            for (const mutation of mutations) {
-                if (mutation.attributeName === 'class' && root.classList.contains('dark')) {
-                    root.classList.remove('dark');
-                }
-            }
-        });
-        observer.observe(root, { attributes: true });
 
-        return () => {
-            observer.disconnect();
-            // Try to restore the theme based on local storage or system preference
-            const stored = localStorage.getItem('cmis-theme');
-            if (stored === 'dark') {
-                root.classList.add('dark');
-            } else if (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                root.classList.add('dark');
-            }
-        };
-    }, []);
-
-    return <>{children}</>;
-};
 
 const App = () => {
     const location = useLocation();
@@ -127,7 +97,7 @@ const App = () => {
     return (
         <AnimatePresence mode="sync" initial={false}>
             <Routes location={location} key={location.pathname}>
-                <Route element={<LightModeEnforcer><Outlet /></LightModeEnforcer>}>
+                <Route element={<Outlet />}>
                     {/* Public Pages */}
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/about" element={<AboutPage />} />

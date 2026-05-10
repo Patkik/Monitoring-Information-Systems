@@ -98,7 +98,7 @@ export default function SetPasswordPage() {
 		>
 			<header className="tw-mb-6">
 				<p className="tw-text-[10px] tw-font-semibold tw-uppercase tw-tracking-[0.2em] tw-text-primary">Set Password</p>
-				<h2 className="login-redesign__form-title tw-mt-2 tw-leading-[1.1] tw-text-[#1d2931]">
+				<h2 className="login-redesign__form-title tw-mt-2 tw-leading-[1.1] tw-text-[#1d2931] dark:tw-text-white">
 					Secure your
 					<br />
 					account.
