@@ -1,6 +1,5 @@
 const path = require('path');
 const User = require('../models/User');
-const { verifyRecaptchaToken } = require('../utils/recaptcha');
 const { uploadBuffer } = require('../utils/cloudinary');
 
 const applicationFolder = process.env.CLOUDINARY_APPLICATIONS_FOLDER || 'mentoring/applications';
@@ -56,19 +55,7 @@ const submitMenteeApplication = async (req, res) => {
       specificSkills,
       major,
       programmingLanguage,
-      motivation,
-      recaptchaToken
     } = req.body;
-
-    const recaptchaResult = await verifyRecaptchaToken(recaptchaToken, req.ip);
-    if (!recaptchaResult.ok) {
-      return res.status(recaptchaResult.status).json({
-        success: false,
-        error: recaptchaResult.code,
-        message: recaptchaResult.message,
-        details: recaptchaResult.details
-      });
-    }
 
     if (!yearLevel || !program || !specificSkills || !major || !programmingLanguage) {
       return res.status(400).json({
@@ -179,19 +166,8 @@ const submitMentorApplication = async (req, res) => {
       educationRole,
       educationProgram,
       educationYearLevel,
-      educationMajor,
-      recaptchaToken
+      educationMajor
     } = req.body;
-
-    const recaptchaResult = await verifyRecaptchaToken(recaptchaToken, req.ip);
-    if (!recaptchaResult.ok) {
-      return res.status(recaptchaResult.status).json({
-        success: false,
-        error: recaptchaResult.code,
-        message: recaptchaResult.message,
-        details: recaptchaResult.details
-      });
-    }
 
     const normalizedExpertise = sanitizeArrayInput(expertiseAreas);
     const normalizedTopics = sanitizeArrayInput(mentoringTopics);

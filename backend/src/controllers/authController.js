@@ -9,7 +9,7 @@ const MAX_LOGIN_ATTEMPTS = 5;
 const LOCK_TIME_MS = 15 * 60 * 1000; // 15 minutes
 
 const createJwt = (user) =>
-  jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+  jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '24h' });
 
 const ACCOUNT_DEACTIVATED_MESSAGE = 'Your account has been deactivated. Only an administrator can reactivate it.';
 
