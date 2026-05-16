@@ -70,3 +70,5 @@ jspm_packages/
 **/API keys.txt
 **/secrets/
 **/config/secrets.js
+
+.env.deploy

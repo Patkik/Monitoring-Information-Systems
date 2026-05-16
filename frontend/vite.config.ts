@@ -5,8 +5,14 @@ import react from '@vitejs/plugin-react';
 // 1) Silence benign Rollup warnings caused by "use client" directives in some libraries
 // 2) Improve chunking to reduce the main bundle size warning
 // 3) Relax the chunk-size warning threshold a bit for DX
+//
+// VITE_BASE_PATH: set to "/steb/" when building for the shared-server deployment
+// so that all asset URLs are rooted at the sub-path. Defaults to "/" for local dev.
+const basePath = process.env.VITE_BASE_PATH || '/';
+
 export default defineConfig({
   plugins: [react()],
+  base: basePath,
   define: {
     // Expose Vite's env for modules that can't directly reference import.meta.env in Jest tests
     importMetaEnv: 'import.meta.env',
